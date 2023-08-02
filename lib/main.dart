@@ -13,11 +13,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
+      debugShowCheckedModeBanner: false,
       title: AppDefaults.titleName,
       routes: AppRoutes.routes,
       initialRoute: AppRoutes.initialRoute,
-      darkTheme: ColorPalete.themeData,
-      themeMode: ThemeMode.dark,
+      theme: ColorPalete.themeData,
     );
   }
 }

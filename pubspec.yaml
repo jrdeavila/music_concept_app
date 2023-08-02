@@ -18,6 +18,8 @@ dependencies:
   firebase_storage: ^11.2.5
   firebase_messaging: ^14.6.5
   connectivity_plus: ^4.0.2
+  image_picker: ^0.8.7
+  image: ^4.0.15
 
   cupertino_icons: ^1.0.2
   flutter_material_design_icons: ^1.0.7296
@@ -29,4 +31,7 @@ dev_dependencies:
   flutter_lints: ^2.0.0
 
 flutter:
+  assets:
+    - assets/welcome/
+    -
   uses-material-design: true
