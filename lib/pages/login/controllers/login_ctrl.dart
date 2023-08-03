@@ -30,7 +30,7 @@ class RegisterCtrl extends GetxController {
   void setImage(Uint8List? value) => _image.value = value;
 
   void submit() {
-    UserAccountService.createUserAccount(
+    UserAccountService.createAccount(
       email: _email.value.trim(),
       password: _password.value.trim(),
       name: _name.value.trim(),

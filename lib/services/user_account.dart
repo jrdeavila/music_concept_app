@@ -7,11 +7,14 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:music_concept_app/lib.dart';
 
 abstract class UserAccountService {
-  static Future<void> createUserAccount({
+  static Future<void> createAccount({
     required String email,
     required String password,
     required String name,
     required Uint8List? image,
+    String? address,
+    String? category,
+    UserAccountType type = UserAccountType.user,
   }) async {
     return FirebaseFirestore.instance.runTransaction((transaction) async {
       final user = (await FirebaseAuth.instance.createUserWithEmailAndPassword(
@@ -39,6 +42,9 @@ abstract class UserAccountService {
         "name": name,
         "email": email,
         "image": imagePath,
+        "address": address,
+        "category": category,
+        "type": type.index,
       });
     });
   }
@@ -46,4 +52,9 @@ abstract class UserAccountService {
   static DocumentReference<Map<String, dynamic>> getUserAccountRef(String? id) {
     return FirebaseFirestore.instance.collection("users").doc(id);
   }
+}
+
+enum UserAccountType {
+  bussiness,
+  user,
 }

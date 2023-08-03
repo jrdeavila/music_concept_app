@@ -8,7 +8,7 @@ class RegisterBussinessPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var ctrl = Get.find<RegisterCtrl>();
+    var ctrl = Get.find<RegisterBussinessCtrl>();
     return Scaffold(
         body: SingleChildScrollView(
       child: Column(
@@ -44,14 +44,16 @@ class RegisterBussinessPage extends StatelessWidget {
                             label: "Direccion",
                             icon: MdiIcons.mapMarker,
                             keyboardType: TextInputType.name,
-                            onChanged: ctrl.setName,
+                            onChanged: ctrl.setAddress,
                           ),
                         ],
                       ),
                     ),
                   ],
                 ),
-                LoginDropDownCategories(),
+                LoginDropDownCategories(
+                  onChangeCategory: ctrl.setCategory,
+                ),
                 LoginRoundedTextField(
                   label: "Correo electronico",
                   icon: MdiIcons.email,
@@ -69,7 +71,7 @@ class RegisterBussinessPage extends StatelessWidget {
                   height: 20,
                 ),
                 RoundedButton(
-                  label: 'Entrar',
+                  label: 'Registrar',
                   onTap: ctrl.submit,
                 ),
                 const SizedBox(

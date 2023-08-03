@@ -34,72 +34,91 @@ class _ProfileViewState extends State<ProfileView> {
     },
   };
 
-  final userRef = Get.find<UserCtrl>().user;
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        AppBar(
-          backgroundColor: Colors.transparent,
-          leadingWidth: 76,
-          leading: HomeAppBarAction(
-            selected: true,
-            icon: MdiIcons.arrowLeft,
-            onTap: () {
-              PageChangeNotification(0).dispatch(context);
-            },
+    return Obx(() {
+      final dataRef = Get.find<UserCtrl>().user;
+
+      return Column(
+        children: [
+          AppBar(
+            backgroundColor: Colors.transparent,
+            leadingWidth: 76,
+            leading: HomeAppBarAction(
+              selected: true,
+              icon: MdiIcons.arrowLeft,
+              onTap: () {
+                PageChangeNotification(0).dispatch(context);
+              },
+            ),
+            actions: [
+              const SizedBox(width: 10.0),
+              _popupProfileMenu(),
+              const SizedBox(width: 16.0),
+            ],
           ),
-          actions: [
-            const SizedBox(width: 10.0),
-            _popupProfileMenu(),
-            const SizedBox(width: 16.0),
-          ],
-        ),
-        Expanded(
-          child: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-              stream: userRef?.snapshots(),
-              builder: (context, snapshot) {
-                final data = snapshot.data?.data();
-                var hasImage = data?['image'] != null;
-                return SingleChildScrollView(
-                  child: Stack(
-                    children: [
-                      Column(
-                        children: [
-                          Container(
-                            width: 100,
-                            height: 100,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Get.theme.colorScheme.onBackground,
-                              image: hasImage
-                                  ? DecorationImage(
-                                      image: NetworkImage(data!['image']),
-                                      fit: BoxFit.cover,
-                                    )
-                                  : null,
+          Expanded(
+            child: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                stream: dataRef?.snapshots(),
+                builder: (context, snapshot) {
+                  final data = snapshot.data?.data();
+                  var hasImage = data?['image'] != null;
+                  var hasAddress = data?['address'] != null;
+                  var hasCategory = data?['category'] != null;
+                  return SingleChildScrollView(
+                    child: Stack(
+                      children: [
+                        Column(
+                          children: [
+                            Container(
+                              width: 100,
+                              height: 100,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Get.theme.colorScheme.onBackground,
+                                image: hasImage
+                                    ? DecorationImage(
+                                        image: NetworkImage(data!['image']),
+                                        fit: BoxFit.cover,
+                                      )
+                                    : null,
+                              ),
+                              child: hasImage
+                                  ? null
+                                  : const Center(child: Icon(MdiIcons.account)),
                             ),
-                            child: hasImage
-                                ? null
-                                : const Center(child: Icon(MdiIcons.account)),
-                          ),
-                          const SizedBox(height: 20.0),
-                          Text(
-                            data?['name'] ?? '',
-                            style: const TextStyle(
-                              fontSize: 25.0,
-                              fontWeight: FontWeight.bold,
+                            const SizedBox(height: 20.0),
+                            Text(
+                              data?['name'] ?? '',
+                              style: const TextStyle(
+                                fontSize: 25.0,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                          ),
-                        ],
-                      )
-                    ],
-                  ),
-                );
-              }),
-        ),
-      ],
-    );
+                            if (hasCategory)
+                              Text(
+                                '"${data?['category']}"',
+                                style: const TextStyle(
+                                  fontSize: 15.0,
+                                ),
+                              ),
+                            if (hasAddress)
+                              Text(
+                                data?['address'] ?? '',
+                                style: TextStyle(
+                                    fontSize: 15.0,
+                                    color: Get.theme.colorScheme.primary),
+                              ),
+                          ],
+                        )
+                      ],
+                    ),
+                  );
+                }),
+          ),
+        ],
+      );
+    });
   }
 
   // Opciones del perfil
