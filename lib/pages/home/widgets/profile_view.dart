@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:get/get.dart';
 import 'package:music_concept_app/lib.dart';
 
@@ -242,19 +241,26 @@ class _ProfileViewState extends State<ProfileView> {
       mainAxisSize: MainAxisSize.min,
       children: [
         Container(
-          width: 100,
-          height: 100,
+          width: 130,
+          height: 130,
+          padding: const EdgeInsets.all(3.0),
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             color: Get.theme.colorScheme.onBackground,
-            image: hasImage
-                ? DecorationImage(
-                    image: NetworkImage(data!['image']),
-                    fit: BoxFit.cover,
-                  )
-                : null,
+            border: Border.all(
+              color: Get.theme.colorScheme.primary,
+              width: 2.0,
+            ),
           ),
-          child: hasImage ? null : const Center(child: Icon(MdiIcons.account)),
+          child: hasImage
+              ? ClipRRect(
+                  borderRadius: BorderRadius.circular(100),
+                  child: Image.network(
+                    data!['image'],
+                    fit: BoxFit.cover,
+                  ),
+                )
+              : const Center(child: Icon(MdiIcons.account)),
         ),
         const SizedBox(height: 20.0),
         Text(
@@ -309,42 +315,5 @@ class _ProfileViewState extends State<ProfileView> {
           icon: MdiIcons.dotsHorizontal,
           selected: true,
         ));
-  }
-}
-
-class WallpaperTabView extends StatelessWidget {
-  const WallpaperTabView({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final ctrl = Get.find<ProfileCtrl>();
-    return Obx(() {
-      return MasonryGridView.builder(
-        physics: const NeverScrollableScrollPhysics(),
-        gridDelegate: const SliverSimpleGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-        ),
-        itemBuilder: (context, index) {
-          return Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 5.0, vertical: 10.0),
-            child: GestureDetector(
-              onTap: () {
-                ctrl.selectWallpaper(ctrl.wallpapers[index]);
-              },
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(20.0),
-                child: Image.asset(
-                  ctrl.wallpapers[index],
-                  height: index.isEven ? 200 : 150,
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
-          );
-        },
-        itemCount: ctrl.wallpapers.length,
-      );
-    });
   }
 }
