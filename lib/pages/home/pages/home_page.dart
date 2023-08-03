@@ -45,6 +45,7 @@ class _HomePageState extends State<HomePage> {
               ProfileView(), // Profile View
             ],
           ),
+          extendBody: true,
           floatingActionButton: FloatingActionButton(
             onPressed: () {},
             child: const Icon(MdiIcons.plus),
