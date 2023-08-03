@@ -32,6 +32,7 @@ abstract class ColorPalete {
   static const AppBarTheme appBarTheme = AppBarTheme(
     backgroundColor: Color(backgroundColor),
     elevation: 0,
+    toolbarHeight: kToolbarHeight + 50.0,
     iconTheme: IconThemeData(
       color: Color(textColor),
     ),

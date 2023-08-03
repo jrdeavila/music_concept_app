@@ -8,6 +8,7 @@ class LoginPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ctrl = Get.find<LoginCtrl>();
     return Scaffold(
         body: SingleChildScrollView(
       child: Column(
@@ -22,14 +23,14 @@ class LoginPage extends StatelessWidget {
                   label: "Correo electronico",
                   icon: MdiIcons.email,
                   keyboardType: TextInputType.emailAddress,
-                  onChanged: (value) {},
+                  onChanged: ctrl.setEmail,
                 ),
                 LoginRoundedTextField(
                   label: "Contraseña",
                   icon: MdiIcons.lock,
                   keyboardType: TextInputType.visiblePassword,
                   isPassword: true,
-                  onChanged: (value) {},
+                  onChanged: ctrl.setPassword,
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
@@ -52,7 +53,7 @@ class LoginPage extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 10.0),
                   child: RoundedButton(
                     label: 'Entrar',
-                    onTap: () {},
+                    onTap: ctrl.submit,
                   ),
                 ),
                 const SizedBox(

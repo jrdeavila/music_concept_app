@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
+import 'package:get/get.dart';
 import 'package:music_concept_app/lib.dart';
 
 class ResetPasswordPage extends StatelessWidget {
@@ -7,6 +8,7 @@ class ResetPasswordPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ctrl = Get.find<ResetPasswordCtrl>();
     return Scaffold(
         body: SingleChildScrollView(
       child: Column(
@@ -22,7 +24,7 @@ class ResetPasswordPage extends StatelessWidget {
                   label: "Correo electronico",
                   icon: MdiIcons.email,
                   keyboardType: TextInputType.emailAddress,
-                  onChanged: (value) {},
+                  onChanged: ctrl.setEmail,
                   helpText:
                       "Se enviara un correo electronico para restablecer la contraseña, si no lo encuentras revisa la carpeta de spam",
                 ),
@@ -31,7 +33,7 @@ class ResetPasswordPage extends StatelessWidget {
                 ),
                 RoundedButton(
                   label: 'Enviar correo',
-                  onTap: () {},
+                  onTap: ctrl.submit,
                 ),
               ],
             ),

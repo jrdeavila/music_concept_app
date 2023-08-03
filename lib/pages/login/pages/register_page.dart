@@ -8,6 +8,7 @@ class RegisterPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var ctrl = Get.find<RegisterCtrl>();
     return Scaffold(
         body: SingleChildScrollView(
       child: Column(
@@ -22,34 +23,34 @@ class RegisterPage extends StatelessWidget {
               children: [
                 Center(
                   child: ImagePicker(
-                    onImageSelected: (image) {},
+                    onImageSelected: ctrl.setImage,
                   ),
                 ),
                 LoginRoundedTextField(
                   label: "Nombre",
                   icon: MdiIcons.account,
-                  keyboardType: TextInputType.emailAddress,
-                  onChanged: (value) {},
+                  keyboardType: TextInputType.name,
+                  onChanged: ctrl.setName,
                 ),
                 LoginRoundedTextField(
                   label: "Correo electronico",
                   icon: MdiIcons.email,
                   keyboardType: TextInputType.emailAddress,
-                  onChanged: (value) {},
+                  onChanged: ctrl.setEmail,
                 ),
                 LoginRoundedTextField(
                   label: "Contraseña",
                   icon: MdiIcons.lock,
                   keyboardType: TextInputType.visiblePassword,
                   isPassword: true,
-                  onChanged: (value) {},
+                  onChanged: ctrl.setPassword,
                 ),
                 const SizedBox(
                   height: 20,
                 ),
                 RoundedButton(
                   label: 'Entrar',
-                  onTap: () {},
+                  onTap: ctrl.submit,
                 ),
                 const SizedBox(
                   height: 20,

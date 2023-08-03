@@ -1,9 +1,18 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:music_concept_app/lib.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   Get.put(ConnectionCtrl());
+  Get.put(AuthenticationCtrl());
+  Get.lazyPut(() => LoginCtrl());
+  Get.lazyPut(() => RegisterCtrl());
+  Get.lazyPut(() => ResetPasswordCtrl());
   runApp(const MyApp());
 }
 

@@ -16,8 +16,6 @@ class ConnectionCtrl extends GetxController {
     _connectivityResult.listen((p0) {
       if (p0 == ConnectivityResult.none) {
         Get.offAndToNamed("/not-wifi");
-      } else {
-        Get.offNamed("/");
       }
     });
   }
