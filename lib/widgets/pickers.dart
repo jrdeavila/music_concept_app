@@ -6,7 +6,13 @@ import 'package:music_concept_app/lib.dart';
 class ImagePicker extends StatefulWidget {
   final void Function(Uint8List? image)? onImageSelected;
   final Uint8List? image;
-  const ImagePicker({super.key, this.onImageSelected, this.image});
+  final double? margin;
+  const ImagePicker({
+    super.key,
+    this.onImageSelected,
+    this.image,
+    this.margin,
+  });
 
   @override
   State<ImagePicker> createState() => _ImagePickerState();
@@ -23,7 +29,7 @@ class _ImagePickerState extends State<ImagePicker> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.all(5.0),
+      margin: EdgeInsets.all(widget.margin ?? 5.0),
       child: InkWell(
         borderRadius: BorderRadius.circular(20),
         onTapUp: _showMenu,
@@ -51,7 +57,7 @@ class _ImagePickerState extends State<ImagePicker> {
               ? null
               : Icon(
                   Icons.camera_alt,
-                  color: Theme.of(context).colorScheme.onPrimary,
+                  color: Theme.of(context).colorScheme.primary,
                   size: 40.0,
                 ),
         ),

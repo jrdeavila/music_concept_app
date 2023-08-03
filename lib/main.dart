@@ -10,9 +10,11 @@ void main() async {
   );
   Get.put(ConnectionCtrl());
   Get.put(AuthenticationCtrl());
+  Get.put(AppModeCtrl());
   Get.lazyPut(() => LoginCtrl());
   Get.lazyPut(() => RegisterCtrl());
   Get.lazyPut(() => ResetPasswordCtrl());
+  Get.lazyPut(() => RegisterBussinessCtrl());
   runApp(const MyApp());
 }
 

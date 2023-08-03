@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
 import 'package:get/get.dart';
+import 'package:music_concept_app/lib.dart';
 
 class LoginRoundedTextField extends StatefulWidget {
   const LoginRoundedTextField({
@@ -40,7 +41,7 @@ class _LoginRoundedTextFieldState extends State<LoginRoundedTextField> {
         obscureText: _visible,
         onChanged: widget.onChanged,
         decoration: InputDecoration(
-          prefixIcon: Icon(widget.icon),
+          prefixIcon: Icon(widget.icon, color: Get.theme.colorScheme.primary),
           suffixIcon: widget.isPassword ? _toggleVisibilityWidget() : null,
           hintText: widget.label,
           helperText: widget.helpText,
@@ -61,4 +62,50 @@ class _LoginRoundedTextFieldState extends State<LoginRoundedTextField> {
         onTap: () => setState(() => _visible = !_visible),
         child: Icon(_visible ? MdiIcons.eye : MdiIcons.eyeOff),
       );
+}
+
+class LoginDropDownCategories extends StatelessWidget {
+  const LoginDropDownCategories({
+    super.key,
+    this.onChangeCategory,
+  });
+
+  final void Function(String)? onChangeCategory;
+
+  @override
+  Widget build(BuildContext context) {
+    final ctrl = Get.find<RegisterBussinessCtrl>();
+    return Obx(() {
+      final categories = ctrl.categories;
+      return Container(
+        padding: const EdgeInsets.all(8.0),
+        child: DropdownButtonFormField(
+          decoration: InputDecoration(
+            fillColor: Get.theme.colorScheme.onBackground,
+            filled: true,
+            hintText: 'Categoria',
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(20),
+              borderSide: BorderSide.none,
+            ),
+            prefixIcon:
+                Icon(MdiIcons.music, color: Get.theme.colorScheme.primary),
+          ),
+          items: categories
+              .map(
+                (e) => DropdownMenuItem(
+                  value: e,
+                  child: Text(e),
+                ),
+              )
+              .toList(),
+          onChanged: (value) {
+            if (value != null) {
+              onChangeCategory?.call(value.toString());
+            }
+          },
+        ),
+      );
+    });
+  }
 }
