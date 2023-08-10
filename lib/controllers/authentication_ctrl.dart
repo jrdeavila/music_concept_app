@@ -10,12 +10,17 @@ class AuthenticationCtrl extends GetxController {
     super.onReady();
     _firebaseUser.listen((p0) {
       if (p0 != null) {
+        _saveNotificationToken(p0.uid);
         Get.offAllNamed(AppRoutes.home);
       } else {
         Get.offAllNamed(AppRoutes.login);
       }
     });
     _firebaseUser.bindStream(FirebaseAuth.instance.authStateChanges());
+  }
+
+  void _saveNotificationToken(String uid) async {
+    await NotificationService.saveNotificationToken("users/$uid");
   }
 
   void login({

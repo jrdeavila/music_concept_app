@@ -4,14 +4,18 @@ import 'package:get/get.dart';
 class HomeAppBarAction extends StatelessWidget {
   const HomeAppBarAction({
     super.key,
-    required this.icon,
+    this.icon,
     this.onTap,
     this.selected = false,
-  });
+    this.child,
+    this.light = false,
+  }) : assert(icon != null || child != null);
 
-  final IconData icon;
+  final IconData? icon;
   final VoidCallback? onTap;
   final bool selected;
+  final Widget? child;
+  final bool light;
 
   @override
   Widget build(BuildContext context) {
@@ -26,9 +30,18 @@ class HomeAppBarAction extends StatelessWidget {
             height: 50.0,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: selected ? Get.theme.colorScheme.onBackground : null,
+              color: selected
+                  ? light
+                      ? Get.theme.colorScheme.onPrimary
+                      : Get.theme.colorScheme.onBackground
+                  : null,
             ),
-            child: Center(child: Icon(icon)),
+            child: child ??
+                Center(
+                    child: Icon(
+                  icon,
+                  color: light ? Get.theme.colorScheme.primary : null,
+                )),
           ),
         ),
       ),

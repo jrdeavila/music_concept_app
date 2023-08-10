@@ -1,17 +1,23 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
 import 'package:music_concept_app/lib.dart';
 
 class ImagePicker extends StatefulWidget {
   final void Function(Uint8List? image)? onImageSelected;
+  final Widget? Function(Uint8List? image, Widget? child)? childOnImageSelected;
   final Uint8List? image;
   final double? margin;
+  final Widget? child;
+
   const ImagePicker({
     super.key,
     this.onImageSelected,
+    this.childOnImageSelected,
     this.image,
     this.margin,
+    this.child,
   });
 
   @override
@@ -34,39 +40,41 @@ class _ImagePickerState extends State<ImagePicker> {
         borderRadius: BorderRadius.circular(20),
         onTapUp: _showMenu,
         onTap: () {},
-        child: Ink(
-          width: 120,
-          height: 120,
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.onBackground,
-            borderRadius: BorderRadius.circular(20),
-            border: _image != null
-                ? Border.all(
-                    color: Theme.of(context).colorScheme.onBackground,
-                    width: 4,
-                  )
-                : null,
-            image: _image != null
-                ? DecorationImage(
-                    image: MemoryImage(_image!),
-                    fit: BoxFit.cover,
-                  )
-                : null,
-          ),
-          child: _image != null
-              ? null
-              : Icon(
-                  Icons.camera_alt,
-                  color: Theme.of(context).colorScheme.primary,
-                  size: 40.0,
-                ),
-        ),
+        child: widget.childOnImageSelected?.call(_image, widget.child) ??
+            widget.child ??
+            Ink(
+              width: double.infinity,
+              height: 120,
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.onBackground,
+                borderRadius: BorderRadius.circular(20),
+                border: _image != null
+                    ? Border.all(
+                        color: Theme.of(context).colorScheme.onBackground,
+                        width: 4,
+                      )
+                    : null,
+                image: _image != null
+                    ? DecorationImage(
+                        image: MemoryImage(_image!),
+                        fit: BoxFit.cover,
+                      )
+                    : null,
+              ),
+              child: _image != null
+                  ? null
+                  : Icon(
+                      MdiIcons.imagePlus,
+                      color: Theme.of(context).colorScheme.primary,
+                      size: 40.0,
+                    ),
+            ),
       ),
     );
   }
 
   void _showMenu(TapUpDetails details) {
-    dialogScale<ResultImagePicker>(
+    dialogBuilder<ResultImagePicker>(
             context, details.globalPosition, const SelectImageMenu())
         .then((value) {
       if (value is ResultImagePicker) {

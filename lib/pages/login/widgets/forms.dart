@@ -7,7 +7,7 @@ class LoginRoundedTextField extends StatefulWidget {
   const LoginRoundedTextField({
     super.key,
     required this.label,
-    required this.icon,
+    this.icon,
     this.keyboardType = TextInputType.text,
     this.onChanged,
     this.isPassword = false,
@@ -15,7 +15,7 @@ class LoginRoundedTextField extends StatefulWidget {
   });
 
   final String label;
-  final IconData icon;
+  final IconData? icon;
   final TextInputType keyboardType;
   final Function(String)? onChanged;
   final bool isPassword;
@@ -41,7 +41,9 @@ class _LoginRoundedTextFieldState extends State<LoginRoundedTextField> {
         obscureText: _visible,
         onChanged: widget.onChanged,
         decoration: InputDecoration(
-          prefixIcon: Icon(widget.icon, color: Get.theme.colorScheme.primary),
+          prefixIcon: widget.icon != null
+              ? Icon(widget.icon, color: Get.theme.colorScheme.primary)
+              : null,
           suffixIcon: widget.isPassword ? _toggleVisibilityWidget() : null,
           hintText: widget.label,
           helperText: widget.helpText,

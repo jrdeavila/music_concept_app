@@ -7,6 +7,14 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:music_concept_app/lib.dart';
 
 abstract class UserAccountService {
+  static Future<QuerySnapshot<Map<String, dynamic>>> searchAccounts(
+      String searchText) {
+    return FirebaseFirestore.instance
+        .collection("users")
+        .where("name", isGreaterThanOrEqualTo: searchText)
+        .get();
+  }
+
   static Future<void> createAccount({
     required String email,
     required String password,
