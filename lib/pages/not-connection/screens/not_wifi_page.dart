@@ -134,7 +134,7 @@ class WifiSearchingAnimation extends StatefulWidget {
   const WifiSearchingAnimation({super.key, this.active = true});
 
   @override
-  _WifiSearchingAnimationState createState() => _WifiSearchingAnimationState();
+  State<WifiSearchingAnimation> createState() => _WifiSearchingAnimationState();
 }
 
 class _WifiSearchingAnimationState extends State<WifiSearchingAnimation>
