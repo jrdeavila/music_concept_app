@@ -44,7 +44,7 @@ abstract class PostService {
   }
 
   static Future<void> deletePost(String postId) async {
-    return FirebaseFirestore.instance.collection('posts').doc(postId).update({
+    return FirebaseFirestore.instance.doc(postId).update({
       'deletedAt': FieldValue.serverTimestamp(),
     });
   }
@@ -58,18 +58,26 @@ abstract class PostService {
         .map((event) => event.docs.length);
   }
 
-  static Stream<QuerySnapshot<Map<String, dynamic>>> getAccountPosts(
+  static Stream<List<QueryDocumentSnapshot<Map<String, dynamic>>>>
+      getAccountPosts(
     String accountRef,
   ) {
     return FirebaseFirestore.instance
         .collection('posts')
-        .where("deletedAt", isNull: true)
-        .where('accountRef', isEqualTo: accountRef)
-        .snapshots();
+        .orderBy("createdAt", descending: true)
+        .snapshots()
+        .map((e) {
+      final docs = e.docs
+          .where((element) =>
+              element['deletedAt'] == null &&
+              element['accountRef'] == accountRef)
+          .toList();
+      return docs;
+    });
   }
 
-  static Stream<QuerySnapshot<Map<String, dynamic>>> getAccountFollowingPost(
-      String accountRef) async* {
+  static Stream<List<QueryDocumentSnapshot<Map<String, dynamic>>>>
+      getAccountFollowingPost(String accountRef) async* {
     final following = await FirebaseFirestore.instance
         .collection("follows")
         .where("followerRef", isEqualTo: accountRef)
@@ -80,9 +88,16 @@ abstract class PostService {
     yield* FirebaseFirestore.instance
         .collection('posts')
         .orderBy("createdAt", descending: true)
-        // .where("visibility", isNotEqualTo: PostVisibility.private.index)
-        .where("deletedAt", isNull: true)
-        .where('accountRef', whereIn: followingRefs)
-        .snapshots();
+        .snapshots()
+        .map((e) {
+      final docs = <QueryDocumentSnapshot<Map<String, dynamic>>>[];
+      for (final ref in followingRefs) {
+        docs.addAll(e.docs.where((element) =>
+            element['accountRef'] == ref &&
+            element['deletedAt'] == null &&
+            element['visibility'] != PostVisibility.private.index));
+      }
+      return docs;
+    });
   }
 }

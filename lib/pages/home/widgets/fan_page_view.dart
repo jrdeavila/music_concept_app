@@ -91,36 +91,38 @@ class FanPageView extends StatelessWidget {
         ),
         Expanded(
           child: SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
-            child: Obx(() {
-              return Column(
-                children: [
-                  ProfileTabBar(
-                    children: [
-                      ProfileTabBarItem(
-                        label: 'Explorar',
-                        icon: MdiIcons.compass,
-                        selected: true,
-                        onTap: () {},
-                      ),
-                      ProfileTabBarItem(
-                        label: 'Descubrir',
-                        icon: MdiIcons.musicNote,
-                        selected: false,
-                        onTap: () {},
-                      ),
-                    ],
-                  ),
-                  ...Get.find<PostCtrl>().reedPosts.map((e) {
-                    return PostItem(
-                      snapshot: e,
-                      isReed: true,
+              physics: const BouncingScrollPhysics(),
+              child: StreamBuilder(
+                  stream: Get.find<PostCtrl>().reedPost(),
+                  initialData: const [],
+                  builder: (context, snapshot) {
+                    return Column(
+                      children: [
+                        ProfileTabBar(
+                          children: [
+                            ProfileTabBarItem(
+                              label: 'Explorar',
+                              icon: MdiIcons.compass,
+                              selected: true,
+                              onTap: () {},
+                            ),
+                            ProfileTabBarItem(
+                              label: 'Descubrir',
+                              icon: MdiIcons.musicNote,
+                              selected: false,
+                              onTap: () {},
+                            ),
+                          ],
+                        ),
+                        ...(snapshot.data!).map((e) {
+                          return PostItem(
+                            snapshot: e,
+                            isReed: true,
+                          );
+                        }).toList(),
+                      ],
                     );
-                  }).toList(),
-                ],
-              );
-            }),
-          ),
+                  })),
         ),
       ],
     );

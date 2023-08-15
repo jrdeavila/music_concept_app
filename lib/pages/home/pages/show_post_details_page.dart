@@ -6,7 +6,7 @@ import 'package:music_concept_app/lib.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class ShowPostDetailsPage extends StatefulWidget {
-  final DocumentSnapshot<Map<String, dynamic>> post;
+  final QueryDocumentSnapshot<Map<String, dynamic>> post;
   const ShowPostDetailsPage({super.key, required this.post});
 
   @override
@@ -51,7 +51,7 @@ class _ShowPostDetailsPageState extends State<ShowPostDetailsPage> {
             bottom: PreferredSize(
               preferredSize: const Size.fromHeight(100),
               child: PostUserAccountDetails(
-                post: widget.post.data()!,
+                post: widget.post.data(),
                 isDetails: true,
               ),
             ),
@@ -196,7 +196,7 @@ class CommentItem extends StatelessWidget {
           Expanded(
             child: Text(
                 timeago.format(
-                  comment.data()!['createdAt'].toDate(),
+                  comment.data()?['createdAt'].toDate(),
                   locale: 'es',
                 ),
                 style: const TextStyle(fontSize: 18.0)),

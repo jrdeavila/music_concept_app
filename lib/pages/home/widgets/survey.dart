@@ -388,13 +388,14 @@ class SurveyProgressInfo extends StatelessWidget {
                           ),
                           const SizedBox(width: 10.0),
                         ],
-                        Text(
-                          option['option'],
-                          style: const TextStyle(
-                            fontSize: 18.0,
+                        Expanded(
+                          child: Text(
+                            option['option'],
+                            style: const TextStyle(
+                              fontSize: 18.0,
+                            ),
                           ),
                         ),
-                        const Spacer(),
                         StreamBuilder<int>(
                             stream: ctrl.getOptionAnswerCount(
                               surveyRef: surveyRef,

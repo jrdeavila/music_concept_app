@@ -7,16 +7,12 @@ import 'package:get/get.dart';
 import 'package:music_concept_app/lib.dart';
 
 class PostCtrl extends GetxController {
-  final Rx<String?> _selectedAccountRef = Rx<String?>("");
+  final Rx<String?> _selectedAccountRef = Rx<String?>(null);
   final RxString _content = ''.obs;
   final Rx<Uint8List?> _image = Rx<Uint8List?>(null);
   final Rx<PostVisibility> _visibility = PostVisibility.public.obs;
   final RxBool _isUploading = false.obs;
-  final RxList<DocumentSnapshot<Map<String, dynamic>>> profilePosts = RxList();
-  final RxList<DocumentSnapshot<Map<String, dynamic>>> profileSurveys =
-      RxList();
-  final RxList<DocumentSnapshot<Map<String, dynamic>>> reedPosts = RxList();
-
+  String? get selectedAccountRef => _selectedAccountRef.value;
   String get content => _content.value;
   Uint8List? get image => _image.value;
   PostVisibility get visibility => _visibility.value;
@@ -97,31 +93,25 @@ class PostCtrl extends GetxController {
   void onReady() {
     super.onReady();
 
-    _selectedAccountRef.listen((event) {
-      profilePosts.value = [];
+    FirebaseAuth.instance.userChanges().listen((event) {
       if (event != null) {
-        PostService.getAccountPosts(event).listen(_loadPost);
-      } else {
-        PostService.getAccountPosts(
-          "users/${FirebaseAuth.instance.currentUser!.uid}",
-        ).listen(_loadPost);
+        reset();
       }
-
-      PostService.getAccountFollowingPost(
-        "users/${FirebaseAuth.instance.currentUser!.uid}",
-      ).listen((event) {
-        reedPosts.value = event.docs;
-      });
     });
-
-    _selectedAccountRef.value = null;
   }
 
-  void _loadPost(event) {
-    profilePosts.value =
-        event.docs.where((e) => e.data()['type'] != 'survey').toList();
-    profileSurveys.value =
-        event.docs.where((e) => e.data()['type'] == 'survey').toList();
+  void reset() {
+    var accountRef = "users/${FirebaseAuth.instance.currentUser!.uid}";
+    _selectedAccountRef.value = accountRef;
+  }
+
+  Stream<List<QueryDocumentSnapshot<Map<String, dynamic>>>> reedPost() {
+    return PostService.getAccountFollowingPost(
+        "users/${FirebaseAuth.instance.currentUser!.uid}");
+  }
+
+  Stream<List<QueryDocumentSnapshot<Map<String, dynamic>>>> profilePosts() {
+    return PostService.getAccountPosts(_selectedAccountRef.value!);
   }
 
   void deletePost(String postRef) {
@@ -131,9 +121,13 @@ class PostCtrl extends GetxController {
   void submit() async {
     final accountRef = "users/${FirebaseAuth.instance.currentUser!.uid}";
     _isUploading.value = true;
+    if (content.isEmpty) {
+      _isUploading.value = false;
+      throw MessageException("El contenido no puede estar vacio");
+    }
     await PostService.createPost(
       accountRef: accountRef,
-      content: content,
+      content: content.trim(),
       image: image,
       visibility: visibility,
     );

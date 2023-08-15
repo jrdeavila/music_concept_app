@@ -60,6 +60,11 @@ abstract class UserAccountService {
   static DocumentReference<Map<String, dynamic>> getUserAccountRef(String? id) {
     return FirebaseFirestore.instance.collection("users").doc(id);
   }
+
+  static DocumentReference<Map<String, dynamic>> getUserAccountDoc(
+      String path) {
+    return FirebaseFirestore.instance.doc(path);
+  }
 }
 
 enum UserAccountType {

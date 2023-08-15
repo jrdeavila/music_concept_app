@@ -13,7 +13,7 @@ class PostItem extends StatefulWidget {
     this.isDetails = false,
   });
 
-  final DocumentSnapshot<Map<String, dynamic>> snapshot;
+  final QueryDocumentSnapshot<Map<String, dynamic>> snapshot;
   final bool isReed;
   final bool isDetails;
 
@@ -33,7 +33,7 @@ class _PostItemState extends State<PostItem> {
     final ctrl = Get.find<PostCtrl>();
     final flwItemCtrl = Get.find<FollowerEditSurveyItemsCtrl>()
       ..setCurrentOptions(widget.snapshot.reference.id);
-    Map<String, dynamic> post = widget.snapshot.data()!;
+    Map<String, dynamic> post = widget.snapshot.data();
     bool hasImage = post['image'] != null;
     return Material(
       color: Colors.transparent,

@@ -3,8 +3,6 @@ import 'package:flutter_material_design_icons/flutter_material_design_icons.dart
 import 'package:get/get.dart';
 import 'package:music_concept_app/lib.dart';
 
-ScrollController profileScrollCtrl = ScrollController();
-
 class ProfileView extends StatefulWidget {
   const ProfileView({
     super.key,
@@ -16,25 +14,17 @@ class ProfileView extends StatefulWidget {
 
 class _ProfileViewState extends State<ProfileView> {
   int _currentTab = 1;
-  double _backgroundOpacity = 1.0;
+  final _scrollCtrl = ScrollController();
 
   @override
   void initState() {
     super.initState();
     Get.lazyPut(() => ProfileCtrl());
-
-    profileScrollCtrl = ScrollController();
-
-    profileScrollCtrl.addListener(() {
-      // Ocultar cuando supere 50 px de scroll y mostrar cuando sea menor a 50 px (0.0 - 1.0) calcular
-      _backgroundOpacity = 1 - (profileScrollCtrl.offset / 50).clamp(0, 1);
-      setState(() {});
-    });
   }
 
   @override
   void dispose() {
-    profileScrollCtrl.dispose();
+    _scrollCtrl.dispose();
     super.dispose();
   }
 
@@ -43,39 +33,17 @@ class _ProfileViewState extends State<ProfileView> {
     final ctrl = Get.find<ProfileCtrl>();
     final postCtrl = Get.find<PostCtrl>();
     return Obx(() {
-      final dataRef =
-          Get.find<FanPageCtrl>().selectedAccount ?? Get.find<UserCtrl>().user;
-
       return StreamBuilder(
-          stream: dataRef?.snapshots(),
+          stream: postCtrl.selectedAccountRef != null
+              ? ctrl.getAccountStream(postCtrl.selectedAccountRef!)
+              : null,
           builder: (context, snapshot) {
             final data = snapshot.data?.data();
-            var isBussiness =
-                data?["type"] == accountTypeIndex(UserAccountType.bussiness);
+
             return Stack(
               fit: StackFit.expand,
               children: [
-                Obx(() {
-                  return Opacity(
-                    opacity: _backgroundOpacity,
-                    child: Container(
-                      margin: const EdgeInsets.only(
-                        top: kToolbarHeight - 20,
-                      ),
-                      decoration: BoxDecoration(
-                        image: ctrl.selectedWallpaper != null ||
-                                data?['background'] != null
-                            ? DecorationImage(
-                                image: AssetImage(data?['background'] ??
-                                    ctrl.selectedWallpaper),
-                                fit: BoxFit.cover,
-                              )
-                            : null,
-                        borderRadius: BorderRadius.circular(30.0),
-                      ),
-                    ),
-                  );
-                }),
+                BackgroundProfile(data: data, scrollCtrl: _scrollCtrl),
                 Container(
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
@@ -91,114 +59,105 @@ class _ProfileViewState extends State<ProfileView> {
                         ]),
                   ),
                 ),
-                CustomScrollView(
-                  controller: profileScrollCtrl,
-                  physics: const BouncingScrollPhysics(),
-                  slivers: [
-                    SliverAppBar(
-                      floating: true,
-                      backgroundColor: Colors.transparent,
-                      leadingWidth: 76,
-                      toolbarHeight: kToolbarHeight + 50,
-                      leading: HomeAppBarAction(
-                        selected: true,
-                        icon: MdiIcons.arrowLeft,
-                        onTap: () {
-                          Get.find<PostCtrl>().setSelectedAccount(null);
-                          Get.find<FanPageCtrl>().setSelectedAccount(null);
-                          PageChangeNotification(0).dispatch(context);
-                        },
-                      ),
-                      actions: [
-                        const SizedBox(width: 10.0),
-                        PopupMenuProfile(
-                            options: accountOptions,
-                            icon: MdiIcons.dotsHorizontal),
-                        const SizedBox(width: 16.0),
-                      ],
-                    ),
-                    SliverToBoxAdapter(
-                      child: _accountDetails(data),
-                    ),
-                    SliverToBoxAdapter(
-                      child: AccountFollowFollowers(
-                        withFollowButton:
-                            Get.find<FanPageCtrl>().selectedAccount != null,
-                      ),
-                    ),
-                    const SliverToBoxAdapter(
-                      child: SizedBox(height: 20.0),
-                    ),
-                    SliverToBoxAdapter(
-                      child: ProfileTabBar(
-                        children: [
-                          ProfileTabBarItem(
-                              label: 'Fondos',
-                              icon: MdiIcons.wallpaper,
-                              selected: _currentTab == 0,
+                StreamBuilder(
+                    stream: postCtrl.profilePosts(),
+                    builder: (context, snapshot) {
+                      return CustomScrollView(
+                        controller: _scrollCtrl,
+                        physics: const BouncingScrollPhysics(),
+                        slivers: [
+                          SliverAppBar(
+                            floating: true,
+                            backgroundColor: Colors.transparent,
+                            leadingWidth: 76,
+                            toolbarHeight: kToolbarHeight + 50,
+                            leading: HomeAppBarAction(
+                              selected: true,
+                              icon: MdiIcons.arrowLeft,
                               onTap: () {
-                                setState(() {
-                                  _currentTab = 0;
-                                });
-                              }),
-                          if (isBussiness)
-                            ProfileTabBarItem(
-                                label: 'Encuestas',
-                                icon: MdiIcons.music,
-                                selected: _currentTab == 1,
-                                onTap: () {
-                                  setState(() {
-                                    _currentTab = 1;
-                                  });
-                                }),
-                          ProfileTabBarItem(
-                              label: 'Posts',
-                              icon: MdiIcons.post,
-                              selected: _currentTab == (isBussiness ? 2 : 1),
-                              onTap: () {
-                                setState(() {
-                                  _currentTab = (isBussiness ? 2 : 1);
-                                });
-                              }),
+                                Get.find<PostCtrl>().setSelectedAccount(null);
+                                Get.find<FanPageCtrl>()
+                                    .setSelectedAccount(null);
+                                PageChangeNotification(0).dispatch(context);
+                              },
+                            ),
+                            actions: [
+                              const SizedBox(width: 10.0),
+                              PopupMenuProfile(
+                                  options: accountOptions,
+                                  icon: MdiIcons.dotsHorizontal),
+                              const SizedBox(width: 16.0),
+                            ],
+                          ),
+                          SliverToBoxAdapter(
+                            child: _accountDetails(data),
+                          ),
+                          SliverToBoxAdapter(
+                            child: AccountFollowFollowers(
+                              withFollowButton:
+                                  Get.find<FanPageCtrl>().selectedAccount !=
+                                      null,
+                            ),
+                          ),
+                          const SliverToBoxAdapter(
+                            child: SizedBox(height: 20.0),
+                          ),
+                          SliverToBoxAdapter(
+                            child: ProfileTabBar(
+                              children: [
+                                ProfileTabBarItem(
+                                    label: 'Fondos',
+                                    icon: MdiIcons.wallpaper,
+                                    selected: _currentTab == 0,
+                                    onTap: () {
+                                      setState(() {
+                                        _currentTab = 0;
+                                      });
+                                    }),
+                                ProfileTabBarItem(
+                                    label: 'Posts',
+                                    icon: MdiIcons.post,
+                                    selected: _currentTab == 1,
+                                    onTap: () {
+                                      setState(() {
+                                        _currentTab = 1;
+                                      });
+                                    }),
+                              ],
+                            ),
+                          ),
+                          if (_currentTab == 0)
+                            const SliverFillRemaining(
+                              child: WallpaperTabView(),
+                            ),
+                          if (snapshot.connectionState ==
+                                  ConnectionState.waiting ||
+                              snapshot.connectionState == ConnectionState.none)
+                            const SliverToBoxAdapter(
+                              child: LoadingPostSkeleton(),
+                            ),
+                          if (snapshot.connectionState ==
+                                  ConnectionState.active &&
+                              snapshot.hasData &&
+                              snapshot.data!.isNotEmpty)
+                            SliverList(
+                              delegate: SliverChildBuilderDelegate(
+                                (context, index) {
+                                  return Center(
+                                    child: PostItem(
+                                      snapshot: snapshot.data![index],
+                                    ),
+                                  );
+                                },
+                                childCount: snapshot.data?.length ?? 0,
+                              ),
+                            ),
+                          const SliverToBoxAdapter(
+                            child: SizedBox(height: 100.0),
+                          )
                         ],
-                      ),
-                    ),
-                    if (_currentTab == 0)
-                      const SliverFillRemaining(
-                        child: WallpaperTabView(),
-                      ),
-                    if (_currentTab == 1 && isBussiness)
-                      SliverList(
-                        delegate: SliverChildBuilderDelegate(
-                          (context, index) {
-                            return Center(
-                              child: PostItem(
-                                snapshot: postCtrl.profileSurveys[index],
-                              ),
-                            );
-                          },
-                          childCount: postCtrl.profileSurveys.length,
-                        ),
-                      ),
-                    if ((_currentTab == 2 && isBussiness) ||
-                        (_currentTab == 1 && !isBussiness))
-                      SliverList(
-                        delegate: SliverChildBuilderDelegate(
-                          (context, index) {
-                            return Center(
-                              child: PostItem(
-                                snapshot: postCtrl.profilePosts[index],
-                              ),
-                            );
-                          },
-                          childCount: postCtrl.profilePosts.length,
-                        ),
-                      ),
-                    const SliverToBoxAdapter(
-                      child: SizedBox(height: 100.0),
-                    )
-                  ],
-                ),
+                      );
+                    }),
               ],
             );
           });
@@ -255,6 +214,78 @@ class _ProfileViewState extends State<ProfileView> {
             style:
                 TextStyle(fontSize: 15.0, color: Get.theme.colorScheme.primary),
           ),
+      ],
+    );
+  }
+}
+
+class BackgroundProfile extends StatefulWidget {
+  const BackgroundProfile({
+    super.key,
+    required this.scrollCtrl,
+    required this.data,
+  });
+
+  final Map<String, dynamic>? data;
+  final ScrollController scrollCtrl;
+
+  @override
+  State<BackgroundProfile> createState() => _BackgroundProfileState();
+}
+
+class _BackgroundProfileState extends State<BackgroundProfile> {
+  double _backgroundOpacity = 1.0;
+
+  @override
+  void initState() {
+    super.initState();
+
+    widget.scrollCtrl.addListener(() {
+      // Ocultar cuando supere 50 px de scroll y mostrar cuando sea menor a 50 px (0.0 - 1.0) calcular
+      _backgroundOpacity = 1 - (widget.scrollCtrl.offset / 50).clamp(0, 1);
+      setState(() {});
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final ctrl = Get.find<ProfileCtrl>();
+
+    return Obx(() {
+      return Opacity(
+        opacity: _backgroundOpacity,
+        child: Container(
+          margin: const EdgeInsets.only(
+            top: kToolbarHeight - 20,
+          ),
+          decoration: BoxDecoration(
+            image: ctrl.selectedWallpaper != null ||
+                    widget.data?['background'] != null
+                ? DecorationImage(
+                    image: AssetImage(
+                        widget.data?['background'] ?? ctrl.selectedWallpaper),
+                    fit: BoxFit.cover,
+                  )
+                : null,
+            borderRadius: BorderRadius.circular(30.0),
+          ),
+        ),
+      );
+    });
+  }
+}
+
+class LoadingPostSkeleton extends StatelessWidget {
+  const LoadingPostSkeleton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        PostSkeleton(),
+        PostSkeleton(),
+        PostSkeleton(),
       ],
     );
   }

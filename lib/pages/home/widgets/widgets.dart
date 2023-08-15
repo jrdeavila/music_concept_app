@@ -4,6 +4,7 @@ export 'following_followers.dart';
 export 'popup.dart';
 export 'post_dialog.dart';
 export 'post_item.dart';
+export 'post_skeleton.dart';
 export 'profile_view.dart';
 export 'survey.dart';
 export 'tabbar.dart';

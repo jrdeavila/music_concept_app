@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
@@ -12,6 +13,13 @@ class ProfileCtrl extends GetxController {
   final Rx<String?> _selectedWallpaper = Rx<String?>(null);
 
   String? get selectedWallpaper => _selectedWallpaper.value;
+
+  Stream<DocumentSnapshot<Map<String, dynamic>>> getAccountStream(
+      String accountRef) {
+    return UserAccountService.getUserAccountDoc(
+      accountRef,
+    ).snapshots();
+  }
 
   @override
   void onReady() {
@@ -74,19 +82,16 @@ class ProfileCtrl extends GetxController {
   }
 
   void _loadWallpapers() async {
-    try {
-      // Lee el contenido de la carpeta "assets/images"
-      String manifestContent =
-          await rootBundle.loadString('AssetManifest.json');
-      Map<String, dynamic> manifestMap = json.decode(manifestContent);
+    // Lee el contenido de la carpeta "assets/images"
+    String manifestContent = await rootBundle.loadString('AssetManifest.json');
+    Map<String, dynamic> manifestMap = json.decode(manifestContent);
 
-      // Recorre el mapa para obtener la lista de imágenes
-      for (String key in manifestMap.keys) {
-        if (key.contains('assets/wallpapers')) {
-          wallpapers.add(key);
-        }
+    // Recorre el mapa para obtener la lista de imágenes
+    for (String key in manifestMap.keys) {
+      if (key.contains('assets/wallpapers')) {
+        wallpapers.add(key);
       }
-    } catch (e) {}
+    }
   }
 }
 
