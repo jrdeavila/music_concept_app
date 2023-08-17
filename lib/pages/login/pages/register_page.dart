@@ -22,8 +22,12 @@ class RegisterPage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Center(
-                  child: ImagePicker(
-                    onImageSelected: ctrl.setImage,
+                  child: SizedBox(
+                    width: 130,
+                    height: 130,
+                    child: ImagePicker(
+                      onImageSelected: ctrl.setImage,
+                    ),
                   ),
                 ),
                 LoginRoundedTextField(
@@ -48,9 +52,27 @@ class RegisterPage extends StatelessWidget {
                 const SizedBox(
                   height: 20,
                 ),
-                RoundedButton(
-                  label: 'Entrar',
-                  onTap: ctrl.submit,
+                Row(
+                  children: [
+                    Expanded(
+                      child: RoundedButton(
+                        label: 'Como usuario',
+                        onTap: ctrl.submit,
+                        padding: EdgeInsets.zero,
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    Expanded(
+                      child: RoundedButton(
+                        isBordered: true,
+                        label: 'Como negocio',
+                        onTap: ctrl.goToBussiness,
+                        padding: EdgeInsets.zero,
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(
                   height: 20,

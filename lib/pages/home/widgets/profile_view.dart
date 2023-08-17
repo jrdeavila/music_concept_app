@@ -75,7 +75,6 @@ class _ProfileViewState extends State<ProfileView> {
                               selected: true,
                               icon: MdiIcons.arrowLeft,
                               onTap: () {
-                                Get.find<PostCtrl>().setSelectedAccount(null);
                                 Get.find<FanPageCtrl>()
                                     .setSelectedAccount(null);
                                 PageChangeNotification(0).dispatch(context);
@@ -83,9 +82,13 @@ class _ProfileViewState extends State<ProfileView> {
                             ),
                             actions: [
                               const SizedBox(width: 10.0),
-                              PopupMenuProfile(
-                                  options: accountOptions,
-                                  icon: MdiIcons.dotsHorizontal),
+                              HomeAppBarAction(
+                                selected: true,
+                                icon: MdiIcons.dotsVertical,
+                                onTap: () {
+                                  Scaffold.of(context).openEndDrawer();
+                                },
+                              ),
                               const SizedBox(width: 16.0),
                             ],
                           ),

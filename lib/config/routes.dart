@@ -3,6 +3,9 @@ import 'package:get/get.dart';
 import 'package:music_concept_app/lib.dart';
 
 abstract class AppRoutes {
+  // Rutas de la aplicacion
+  static const String settings = "/settings";
+
   // Rutas del cliente
   static const String login = "/login";
   static const String register = "/register";
@@ -11,18 +14,21 @@ abstract class AppRoutes {
   // Rutas del negocio
   static const String businessRegister = "/business-register";
   static const String createSurvey = "/create-survey";
+  static const String mapFindLocation = "/map-find-location";
 
   static const String home = "/home";
   static const String notWifi = "/not-wifi";
   static const String root = "/";
   static const String postDetails = "/post-details";
 
-  static const String initialRoute = "/";
+  static const String initialRoute = root;
   static final Map<String, Widget Function(BuildContext context)> routes = {
     root: (context) => const WelcomePage(),
+    settings: (context) => const SettingsPage(),
     login: (context) => const LoginPage(),
     register: (context) => const RegisterPage(),
     businessRegister: (context) => const RegisterBussinessPage(),
+    mapFindLocation: (context) => const MapFindLocationPage(),
     createSurvey: (context) => const CreateSurvePage(),
     postDetails: (context) => ShowPostDetailsPage(post: Get.arguments),
     resetPassword: (context) => const ResetPasswordPage(),

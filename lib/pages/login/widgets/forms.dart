@@ -8,10 +8,12 @@ class LoginRoundedTextField extends StatefulWidget {
     super.key,
     required this.label,
     this.icon,
+    this.initialValue,
     this.keyboardType = TextInputType.text,
     this.onChanged,
     this.isPassword = false,
     this.helpText,
+    this.onControllingText,
   });
 
   final String label;
@@ -20,6 +22,8 @@ class LoginRoundedTextField extends StatefulWidget {
   final Function(String)? onChanged;
   final bool isPassword;
   final String? helpText;
+  final String? initialValue;
+  final void Function(TextEditingController)? onControllingText;
 
   @override
   State<LoginRoundedTextField> createState() => _LoginRoundedTextFieldState();
@@ -27,17 +31,21 @@ class LoginRoundedTextField extends StatefulWidget {
 
 class _LoginRoundedTextFieldState extends State<LoginRoundedTextField> {
   late bool _visible;
+  late TextEditingController _controller;
   @override
   void initState() {
     super.initState();
     _visible = widget.isPassword;
+    _controller = TextEditingController(text: widget.initialValue);
+    widget.onControllingText?.call(_controller);
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.all(8.0),
-      child: TextField(
+      child: TextFormField(
+        controller: _controller,
         obscureText: _visible,
         onChanged: widget.onChanged,
         decoration: InputDecoration(

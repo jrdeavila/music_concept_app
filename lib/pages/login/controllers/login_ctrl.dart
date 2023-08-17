@@ -12,8 +12,8 @@ class LoginCtrl extends GetxController {
 
   void submit() {
     Get.find<AuthenticationCtrl>().login(
-      email: _email.value.trim(),
-      password: _password.value.trim(),
+      email: _email.validateEmail(),
+      password: _password.validateEmpty(),
     );
   }
 }
@@ -29,11 +29,28 @@ class RegisterCtrl extends GetxController {
   void setName(String value) => _name.value = value;
   void setImage(Uint8List? value) => _image.value = value;
 
+  void goToBussiness() {
+    Get.toNamed(AppRoutes.businessRegister, arguments: {
+      "name": _name.validateEmpty(
+        label: "Nombre",
+      ),
+      "email": _email.validateEmail(),
+      "password": _password.validateEmpty(
+        label: "Contraseña",
+      ),
+      "image": _image.value,
+    });
+  }
+
   void submit() {
     UserAccountService.createAccount(
-      email: _email.value.trim(),
-      password: _password.value.trim(),
-      name: _name.value.trim(),
+      name: _name.validateEmpty(
+        label: "Nombre",
+      ),
+      email: _email.validateEmail(),
+      password: _password.validateEmpty(
+        label: "Contraseña",
+      ),
       image: _image.value,
     );
   }
@@ -46,7 +63,7 @@ class ResetPasswordCtrl extends GetxController {
 
   void submit() {
     Get.find<AuthenticationCtrl>().resetPassword(
-      email: _email.value.trim(),
+      email: _email.validateEmail(),
     );
     Get.back();
   }

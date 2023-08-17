@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
 import 'package:get/get.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:music_concept_app/lib.dart';
 
 class RegisterBussinessPage extends StatelessWidget {
@@ -9,6 +10,9 @@ class RegisterBussinessPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var ctrl = Get.find<RegisterBussinessCtrl>();
+    ctrl.loadInfo(Get.arguments as Map<String, dynamic>);
+    var locationCtrl = Get.find<LocationCtrl>();
+    TextEditingController? addressCtrl;
     return Scaffold(
         body: SingleChildScrollView(
       child: Column(
@@ -21,51 +25,49 @@ class RegisterBussinessPage extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Row(
-                  children: [
-                    Expanded(
-                      flex: 1,
-                      child: ImagePicker(
-                        onImageSelected: ctrl.setImage,
-                      ),
+                Obx(() {
+                  return ResumeMapLocation(
+                    position: ctrl.location ??
+                        LatLng(
+                          locationCtrl.position!.latitude,
+                          locationCtrl.position!.longitude,
+                        ),
+                    onLocationChange: (place) {
+                      ctrl.setLocation(
+                        LatLng(
+                          place.result!.geometry!.location!.lat!,
+                          place.result!.geometry!.location!.lng!,
+                        ),
+                      );
+                      final address =
+                          place.result!.formattedAddress ?? place.result!.name!;
+                      addressCtrl?.text = address;
+
+                      ctrl.setAddress(address);
+                    },
+                  );
+                }),
+                Padding(
+                  padding: const EdgeInsets.only(left: 20.0),
+                  child: Text(
+                    "Presiona el mapa para seleccionar tu ubicacion",
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey[400],
                     ),
-                    Expanded(
-                      flex: 2,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          LoginRoundedTextField(
-                            label: "Nombre",
-                            icon: MdiIcons.account,
-                            keyboardType: TextInputType.name,
-                            onChanged: ctrl.setName,
-                          ),
-                          LoginRoundedTextField(
-                            label: "Direccion",
-                            icon: MdiIcons.mapMarker,
-                            keyboardType: TextInputType.name,
-                            onChanged: ctrl.setAddress,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
+                  ),
+                ),
+                LoginRoundedTextField(
+                  onControllingText: (ctrl) => addressCtrl = ctrl,
+                  initialValue: ctrl.address,
+                  label: "Direccion",
+                  icon: MdiIcons.mapMarker,
+                  keyboardType: TextInputType.name,
+                  onChanged: ctrl.setAddress,
+                  helpText: "Ej: Av. 9 de Octubre y Malecon",
                 ),
                 LoginDropDownCategories(
                   onChangeCategory: ctrl.setCategory,
-                ),
-                LoginRoundedTextField(
-                  label: "Correo electronico",
-                  icon: MdiIcons.email,
-                  keyboardType: TextInputType.emailAddress,
-                  onChanged: ctrl.setEmail,
-                ),
-                LoginRoundedTextField(
-                  label: "Contraseña",
-                  icon: MdiIcons.lock,
-                  keyboardType: TextInputType.visiblePassword,
-                  isPassword: true,
-                  onChanged: ctrl.setPassword,
                 ),
                 const SizedBox(
                   height: 20,

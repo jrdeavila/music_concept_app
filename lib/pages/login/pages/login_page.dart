@@ -70,21 +70,6 @@ class LoginPage extends StatelessWidget {
                   },
                   child: const Text('¿No tienes una cuenta? Registrate'),
                 ),
-                const SizedBox(
-                  height: 20,
-                ),
-                Obx(() {
-                  return Center(
-                    child: OutlinedRoundedButton(
-                      label: appModeCtrl.isNormalMode
-                          ? 'Modo de establecimientos'
-                          : 'Modo de usuario',
-                      onTap: () {
-                        Get.find<AppModeCtrl>().toggleMode();
-                      },
-                    ),
-                  );
-                }),
               ],
             ),
           ),

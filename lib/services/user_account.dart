@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:music_concept_app/lib.dart';
 
 abstract class UserAccountService {
@@ -20,6 +21,7 @@ abstract class UserAccountService {
     required String password,
     required String name,
     required Uint8List? image,
+    LatLng? location,
     String? address,
     String? category,
     UserAccountType type = UserAccountType.user,
@@ -53,6 +55,9 @@ abstract class UserAccountService {
         "address": address,
         "category": category,
         "type": type.index,
+        "location": location != null
+            ? GeoPoint(location.latitude, location.longitude)
+            : null,
       });
     });
   }

@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:get/get.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:music_concept_app/lib.dart';
 
 class RegisterBussinessCtrl extends GetxController {
@@ -9,32 +10,49 @@ class RegisterBussinessCtrl extends GetxController {
   final RxString _name = RxString("");
   final RxString _address = RxString("");
   final RxString _category = RxString("");
+  final Rx<LatLng?> _location = Rx<LatLng?>(null);
   final Rx<Uint8List?> _image = Rx<Uint8List?>(null);
 
   final RxList<String> categories = RxList<String>([]);
 
+  LatLng? get location => _location.value;
+  String get address => _address.value;
+
   @override
   void onReady() {
     super.onReady();
-    AppConfigService.bussinessCategories.listen((event) {
-      categories.value = event;
-    });
+    categories.bindStream(AppConfigService.bussinessCategories);
   }
 
-  void setEmail(String value) => _email.value = value;
-  void setPassword(String value) => _password.value = value;
-  void setName(String value) => _name.value = value;
-  void setImage(Uint8List? value) => _image.value = value;
+  void loadInfo(Map<String, dynamic> data) {
+    _name.value = data["name"];
+    _email.value = data["email"];
+    _password.value = data["password"];
+    _image.value = data["image"];
+  }
+
   void setAddress(String value) => _address.value = value;
   void setCategory(String value) => _category.value = value;
+  void setLocation(LatLng? value) => _location.value = value;
 
   void submit() {
     UserAccountService.createAccount(
-      email: _email.value.trim(),
-      password: _password.value.trim(),
-      name: _name.value.trim(),
-      address: _address.value.trim(),
-      category: _category.value.trim(),
+      email: _email.validateEmail(),
+      password: _password.validateEmpty(
+        label: "Contraseña",
+      ),
+      name: _name.validateEmpty(
+        label: "Nombre",
+      ),
+      address: _address.validateEmpty(
+        label: "Direccion",
+      ),
+      category: _category.validateEmpty(
+        label: "Categoria",
+      ),
+      location: _location.validateNull(
+        label: "Ubicacion",
+      ),
       image: _image.value,
       type: UserAccountType.bussiness,
     );

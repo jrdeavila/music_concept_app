@@ -1,11 +1,19 @@
+import 'package:dio/dio.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 abstract class HandlerException {
-  static void handler(Object e, StackTrace stackTrace) {
+  static void handler(Object e, StackTrace? stackTrace) {
     if (e is FirebaseException) {
       SnackbarUtils.onFirebaseException(e.code);
+    }
+
+    if (e is MessageException) {
+      SnackbarUtils.onException(e.message);
+    }
+    if (e is DioException && e.type == DioExceptionType.cancel) {
+      // No hacer nada
     } else {
       SnackbarUtils.onException(e.toString());
     }

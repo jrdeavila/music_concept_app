@@ -8,33 +8,49 @@ class RoundedButton extends StatelessWidget {
     this.label,
     this.child,
     this.radius,
+    this.height = 50.0,
+    this.isBordered = false,
+    this.padding = const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
   }) : assert(label != null || child != null);
 
   final VoidCallback? onTap;
   final String? label;
   final Widget? child;
   final double? radius;
-
+  final double height;
+  final bool isBordered;
+  final EdgeInsets padding;
   @override
   Widget build(BuildContext context) {
     return InkWell(
       borderRadius: BorderRadius.circular(25),
       onTap: onTap,
       child: Ink(
-        height: 50.0,
-        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+        height: height,
+        padding: padding,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(radius ?? 25),
-          color: Get.theme.colorScheme.primary,
+          color: isBordered ? null : Get.theme.colorScheme.primary,
+          border: isBordered
+              ? Border.all(
+                  color: Get.theme.colorScheme.primary,
+                  width: 3,
+                )
+              : null,
         ),
-        child: child ??
-            Text(
-              label!,
-              style: const TextStyle(
-                fontSize: 18,
+        child: Center(
+          child: child ??
+              Text(
+                label!,
+                style: TextStyle(
+                  fontSize: 18,
+                  color: isBordered
+                      ? Get.theme.colorScheme.primary
+                      : Get.theme.colorScheme.onPrimary,
+                ),
+                textAlign: TextAlign.center,
               ),
-              textAlign: TextAlign.center,
-            ),
+        ),
       ),
     );
   }

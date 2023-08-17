@@ -67,10 +67,15 @@ class Skeleton extends StatefulWidget {
 
 class _SkeletonState extends State<Skeleton>
     with SingleTickerProviderStateMixin {
-  late final AnimationController _controller = AnimationController(
-    duration: const Duration(seconds: 1),
-    vsync: this,
-  )..repeat(reverse: true);
+  late AnimationController _controller;
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(seconds: 1),
+      vsync: this,
+    )..repeat(reverse: true);
+  }
 
   @override
   void dispose() {

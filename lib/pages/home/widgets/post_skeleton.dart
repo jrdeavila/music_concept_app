@@ -43,7 +43,8 @@ class _PostSkeletonState extends State<PostSkeleton>
           ),
           child: Column(
             children: [
-              _skeleton(
+              SkeletonBox(
+                value: _controller.value,
                 borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(20.0),
                   topRight: Radius.circular(20.0),
@@ -59,7 +60,8 @@ class _PostSkeletonState extends State<PostSkeleton>
                   const SizedBox(
                     width: 20,
                   ),
-                  _skeleton(
+                  SkeletonBox(
+                    value: _controller.value,
                     width: 50,
                     height: 50,
                     shape: BoxShape.circle,
@@ -69,20 +71,23 @@ class _PostSkeletonState extends State<PostSkeleton>
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _skeleton(
+                      SkeletonBox(
+                        value: _controller.value,
                         width: 150,
                         height: 15,
                       ),
                       const SizedBox(height: 8.0),
                       Row(
                         children: [
-                          _skeleton(
+                          SkeletonBox(
+                            value: _controller.value,
                             width: 100,
                             height: 8,
                           ),
                           const SizedBox(width: 10.0),
-                          _skeleton(
+                          SkeletonBox(
                             width: 15,
+                            value: _controller.value,
                             height: 15,
                             shape: BoxShape.circle,
                           ),
@@ -98,19 +103,22 @@ class _PostSkeletonState extends State<PostSkeleton>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _skeleton(
+                      SkeletonBox(
                         width: double.infinity,
                         height: 20,
+                        value: _controller.value,
                       ),
                       const SizedBox(height: 10.0),
-                      _skeleton(
+                      SkeletonBox(
                         width: 250,
                         height: 20,
+                        value: _controller.value,
                       ),
                       const SizedBox(height: 10.0),
-                      _skeleton(
+                      SkeletonBox(
                         width: 300,
                         height: 20,
+                        value: _controller.value,
                       ),
                     ],
                   ),
@@ -171,12 +179,28 @@ class _PostSkeletonState extends State<PostSkeleton>
       },
     );
   }
+}
 
-  Container _skeleton(
-      {required double width,
-      required double height,
-      BoxShape shape = BoxShape.rectangle,
-      BorderRadius? borderRadius}) {
+class SkeletonBox extends StatelessWidget {
+  const SkeletonBox({
+    super.key,
+    required this.width,
+    required this.height,
+    this.shape = BoxShape.rectangle,
+    this.borderRadius,
+    this.radius,
+    required this.value,
+  });
+
+  final double width;
+  final double height;
+  final BoxShape shape;
+  final BorderRadius? borderRadius;
+  final double value;
+  final double? radius;
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       width: width,
       height: height,
@@ -186,7 +210,7 @@ class _PostSkeletonState extends State<PostSkeleton>
           color: Color.lerp(
             Colors.grey[600],
             Colors.grey[300],
-            _controller.value,
+            value,
           )),
     );
   }

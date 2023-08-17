@@ -96,22 +96,17 @@ class ProfileCtrl extends GetxController {
 }
 
 final accountOptions = {
-  'logout': {
-    "label": "Cerrar Sesión",
-    "icon": MdiIcons.logout,
+  'settings-profile': {
+    "label": "Configuración de la cuenta",
+    "icon": MdiIcons.accountCog,
+    "onTap": () {},
+  },
+  'settings-app': {
+    "label": "Configuración de la aplicación",
+    "icon": MdiIcons.cog,
     "onTap": () {
-      Get.find<AuthenticationCtrl>().logout();
-    }
-  },
-  'change-image': {
-    "label": "Cambiar Imagen",
-    "icon": MdiIcons.image,
-    "onTap": () {},
-  },
-  'edit-profile': {
-    "label": "Editar Perfil",
-    "icon": MdiIcons.accountEdit,
-    "onTap": () {},
+      Get.toNamed(AppRoutes.settings);
+    },
   },
 };
 
