@@ -156,6 +156,7 @@ class _HomePageState extends State<HomePage> {
             selected: _selectedPage == 0,
             icon: MdiIcons.home,
             onTap: () {
+              Get.find<PostCtrl>().reset();
               _pageCtrl.animateToPage(0,
                   duration: const Duration(milliseconds: 500),
                   curve: Curves.easeInOut);
@@ -166,6 +167,7 @@ class _HomePageState extends State<HomePage> {
             icon: MdiIcons.account,
             selected: _selectedPage == 1,
             onTap: () {
+              Get.find<PostCtrl>().reset();
               _pageCtrl.animateToPage(
                 1,
                 duration: const Duration(milliseconds: 500),

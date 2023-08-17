@@ -5,7 +5,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
 import 'package:music_concept_app/lib.dart';
 
 class ProfileCtrl extends GetxController {
@@ -25,9 +24,7 @@ class ProfileCtrl extends GetxController {
   void onReady() {
     super.onReady();
     _loadWallpapers();
-    _selectedWallpaper.value = GetStorage().read('wallpaper');
     _selectedWallpaper.listen((value) {
-      // GetStorage().write('wallpaper', value);
       BackgroundService.setBackground(
         "users/${FirebaseAuth.instance.currentUser?.uid}",
         value,

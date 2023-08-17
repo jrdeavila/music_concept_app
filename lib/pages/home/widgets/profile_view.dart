@@ -77,6 +77,7 @@ class _ProfileViewState extends State<ProfileView> {
                               onTap: () {
                                 Get.find<FanPageCtrl>()
                                     .setSelectedAccount(null);
+                                Get.find<PostCtrl>().reset();
                                 PageChangeNotification(0).dispatch(context);
                               },
                             ),
