@@ -26,6 +26,9 @@ class RegisterCtrl extends GetxController {
   final RxDouble _page = RxDouble(0);
 
   double get page => _page.value;
+  String get email => _email.value;
+  String get password => _password.value;
+  String get name => _name.value;
 
   void setEmail(String value) => _email.value = value;
   void setPassword(String value) => _password.value = value;

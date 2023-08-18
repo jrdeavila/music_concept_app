@@ -3,9 +3,15 @@ import 'package:flutter_material_design_icons/flutter_material_design_icons.dart
 import 'package:get/get.dart';
 import 'package:music_concept_app/lib.dart';
 
-class RegisterPage extends StatelessWidget {
+class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
 
+  @override
+  State<RegisterPage> createState() => _RegisterPageState();
+}
+
+class _RegisterPageState extends State<RegisterPage> {
+  TextEditingController? emailCtrl, passwordCtrl, nameCtrl;
   @override
   Widget build(BuildContext context) {
     final ctrl = Get.find<RegisterCtrl>();
@@ -29,6 +35,8 @@ class RegisterPage extends StatelessWidget {
                     icon: MdiIcons.accountLock,
                     selected: ctrl.page == 0,
                     onTap: () {
+                      emailCtrl?.text = ctrl.email;
+                      passwordCtrl?.text = ctrl.password;
                       ctrl.previousPage();
                     },
                   ),
@@ -37,6 +45,7 @@ class RegisterPage extends StatelessWidget {
                     icon: MdiIcons.account,
                     selected: ctrl.page == 1,
                     onTap: () {
+                      nameCtrl?.text = ctrl.name;
                       ctrl.nextPage();
                     },
                   ),
@@ -79,6 +88,9 @@ class RegisterPage extends StatelessWidget {
           ),
         ),
         LoginRoundedTextField(
+          onControllingText: (ctrl) {
+            nameCtrl = ctrl;
+          },
           label: "Nombre",
           icon: MdiIcons.account,
           keyboardType: TextInputType.name,
@@ -120,6 +132,9 @@ class RegisterPage extends StatelessWidget {
           icon: MdiIcons.email,
           keyboardType: TextInputType.emailAddress,
           onChanged: ctrl.setEmail,
+          onControllingText: (ctrl) {
+            emailCtrl = ctrl;
+          },
         ),
         LoginRoundedTextField(
           label: "Contraseña",
@@ -127,6 +142,9 @@ class RegisterPage extends StatelessWidget {
           keyboardType: TextInputType.visiblePassword,
           isPassword: true,
           onChanged: ctrl.setPassword,
+          onControllingText: (ctrl) {
+            passwordCtrl = ctrl;
+          },
         ),
         const SizedBox(
           height: 20,
