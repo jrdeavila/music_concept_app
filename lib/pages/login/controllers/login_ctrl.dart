@@ -23,11 +23,24 @@ class RegisterCtrl extends GetxController {
   final RxString _password = RxString("");
   final RxString _name = RxString("");
   final Rx<Uint8List?> _image = Rx<Uint8List?>(null);
+  final RxDouble _page = RxDouble(0);
+
+  double get page => _page.value;
 
   void setEmail(String value) => _email.value = value;
   void setPassword(String value) => _password.value = value;
   void setName(String value) => _name.value = value;
   void setImage(Uint8List? value) => _image.value = value;
+
+  void nextPage() {
+    _email.validateEmail();
+    _password.validateEmpty(label: "Contraseña");
+    _page.value = 1;
+  }
+
+  void previousPage() {
+    _page.value = 0;
+  }
 
   void goToBussiness() {
     Get.toNamed(AppRoutes.businessRegister, arguments: {
