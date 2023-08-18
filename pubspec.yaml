@@ -28,6 +28,7 @@ dependencies:
   google_maps_flutter: ^2.4.0
   image: ^4.0.15
   image_picker: ^0.8.7
+  intl: ^0.18.1
   timeago: ^3.5.0
 
 dev_dependencies:

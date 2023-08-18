@@ -6,13 +6,13 @@ import 'package:flutter_material_design_icons/flutter_material_design_icons.dart
 import 'package:get/get.dart';
 import 'package:music_concept_app/lib.dart';
 
-class PostCtrl extends GetxController {
-  final Rx<String?> _selectedAccountRef = Rx<String?>(null);
+class CreatePostCtrl extends GetxController {
   final RxString _content = ''.obs;
   final Rx<Uint8List?> _image = Rx<Uint8List?>(null);
   final Rx<PostVisibility> _visibility = PostVisibility.public.obs;
+
   final RxBool _isUploading = false.obs;
-  String? get selectedAccountRef => _selectedAccountRef.value;
+
   String get content => _content.value;
   Uint8List? get image => _image.value;
   PostVisibility get visibility => _visibility.value;
@@ -29,6 +29,32 @@ class PostCtrl extends GetxController {
   void setVisibility(PostVisibility visibility) {
     _visibility.value = visibility;
   }
+
+  void resetContent() {
+    _content.value = "";
+    _isUploading.value = false;
+    _image.value = null;
+  }
+
+  void submit() async {
+    final accountRef = "users/${FirebaseAuth.instance.currentUser!.uid}";
+    _isUploading.value = true;
+
+    await PostService.createPost(
+      accountRef: accountRef,
+      content: _content.validateEmpty(),
+      image: image,
+      visibility: visibility,
+    );
+    _isUploading.value = false;
+    Get.back();
+  }
+}
+
+class PostCtrl extends GetxController {
+  final Rx<String?> _selectedAccountRef = Rx<String?>(null);
+
+  String? get selectedAccountRef => _selectedAccountRef.value;
 
   void setSelectedAccount(String? accountRef) {
     _selectedAccountRef.value = accountRef;
@@ -116,23 +142,6 @@ class PostCtrl extends GetxController {
 
   void deletePost(String postRef) {
     PostService.deletePost(postRef);
-  }
-
-  void submit() async {
-    final accountRef = "users/${FirebaseAuth.instance.currentUser!.uid}";
-    _isUploading.value = true;
-    if (content.isEmpty) {
-      _isUploading.value = false;
-      throw MessageException("El contenido no puede estar vacio");
-    }
-    await PostService.createPost(
-      accountRef: accountRef,
-      content: content.trim(),
-      image: image,
-      visibility: visibility,
-    );
-    _isUploading.value = false;
-    Get.back();
   }
 
   void createSurveyAnwser({

@@ -7,15 +7,18 @@ abstract class HandlerException {
   static void handler(Object e, StackTrace? stackTrace) {
     if (e is FirebaseException) {
       SnackbarUtils.onFirebaseException(e.code);
+      return;
     }
 
     if (e is MessageException) {
       SnackbarUtils.onException(e.message);
+      return;
     }
     if (e is DioException && e.type == DioExceptionType.cancel) {
-      // No hacer nada
+      return;
     } else {
       SnackbarUtils.onException(e.toString());
+      return;
     }
   }
 }

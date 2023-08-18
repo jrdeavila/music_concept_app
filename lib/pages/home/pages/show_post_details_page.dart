@@ -196,7 +196,7 @@ class CommentItem extends StatelessWidget {
           Expanded(
             child: Text(
                 timeago.format(
-                  comment.data()?['createdAt'].toDate(),
+                  comment.data()?['createdAt'].toDate() ?? DateTime.now(),
                   locale: 'es',
                 ),
                 style: const TextStyle(fontSize: 18.0)),

@@ -38,7 +38,7 @@ abstract class PostService {
         'image': imagePath,
         'createdAt': FieldValue.serverTimestamp(),
         'deletedAt': null,
-        "type": "post"
+        "type": PostType.post.index,
       });
     });
   }
@@ -100,4 +100,10 @@ abstract class PostService {
       return docs;
     });
   }
+}
+
+enum PostType {
+  post,
+  survey,
+  event,
 }

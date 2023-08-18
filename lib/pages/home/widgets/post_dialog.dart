@@ -5,14 +5,31 @@ import 'package:flutter_material_design_icons/flutter_material_design_icons.dart
 import 'package:get/get.dart';
 import 'package:music_concept_app/lib.dart';
 
-class PostDialogContent extends StatelessWidget {
+class PostDialogContent extends StatefulWidget {
   const PostDialogContent({
     super.key,
   });
 
   @override
+  State<PostDialogContent> createState() => _PostDialogContentState();
+}
+
+class _PostDialogContentState extends State<PostDialogContent> {
+  @override
+  void initState() {
+    super.initState();
+    Get.lazyPut(() => CreatePostCtrl());
+  }
+
+  @override
+  void dispose() {
+    Get.delete<CreatePostCtrl>();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final ctrl = Get.find<PostCtrl>();
+    final ctrl = Get.find<CreatePostCtrl>();
     return Obx(() {
       return BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
@@ -69,13 +86,6 @@ class PostDialogContent extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 20.0),
-                  SizedBox(
-                    width: double.infinity,
-                    child: Divider(
-                      color: Get.theme.colorScheme.onBackground,
-                      height: 1.0,
-                    ),
-                  ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: RoundedButton(
@@ -121,7 +131,9 @@ class PostDialogContent extends StatelessWidget {
               HomeAppBarAction(
                 selected: true,
                 icon: MdiIcons.close,
-                onTap: Get.back,
+                onTap: () {
+                  Get.back();
+                },
               )
             ],
           ),

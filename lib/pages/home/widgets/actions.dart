@@ -34,7 +34,7 @@ class HomeAppBarAction extends StatelessWidget {
                   ? light
                       ? Get.theme.colorScheme.onPrimary
                       : Get.theme.colorScheme.onBackground
-                  : null,
+                  : Get.theme.colorScheme.onBackground.withOpacity(0.3),
             ),
             child: child ??
                 Center(

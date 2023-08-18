@@ -21,6 +21,7 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     Get.lazyPut(() => UserCtrl());
 
+    Get.lazyPut(() => EventCtrl());
     Get.lazyPut(() => PostCtrl());
     _pageCtrl.addListener(() {
       setState(() {
@@ -94,46 +95,33 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _floatingButton() {
-    return Obx(() {
-      final dataRef =
-          Get.find<FanPageCtrl>().selectedAccount ?? Get.find<UserCtrl>().user;
-
-      return StreamBuilder(
-          stream: dataRef?.snapshots(),
-          builder: (context, snapshot) {
-            final isBussiness = snapshot.data?.data()?["type"] ==
-                accountTypeIndex(UserAccountType.bussiness);
-
-            return FloatingActionButton.extended(
-              onPressed: () {
-                if (isBussiness) {
-                  dialogBuilder<bool>(
-                    context,
-                    Offset(
-                      Get.width / 2,
-                      Get.height / 2,
-                    ),
-                    const MenuSelectPostOrSurvey(),
-                  ).then((bool? value) {
-                    if (value == null) return;
-                    if (value) {
-                      Get.toNamed(AppRoutes.createSurvey);
-                    } else {
-                      _showPostDialog(context);
-                    }
-                  });
-                } else {
-                  _showPostDialog(context);
-                }
-              },
-              icon: const Icon(MdiIcons.plus),
-              label: const Text('Publicar'),
-            );
-          });
-    });
+    return FloatingActionButton.extended(
+      onPressed: () {
+        dialogBuilder<PostType>(
+          context,
+          Offset(
+            Get.width / 2,
+            Get.height / 2,
+          ),
+          const MenuSelectPostOrSurvey(),
+        ).then((value) {
+          if (value == PostType.survey) {
+            Get.toNamed(AppRoutes.createSurvey);
+          }
+          if (value == PostType.event) {
+            _showEventDialog(context);
+          }
+          if (value == PostType.post) {
+            _showPostDialog(context);
+          }
+        });
+      },
+      icon: const Icon(MdiIcons.plus),
+      label: const Text('Publicar'),
+    );
   }
 
-  Future<dynamic> _showPostDialog(BuildContext context) {
+  Future<void> _showPostDialog(BuildContext context) {
     return dialogKeyboardBuilder(
       context,
       Offset(
@@ -141,6 +129,17 @@ class _HomePageState extends State<HomePage> {
         Get.height / 2,
       ),
       const PostDialogContent(),
+    );
+  }
+
+  Future<void> _showEventDialog(BuildContext context) {
+    return dialogKeyboardBuilder(
+      context,
+      Offset(
+        Get.width / 2,
+        Get.height / 2,
+      ),
+      const EventDialogContent(),
     );
   }
 
@@ -177,185 +176,6 @@ class _HomePageState extends State<HomePage> {
           ),
           const SizedBox(width: 16.0),
         ]),
-      ),
-    );
-  }
-}
-
-class HomeDrawer extends StatelessWidget {
-  const HomeDrawer({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Drawer(
-      backgroundColor: Get.theme.colorScheme.background,
-      child: Column(
-        children: [
-          Expanded(
-            child: ListView(
-              children: [
-                Container(
-                  color: Get.theme.colorScheme.onBackground,
-                  width: double.infinity,
-                  height: 200,
-                  child: Center(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Text(
-                          AppDefaults.titleName,
-                          style: TextStyle(
-                            fontSize: 30.0,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(
-                          "Opciones de configuracion",
-                          style: TextStyle(
-                            fontSize: 12.0,
-                            color: Colors.grey[300],
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(
-                  height: 20.0,
-                ),
-                ...accountOptions.keys.map(
-                  (e) => ListTile(
-                    onTap: () {
-                      (accountOptions[e]!['onTap'] as VoidCallback)();
-                    },
-                    leading: Icon(
-                      accountOptions[e]!["icon"] as IconData,
-                      size: 30,
-                    ),
-                    title: Text(
-                      accountOptions[e]!["label"] as String,
-                      style: const TextStyle(
-                        fontSize: 15.0,
-                      ),
-                    ),
-                  ),
-                )
-              ],
-            ),
-          ),
-          ListTile(
-            onTap: () {
-              Get.find<AuthenticationCtrl>().logout();
-            },
-            leading: const Icon(
-              MdiIcons.logout,
-              size: 30,
-            ),
-            title: const Text(
-              "Cerrar Sesión",
-              style: TextStyle(
-                fontSize: 15.0,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class MenuSelectPostOrSurvey extends StatelessWidget {
-  const MenuSelectPostOrSurvey({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return BackdropFilter(
-      filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
-      child: SizedBox(
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(20.0),
-          child: Material(
-            color: Get.theme.colorScheme.background,
-            child: Padding(
-              padding: const EdgeInsets.all(25.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Text(
-                    "¿Que deseas publicar?",
-                    style: TextStyle(
-                      fontSize: 25.0,
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 20.0,
-                  ),
-                  Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        _listItem(
-                          icon: MdiIcons.newspaperVariantMultipleOutline,
-                          label: 'Publicacion',
-                          onTap: () {
-                            Get.back(result: false);
-                          },
-                        ),
-                        const SizedBox(width: 20.0),
-                        _listItem(
-                          icon: MdiIcons.poll,
-                          label: 'Encuesta',
-                          onTap: () {
-                            Get.back(result: true);
-                          },
-                        ),
-                      ]),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _listItem({
-    required IconData icon,
-    required String label,
-    required VoidCallback onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: 140,
-        height: 140,
-        decoration: BoxDecoration(
-            color: Get.theme.colorScheme.onBackground,
-            borderRadius: BorderRadius.circular(20.0)),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              icon,
-              color: Get.theme.colorScheme.primary,
-              size: 70,
-            ),
-            const SizedBox(
-              width: 15.0,
-            ),
-            Text(
-              label,
-              style: const TextStyle(
-                fontSize: 20.0,
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }

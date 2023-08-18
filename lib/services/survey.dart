@@ -25,7 +25,7 @@ abstract class SurveyService {
         'allowAddOptions': allowAddOptions,
         'createdAt': FieldValue.serverTimestamp(),
         'deletedAt': null,
-        "type": "survey"
+        "type": PostType.survey.index,
       });
       for (var i = 0; i < optUpl.length; i++) {
         final option = optUpl[i];

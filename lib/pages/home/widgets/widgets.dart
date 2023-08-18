@@ -1,4 +1,7 @@
 export 'actions.dart';
+export 'dialog.dart';
+export 'drawer.dart';
+export 'event_dialog.dart';
 export 'fan_page_view.dart';
 export 'following_followers.dart';
 export 'popup.dart';

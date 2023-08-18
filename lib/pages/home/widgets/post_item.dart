@@ -31,8 +31,7 @@ class _PostItemState extends State<PostItem> {
   @override
   Widget build(BuildContext context) {
     final ctrl = Get.find<PostCtrl>();
-    final flwItemCtrl = Get.find<FollowerEditSurveyItemsCtrl>()
-      ..setCurrentOptions(widget.snapshot.reference.id);
+
     Map<String, dynamic> post = widget.snapshot.data();
     bool hasImage = post['image'] != null;
     return Material(
@@ -52,215 +51,271 @@ class _PostItemState extends State<PostItem> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                if (hasImage)
-                  ClipRRect(
-                    borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(20.0),
-                      topRight: Radius.circular(20.0),
-                    ),
-                    child: CachingImage(
-                      url: post['image'],
-                      height: 200,
-                      fit: BoxFit.cover,
-                      width: double.infinity,
-                    ),
-                  ),
+                if (hasImage) _buildImage(post),
                 if (!widget.isDetails) PostUserAccountDetails(post: post),
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 20.0, vertical: 20.0),
-                  child: Text(
-                    post['content'] ?? '',
-                    style: TextStyle(
-                      fontSize: hasImage ? 18.0 : 22.0,
+                if (post['type'] == PostType.event.index)
+                  ResumeSelectDate(
+                    readOnly: true,
+                    children: [
+                      Text(
+                        post['content'] ?? '',
+                        style: const TextStyle(
+                          fontSize: 22.0,
+                        ),
+                      ),
+                      const SizedBox(height: 10.0),
+                    ],
+                  ),
+                if (post['type'] != PostType.event.index)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20.0, vertical: 20.0),
+                    child: Text(
+                      post['content'] ?? '',
+                      style: TextStyle(
+                        fontSize: hasImage ? 18.0 : 22.0,
+                      ),
                     ),
                   ),
-                ),
-                if (post['type'] == 'survey') ...[
-                  StreamBuilder(
-                      stream: ctrl.getOptions(widget.snapshot.id),
-                      builder: (context, snapshot) {
-                        return StreamBuilder<int>(
-                            stream: ctrl.getTopOption(widget.snapshot.id),
-                            builder: (context, snapshotTop) {
-                              return Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 20.0, vertical: 10.0),
-                                child: Column(
-                                  children: [
-                                    if (post["allowMultipleVotes"] ??
-                                        false) ...[
-                                      ...List.generate(
-                                          snapshot.data?.docs.length ?? 0,
-                                          (index) {
-                                        final option =
-                                            snapshot.data!.docs[index];
-                                        return CheckSurveyItem(
-                                            surveyRef: widget.snapshot.id,
-                                            snapshot: option,
-                                            maxVotes: snapshotTop.data ?? 0);
-                                      }),
-                                    ] else ...[
-                                      ...List.generate(
-                                          snapshot.data?.docs.length ?? 0,
-                                          (index) {
-                                        final option =
-                                            snapshot.data!.docs[index];
-                                        return RadioSurveyItem(
-                                            surveyRef: widget.snapshot.id,
-                                            snapshot: option,
-                                            maxVotes: snapshotTop.data ?? 0);
-                                      }),
-                                    ],
-                                  ],
-                                ),
-                              );
-                            });
-                      }),
-                  if (post['allowAddOptions'] ?? false)
-                    Obx(() {
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            if (flwItemCtrl.isNew)
-                              SurveyItemWithRemove(
-                                hint: "Nueva opción",
-                                value: flwItemCtrl.content,
-                                image: flwItemCtrl.image,
-                                onChanged: (value) {
-                                  flwItemCtrl.onChange(value);
-                                },
-                                onImageChange: (value) {
-                                  flwItemCtrl.onChangeImage(value);
-                                },
-                                onRemove: () {
-                                  flwItemCtrl.removeItem();
-                                },
-                              ),
-                            !flwItemCtrl.isNew
-                                ? AddNewSurveyItemButton(
-                                    onTap: () {
-                                      flwItemCtrl.addItem();
-                                    },
-                                  )
-                                : flwItemCtrl.hasContent
-                                    ? GestureDetector(
-                                        onTap: () {
-                                          flwItemCtrl.submit();
-                                        },
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(10.0),
-                                            color:
-                                                Get.theme.colorScheme.primary,
-                                          ),
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 20.0,
-                                            vertical: 10.0,
-                                          ),
-                                          height: 45.0,
-                                          width: double.infinity,
-                                          child: const Center(
-                                            child: Text(
-                                              "Agregar Opcion",
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      )
-                                    : const SizedBox.shrink(),
-                          ],
-                        ),
-                      );
-                    }),
+                if (post['type'] == "survey" ||
+                    post["type"] == PostType.survey.index) ...[
+                  _buildSurveyOptionsStream(ctrl, post),
+                  if (post['allowAddOptions'] ?? false) _buildAddNewOption(),
                 ],
                 const SizedBox(height: 20.0),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    StreamBuilder<bool>(
-                        stream: ctrl.accountLikedPost(
-                          postRef: widget.snapshot.reference.path,
-                        ),
-                        builder: (context, snapshot) {
-                          return StreamBuilder<int>(
-                              stream: ctrl.countLikesPost(
-                                postRef: widget.snapshot.reference.path,
-                              ),
-                              builder: (context, likes) {
-                                return PostAction(
-                                    label: likes.data?.toString() ?? "0",
-                                    selected: snapshot.data ?? false,
-                                    selectedIcon: MdiIcons.heart,
-                                    icon: MdiIcons.heartOutline,
-                                    onTap: () {
-                                      if (snapshot.data == true) {
-                                        ctrl.dislikePost(
-                                            postRef:
-                                                widget.snapshot.reference.path);
-                                      } else {
-                                        ctrl.likePost(
-                                            postRef:
-                                                widget.snapshot.reference.path);
-                                      }
-                                    });
-                              });
-                        }),
-                    StreamBuilder<int>(
-                        stream: ctrl.countCommentsPost(
-                          postRef: widget.snapshot.reference.path,
-                        ),
-                        builder: (context, snapshot) {
-                          return PostAction(
-                            selected: false,
-                            label: snapshot.data?.toString() ?? "0",
-                            icon: MdiIcons.commentOutline,
-                            selectedIcon: MdiIcons.comment,
-                            onTap: () {
-                              Get.toNamed(
-                                AppRoutes.postDetails,
-                                arguments: widget.snapshot,
-                              );
-                            },
-                          );
-                        }),
-                  ],
-                ),
+                _buildPostDetails(post),
               ],
             ),
-            if (!widget.isReed)
-              Positioned(
-                right: 0,
-                top: 0,
-                child: PopupMenuProfile(
-                  icon: MdiIcons.dotsVertical,
-                  positionY: 0,
-                  selected: false,
-                  options: {
-                    'edit': {
-                      "label": "Editar",
-                      "icon": MdiIcons.pencil,
-                      "onTap": () {}
-                    },
-                    'delete': {
-                      "label": "Eliminar",
-                      "icon": MdiIcons.trashCan,
-                      "onTap": () {
-                        ctrl.deletePost(widget.snapshot.reference.path);
-                      },
-                    },
-                  },
-                ),
-              ),
+            if (!widget.isReed) _buildPostMenu(),
           ],
         ),
       ),
     );
+  }
+
+  Positioned _buildPostMenu() {
+    final ctrl = Get.find<PostCtrl>();
+    return Positioned(
+      right: 0,
+      top: 0,
+      child: PopupMenuProfile(
+        icon: MdiIcons.dotsVertical,
+        positionY: 0,
+        selected: false,
+        options: {
+          'edit': {"label": "Editar", "icon": MdiIcons.pencil, "onTap": () {}},
+          'delete': {
+            "label": "Eliminar",
+            "icon": MdiIcons.trashCan,
+            "onTap": () {
+              ctrl.deletePost(widget.snapshot.reference.path);
+            },
+          },
+        },
+      ),
+    );
+  }
+
+  Row _buildPostDetails(Map<String, dynamic> post) {
+    final ctrl = Get.find<PostCtrl>();
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        StreamBuilder<bool>(
+            stream: ctrl.accountLikedPost(
+              postRef: widget.snapshot.reference.path,
+            ),
+            builder: (context, snapshot) {
+              return StreamBuilder<int>(
+                  stream: ctrl.countLikesPost(
+                    postRef: widget.snapshot.reference.path,
+                  ),
+                  builder: (context, likes) {
+                    return PostAction(
+                        label: likes.data?.toString() ?? "0",
+                        selected: snapshot.data ?? false,
+                        selectedIcon: MdiIcons.heart,
+                        icon: MdiIcons.heartOutline,
+                        onTap: () {
+                          if (snapshot.data == true) {
+                            ctrl.dislikePost(
+                                postRef: widget.snapshot.reference.path);
+                          } else {
+                            ctrl.likePost(
+                                postRef: widget.snapshot.reference.path);
+                          }
+                        });
+                  });
+            }),
+        StreamBuilder<int>(
+            stream: ctrl.countCommentsPost(
+              postRef: widget.snapshot.reference.path,
+            ),
+            builder: (context, snapshot) {
+              return PostAction(
+                selected: false,
+                label: snapshot.data?.toString() ?? "0",
+                icon: MdiIcons.commentOutline,
+                selectedIcon: MdiIcons.comment,
+                onTap: () {
+                  Get.toNamed(
+                    AppRoutes.postDetails,
+                    arguments: widget.snapshot,
+                  );
+                },
+              );
+            }),
+        if (post['type'] == PostType.event.index)
+          // TODO: implementar asitencia a evento
+          StreamBuilder<int>(
+              stream: Get.find<EventCtrl>().getCountAssist(
+                eventRef: widget.snapshot.reference.id,
+              ),
+              builder: (context, count) {
+                return StreamBuilder<bool>(
+                    stream: Get.find<EventCtrl>().hasAssistOnEvent(
+                      eventRef: widget.snapshot.reference.id,
+                    ),
+                    builder: (context, assist) {
+                      return PostAction(
+                        label:
+                            "${count.data ?? 0}  ${assist.data == false ? 'Asistiras?' : ''}",
+                        onTap: () {
+                          if (assist.data == false) {
+                            Get.find<EventCtrl>().assistEvent(
+                              eventRef: widget.snapshot.reference.id,
+                            );
+                          } else {
+                            Get.find<EventCtrl>().deleteAssistEvent(
+                              eventRef: widget.snapshot.reference.id,
+                            );
+                          }
+                        },
+                        selected: assist.data ?? false,
+                        selectedIcon: MdiIcons.account,
+                        icon: MdiIcons.accountOutline,
+                      );
+                    });
+              })
+      ],
+    );
+  }
+
+  ClipRRect _buildImage(Map<String, dynamic> post) {
+    return ClipRRect(
+      borderRadius: const BorderRadius.only(
+        topLeft: Radius.circular(20.0),
+        topRight: Radius.circular(20.0),
+      ),
+      child: CachingImage(
+        url: post['image'],
+        height: 200,
+        fit: BoxFit.cover,
+        width: double.infinity,
+      ),
+    );
+  }
+
+  Obx _buildAddNewOption() {
+    final flwItemCtrl = Get.find<FollowerEditSurveyItemsCtrl>()
+      ..setCurrentOptions(widget.snapshot.reference.id);
+    return Obx(() {
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (flwItemCtrl.isNew)
+              SurveyItemWithRemove(
+                hint: "Nueva opción",
+                value: flwItemCtrl.content,
+                image: flwItemCtrl.image,
+                onChanged: (value) {
+                  flwItemCtrl.onChange(value);
+                },
+                onImageChange: (value) {
+                  flwItemCtrl.onChangeImage(value);
+                },
+                onRemove: () {
+                  flwItemCtrl.removeItem();
+                },
+              ),
+            !flwItemCtrl.isNew
+                ? AddNewSurveyItemButton(
+                    onTap: () {
+                      flwItemCtrl.addItem();
+                    },
+                  )
+                : flwItemCtrl.hasContent
+                    ? GestureDetector(
+                        onTap: () {
+                          flwItemCtrl.submit();
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10.0),
+                            color: Get.theme.colorScheme.primary,
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20.0,
+                            vertical: 10.0,
+                          ),
+                          height: 45.0,
+                          width: double.infinity,
+                          child: const Center(
+                            child: Text(
+                              "Agregar Opcion",
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      )
+                    : const SizedBox.shrink(),
+          ],
+        ),
+      );
+    });
+  }
+
+  StreamBuilder<QuerySnapshot<Map<String, dynamic>>> _buildSurveyOptionsStream(
+      PostCtrl ctrl, Map<String, dynamic> post) {
+    return StreamBuilder(
+        stream: ctrl.getOptions(widget.snapshot.id),
+        builder: (context, snapshot) {
+          return StreamBuilder<int>(
+              stream: ctrl.getTopOption(widget.snapshot.id),
+              builder: (context, snapshotTop) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 20.0, vertical: 10.0),
+                  child: Column(
+                    children: [
+                      if (post["allowMultipleVotes"] ?? false) ...[
+                        ...List.generate(snapshot.data?.docs.length ?? 0,
+                            (index) {
+                          final option = snapshot.data!.docs[index];
+                          return CheckSurveyItem(
+                              surveyRef: widget.snapshot.id,
+                              snapshot: option,
+                              maxVotes: snapshotTop.data ?? 0);
+                        }),
+                      ] else ...[
+                        ...List.generate(snapshot.data?.docs.length ?? 0,
+                            (index) {
+                          final option = snapshot.data!.docs[index];
+                          return RadioSurveyItem(
+                              surveyRef: widget.snapshot.id,
+                              snapshot: option,
+                              maxVotes: snapshotTop.data ?? 0);
+                        }),
+                      ],
+                    ],
+                  ),
+                );
+              });
+        });
   }
 }
 

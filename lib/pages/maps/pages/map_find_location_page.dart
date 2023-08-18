@@ -9,10 +9,14 @@ class ResumeMapLocation extends StatefulWidget {
     super.key,
     this.position,
     this.onLocationChange,
+    this.radius = 20.0,
+    this.margin = 8.0,
   });
 
   final LatLng? position;
   final void Function(PlaceDetails)? onLocationChange;
+  final double radius;
+  final double margin;
 
   @override
   State<ResumeMapLocation> createState() => _ResumeMapLocationState();
@@ -25,9 +29,9 @@ class _ResumeMapLocationState extends State<ResumeMapLocation> {
     return Material(
       color: Colors.transparent,
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: EdgeInsets.all(widget.margin),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(widget.radius),
           child: SizedBox(
             height: 200,
             width: 200,

@@ -47,6 +47,7 @@ class RoundedButton extends StatelessWidget {
                   color: isBordered
                       ? Get.theme.colorScheme.primary
                       : Get.theme.colorScheme.onPrimary,
+                  fontWeight: FontWeight.bold,
                 ),
                 textAlign: TextAlign.center,
               ),
