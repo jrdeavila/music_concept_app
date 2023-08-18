@@ -45,51 +45,40 @@ class _HomePageState extends State<HomePage> {
             curve: Curves.easeInOut);
         return true;
       },
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          Scaffold(
-            endDrawer: const HomeDrawer(),
-            body: PageView(
-              physics: const NeverScrollableScrollPhysics(),
-              scrollDirection: Axis.horizontal,
-              controller: _pageCtrl,
-              children: const [
-                FanPageView(), // Home View
+      child: Scaffold(
+        endDrawer: const HomeDrawer(),
+        body: PageView(
+          physics: const NeverScrollableScrollPhysics(),
+          scrollDirection: Axis.horizontal,
+          controller: _pageCtrl,
+          children: const [
+            FanPageView(), // Home View
 
-                ProfileView(), // Profile View
-              ],
-            ),
-            extendBody: true,
-            // resizeToAvoidBottomInset: false,
+            ProfileView(), // Profile View
+          ],
+        ),
+        extendBody: true,
+        // resizeToAvoidBottomInset: false,
+        floatingActionButton: Builder(builder: (context) {
+          if (Get.find<FanPageCtrl>().isSearching) {
+            return const SizedBox.shrink();
+          }
+          if (Get.find<FanPageCtrl>().selectedAccount != null) {
+            return const SizedBox.shrink();
+          }
+          return _floatingButton();
+        }),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
 
-            bottomNavigationBar: Obx(() {
-              if (Get.find<FanPageCtrl>().isSearching) {
-                return const SizedBox.shrink();
-              }
-              if (Get.find<FanPageCtrl>().selectedAccount != null) {
-                return const SizedBox.shrink();
-              }
-              return _bottomBar();
-            }),
-          ),
-          Align(
-            alignment: const FractionalOffset(0.5, 0.925),
-            child: SizedBox(
-              width: 134.0,
-              child: Obx(() {
-                if (Get.find<FanPageCtrl>().isSearching) {
-                  return const SizedBox.shrink();
-                }
-                if (Get.find<FanPageCtrl>().selectedAccount != null) {
-                  return const SizedBox.shrink();
-                }
-
-                return _floatingButton();
-              }),
-            ),
-          )
-        ],
+        bottomNavigationBar: Obx(() {
+          if (Get.find<FanPageCtrl>().isSearching) {
+            return const SizedBox.shrink();
+          }
+          if (Get.find<FanPageCtrl>().selectedAccount != null) {
+            return const SizedBox.shrink();
+          }
+          return _bottomBar();
+        }),
       ),
     );
   }

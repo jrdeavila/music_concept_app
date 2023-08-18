@@ -120,6 +120,9 @@ class FanPageView extends StatelessWidget {
                             isReed: true,
                           );
                         }).toList(),
+                        const SizedBox(
+                          height: 100.0,
+                        )
                       ],
                     );
                   })),
