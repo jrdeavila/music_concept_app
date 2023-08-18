@@ -4,11 +4,26 @@ import 'package:music_concept_app/lib.dart';
 
 abstract class EventService {
   static Future<void> createEvent({
+    String? eventRef,
     required String content,
     required LatLng point,
     required DateTime startDate,
     required String accountRef,
   }) {
+    if (eventRef != null) {
+      return FirebaseFirestore.instance
+          .collection("posts")
+          .doc(eventRef)
+          .update({
+        "content": content,
+        "point": GeoPoint(
+          point.latitude,
+          point.longitude,
+        ),
+        "startDate": Timestamp.fromDate(startDate),
+        "updatedAt": FieldValue.serverTimestamp(),
+      });
+    }
     return FirebaseFirestore.instance.collection("posts").add({
       "content": content,
       "point": GeoPoint(

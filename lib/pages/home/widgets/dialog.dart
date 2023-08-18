@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
 
@@ -115,4 +116,31 @@ class MenuSelectPostOrSurvey extends StatelessWidget {
       ),
     );
   }
+}
+
+Future<void> showPostDialog(BuildContext context) {
+  return dialogKeyboardBuilder(
+    context,
+    Offset(
+      Get.width / 2,
+      Get.height / 2,
+    ),
+    const PostDialogContent(),
+  );
+}
+
+Future<void> showEventDialog(
+  BuildContext context, {
+  DocumentSnapshot<Map<String, dynamic>>? event,
+}) {
+  return dialogKeyboardBuilder(
+    context,
+    Offset(
+      Get.width / 2,
+      Get.height / 2,
+    ),
+    EventDialogContent(
+      event: event,
+    ),
+  );
 }

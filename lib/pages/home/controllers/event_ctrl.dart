@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
@@ -14,7 +15,6 @@ class CreateEventCtrl extends GetxController {
   String get content => _content.value;
   DateTime get startDate => _startDate.value;
   LatLng? get point => _point.value;
-  PostVisibility get visibility => _visibility.value;
   bool get isUploading => _isUploading.value;
 
   void setContent(String value) => _content.value = value;
@@ -29,6 +29,12 @@ class CreateEventCtrl extends GetxController {
     _point.bindStream(_getCurrentPoint());
   }
 
+  void loadInfo(Map<String, dynamic> data) {
+    _content.value = data["content"];
+    _startDate.value = (data["startDate"] as Timestamp).toDate();
+    _point.value = (data["point"] as GeoPoint).toLatLng();
+  }
+
   Stream<LatLng?> _getCurrentPoint() {
     return Geolocator.getPositionStream().map(
       (event) => LatLng(
@@ -38,9 +44,10 @@ class CreateEventCtrl extends GetxController {
     );
   }
 
-  void submit() async {
+  void submit([String? eventRef]) async {
     _isUploading.value = true;
     EventService.createEvent(
+      eventRef: eventRef,
       accountRef: "users/${FirebaseAuth.instance.currentUser!.uid}",
       content: _content.validateEmpty(),
       point: _point.validateNull(label: "Ubicacion"),
@@ -85,4 +92,8 @@ class EventCtrl extends GetxController {
       eventRef: eventRef,
     );
   }
+}
+
+extension GeoPointLatLng on GeoPoint {
+  LatLng toLatLng() => LatLng(latitude, longitude);
 }

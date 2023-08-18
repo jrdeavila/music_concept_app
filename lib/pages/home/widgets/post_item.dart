@@ -56,6 +56,7 @@ class _PostItemState extends State<PostItem> {
                 if (post['type'] == PostType.event.index)
                   ResumeSelectDate(
                     readOnly: true,
+                    date: post['startDate']?.toDate(),
                     children: [
                       Text(
                         post['content'] ?? '',
@@ -103,7 +104,16 @@ class _PostItemState extends State<PostItem> {
         positionY: 0,
         selected: false,
         options: {
-          'edit': {"label": "Editar", "icon": MdiIcons.pencil, "onTap": () {}},
+          'edit': {
+            "label": "Editar",
+            "icon": MdiIcons.pencil,
+            "onTap": () {
+              showEventDialog(
+                context,
+                event: widget.snapshot,
+              );
+            },
+          },
           'delete': {
             "label": "Eliminar",
             "icon": MdiIcons.trashCan,
@@ -166,7 +176,6 @@ class _PostItemState extends State<PostItem> {
               );
             }),
         if (post['type'] == PostType.event.index)
-          // TODO: implementar asitencia a evento
           StreamBuilder<int>(
               stream: Get.find<EventCtrl>().getCountAssist(
                 eventRef: widget.snapshot.reference.id,

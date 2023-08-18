@@ -98,37 +98,15 @@ class _HomePageState extends State<HomePage> {
             Get.toNamed(AppRoutes.createSurvey);
           }
           if (value == PostType.event) {
-            _showEventDialog(context);
+            showEventDialog(context);
           }
           if (value == PostType.post) {
-            _showPostDialog(context);
+            showPostDialog(context);
           }
         });
       },
       icon: const Icon(MdiIcons.plus),
       label: const Text('Publicar'),
-    );
-  }
-
-  Future<void> _showPostDialog(BuildContext context) {
-    return dialogKeyboardBuilder(
-      context,
-      Offset(
-        Get.width / 2,
-        Get.height / 2,
-      ),
-      const PostDialogContent(),
-    );
-  }
-
-  Future<void> _showEventDialog(BuildContext context) {
-    return dialogKeyboardBuilder(
-      context,
-      Offset(
-        Get.width / 2,
-        Get.height / 2,
-      ),
-      const EventDialogContent(),
     );
   }
 

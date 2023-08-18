@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
 import 'package:get/get.dart';
@@ -8,8 +9,10 @@ import 'package:intl/intl.dart';
 import 'package:music_concept_app/lib.dart';
 
 class EventDialogContent extends StatefulWidget {
+  final DocumentSnapshot<Map<String, dynamic>>? event;
   const EventDialogContent({
     super.key,
+    this.event,
   });
 
   @override
@@ -33,6 +36,9 @@ class _EventDialogContentState extends State<EventDialogContent> {
   @override
   Widget build(BuildContext context) {
     final ctrl = Get.find<CreateEventCtrl>();
+    if (widget.event != null) {
+      ctrl.loadInfo(widget.event!.data()!);
+    }
 
     return Obx(() {
       if (ctrl.point != null) {
@@ -76,7 +82,8 @@ class _EventDialogContentState extends State<EventDialogContent> {
                   const SizedBox(
                     height: 10.0,
                   ),
-                  TextField(
+                  TextFormField(
+                    initialValue: widget.event?['content'],
                     minLines: 1,
                     maxLines: 2,
                     style: const TextStyle(
@@ -166,7 +173,9 @@ class _EventDialogContentState extends State<EventDialogContent> {
                     padding: const EdgeInsets.all(8.0),
                     child: RoundedButton(
                         padding: EdgeInsets.zero,
-                        onTap: ctrl.isUploading ? null : ctrl.submit,
+                        onTap: ctrl.isUploading
+                            ? null
+                            : () => ctrl.submit(widget.event?.id),
                         radius: 20.0,
                         label: ctrl.isUploading ? null : 'Publicar',
                         child: ctrl.isUploading
