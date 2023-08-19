@@ -397,49 +397,56 @@ class PostUserAccountDetails extends StatelessWidget {
       child: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
           stream: ctrl.getAccountRef(post['accountRef']),
           builder: (context, snapshot) {
-            return Row(
-              children: [
-                ProfileImage(
-                  image: snapshot.data?['image'],
-                  name: snapshot.data?['name'],
-                  avatarSize: isDetails ? 80.0 : 40.0,
-                  fontSize: isDetails ? 30.0 : 20.0,
-                ),
-                const SizedBox(width: 10.0),
-                Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      snapshot.data?['name'] ?? '',
-                      style: TextStyle(
-                        fontSize: isDetails ? 25.0 : 16.0,
-                      ),
-                    ),
-                    Row(
-                      children: [
-                        if (post['createdAt'] != null)
-                          Text(
-                            timeago.format(
-                              post['createdAt']?.toDate(),
-                              locale: 'es',
-                            ),
-                            style: TextStyle(
-                              fontSize: isDetails ? 16.0 : 12.0,
-                              color: Colors.grey,
-                            ),
-                          ),
-                        const SizedBox(width: 5.0),
-                        Icon(
-                          getVisibilityIcon(post['visibility']),
-                          size: 12.0,
-                          color: Colors.grey,
+            return GestureDetector(
+              onTap: () {
+                if (snapshot.hasData) {
+                  Get.find<FanPageCtrl>().goToGuestProfile(snapshot.data!);
+                }
+              },
+              child: Row(
+                children: [
+                  ProfileImage(
+                    image: snapshot.data?['image'],
+                    name: snapshot.data?['name'],
+                    avatarSize: isDetails ? 80.0 : 40.0,
+                    fontSize: isDetails ? 30.0 : 20.0,
+                  ),
+                  const SizedBox(width: 10.0),
+                  Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        snapshot.data?['name'] ?? '',
+                        style: TextStyle(
+                          fontSize: isDetails ? 25.0 : 16.0,
                         ),
-                      ],
-                    )
-                  ],
-                ),
-              ],
+                      ),
+                      Row(
+                        children: [
+                          if (post['createdAt'] != null)
+                            Text(
+                              timeago.format(
+                                post['createdAt']?.toDate(),
+                                locale: 'es',
+                              ),
+                              style: TextStyle(
+                                fontSize: isDetails ? 16.0 : 12.0,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          const SizedBox(width: 5.0),
+                          Icon(
+                            getVisibilityIcon(post['visibility']),
+                            size: 12.0,
+                            color: Colors.grey,
+                          ),
+                        ],
+                      )
+                    ],
+                  ),
+                ],
+              ),
             );
           }),
     );
