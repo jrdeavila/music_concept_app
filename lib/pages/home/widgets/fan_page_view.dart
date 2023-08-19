@@ -160,12 +160,7 @@ class FanPageView extends StatelessWidget {
                   final hasAddress = data!['address'] != null;
                   return ListTile(
                     onTap: () {
-                      ctrl.setSelectedAccount(
-                          ctrl.searchResult[index].reference);
-                      ctrl.setSearching(false);
-                      PageChangeNotification(1).dispatch(context);
-                      Get.find<PostCtrl>().setSelectedAccount(
-                          ctrl.searchResult[index].reference.path);
+                      ctrl.goToGuestProfile(ctrl.searchResult[index]);
                     },
                     leading: ProfileImage(
                       image: data['image'],

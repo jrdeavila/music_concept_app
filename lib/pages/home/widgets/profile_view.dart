@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
 import 'package:get/get.dart';
@@ -6,7 +7,10 @@ import 'package:music_concept_app/lib.dart';
 class ProfileView extends StatefulWidget {
   const ProfileView({
     super.key,
+    this.guest,
   });
+
+  final DocumentSnapshot<Map<String, dynamic>>? guest;
 
   @override
   State<ProfileView> createState() => _ProfileViewState();
@@ -32,57 +36,58 @@ class _ProfileViewState extends State<ProfileView> {
   Widget build(BuildContext context) {
     final ctrl = Get.find<ProfileCtrl>();
     final postCtrl = Get.find<PostCtrl>();
-    return Obx(() {
-      return StreamBuilder(
-          stream: postCtrl.selectedAccountRef != null
-              ? ctrl.getAccountStream(postCtrl.selectedAccountRef!)
-              : null,
-          builder: (context, snapshot) {
-            final data = snapshot.data?.data();
+    return StreamBuilder(
+        stream: ctrl.getAccountStream(widget.guest?.reference.path),
+        builder: (context, snapshot) {
+          final data = snapshot.data?.data();
 
-            return Stack(
-              fit: StackFit.expand,
-              children: [
-                BackgroundProfile(data: data, scrollCtrl: _scrollCtrl),
-                Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                        colors: [
-                          Get.theme.colorScheme.background,
-                          Get.theme.colorScheme.background.withOpacity(0),
-                        ],
-                        begin: Alignment.bottomCenter,
-                        end: Alignment.topCenter,
-                        stops: const [
-                          0.6,
-                          1.0,
-                        ]),
-                  ),
+          return Stack(
+            fit: StackFit.expand,
+            children: [
+              BackgroundProfile(data: data, scrollCtrl: _scrollCtrl),
+              Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                      colors: [
+                        Get.theme.colorScheme.background,
+                        Get.theme.colorScheme.background.withOpacity(0),
+                      ],
+                      begin: Alignment.bottomCenter,
+                      end: Alignment.topCenter,
+                      stops: const [
+                        0.6,
+                        1.0,
+                      ]),
                 ),
-                StreamBuilder(
-                    stream: postCtrl.profilePosts(),
-                    builder: (context, snapshot) {
-                      return CustomScrollView(
-                        controller: _scrollCtrl,
-                        physics: const BouncingScrollPhysics(),
-                        slivers: [
-                          SliverAppBar(
-                            floating: true,
-                            backgroundColor: Colors.transparent,
-                            leadingWidth: 76,
-                            toolbarHeight: kToolbarHeight + 50,
-                            leading: HomeAppBarAction(
-                              selected: true,
-                              icon: MdiIcons.arrowLeft,
-                              onTap: () {
-                                Get.find<FanPageCtrl>()
-                                    .setSelectedAccount(null);
-                                Get.find<PostCtrl>().reset();
-                                PageChangeNotification(0).dispatch(context);
-                              },
-                            ),
-                            actions: [
-                              const SizedBox(width: 10.0),
+              ),
+              StreamBuilder(
+                  stream: postCtrl.profilePosts(
+                    guestRef: widget.guest?.reference.path,
+                  ),
+                  builder: (context, snapshot) {
+                    return CustomScrollView(
+                      controller: _scrollCtrl,
+                      physics: const BouncingScrollPhysics(),
+                      slivers: [
+                        SliverAppBar(
+                          floating: true,
+                          backgroundColor: Colors.transparent,
+                          leadingWidth: 76,
+                          toolbarHeight: kToolbarHeight + 50,
+                          leading: HomeAppBarAction(
+                            selected: true,
+                            icon: MdiIcons.arrowLeft,
+                            onTap: () {
+                              if (widget.guest != null) {
+                                Get.back();
+                              } else {
+                                Get.find<FanPageCtrl>().goToReed();
+                              }
+                            },
+                          ),
+                          actions: [
+                            const SizedBox(width: 10.0),
+                            if (widget.guest == null)
                               HomeAppBarAction(
                                 selected: true,
                                 icon: MdiIcons.dotsVertical,
@@ -90,82 +95,80 @@ class _ProfileViewState extends State<ProfileView> {
                                   Scaffold.of(context).openEndDrawer();
                                 },
                               ),
-                              const SizedBox(width: 16.0),
+                            const SizedBox(width: 16.0),
+                          ],
+                        ),
+                        SliverToBoxAdapter(
+                          child: _accountDetails(data),
+                        ),
+                        SliverToBoxAdapter(
+                          child: AccountFollowFollowers(
+                            guest: widget.guest,
+                          ),
+                        ),
+                        const SliverToBoxAdapter(
+                          child: SizedBox(height: 20.0),
+                        ),
+                        SliverToBoxAdapter(
+                          child: ProfileTabBar(
+                            children: [
+                              ProfileTabBarItem(
+                                  label: 'Fondos',
+                                  icon: MdiIcons.wallpaper,
+                                  selected: _currentTab == 0,
+                                  onTap: () {
+                                    setState(() {
+                                      _currentTab = 0;
+                                    });
+                                  }),
+                              ProfileTabBarItem(
+                                  label: 'Posts',
+                                  icon: MdiIcons.post,
+                                  selected: _currentTab == 1,
+                                  onTap: () {
+                                    setState(() {
+                                      _currentTab = 1;
+                                    });
+                                  }),
                             ],
                           ),
-                          SliverToBoxAdapter(
-                            child: _accountDetails(data),
+                        ),
+                        if (_currentTab == 0)
+                          const SliverFillRemaining(
+                            child: WallpaperTabView(),
                           ),
-                          SliverToBoxAdapter(
-                            child: AccountFollowFollowers(
-                              withFollowButton:
-                                  Get.find<FanPageCtrl>().selectedAccount !=
-                                      null,
-                            ),
-                          ),
+                        if (snapshot.connectionState ==
+                                ConnectionState.waiting ||
+                            snapshot.connectionState == ConnectionState.none)
                           const SliverToBoxAdapter(
-                            child: SizedBox(height: 20.0),
+                            child: LoadingPostSkeleton(),
                           ),
-                          SliverToBoxAdapter(
-                            child: ProfileTabBar(
-                              children: [
-                                ProfileTabBarItem(
-                                    label: 'Fondos',
-                                    icon: MdiIcons.wallpaper,
-                                    selected: _currentTab == 0,
-                                    onTap: () {
-                                      setState(() {
-                                        _currentTab = 0;
-                                      });
-                                    }),
-                                ProfileTabBarItem(
-                                    label: 'Posts',
-                                    icon: MdiIcons.post,
-                                    selected: _currentTab == 1,
-                                    onTap: () {
-                                      setState(() {
-                                        _currentTab = 1;
-                                      });
-                                    }),
-                              ],
+                        if (snapshot.connectionState ==
+                                ConnectionState.active &&
+                            snapshot.hasData &&
+                            snapshot.data!.isNotEmpty)
+                          SliverList(
+                            delegate: SliverChildBuilderDelegate(
+                              (context, index) {
+                                return Center(
+                                  child: PostItem(
+                                    isReed: widget.guest != null,
+                                    snapshot: snapshot.data![index],
+                                  ),
+                                );
+                              },
+                              childCount: snapshot.data?.length ?? 0,
                             ),
                           ),
-                          if (_currentTab == 0)
-                            const SliverFillRemaining(
-                              child: WallpaperTabView(),
-                            ),
-                          if (snapshot.connectionState ==
-                                  ConnectionState.waiting ||
-                              snapshot.connectionState == ConnectionState.none)
-                            const SliverToBoxAdapter(
-                              child: LoadingPostSkeleton(),
-                            ),
-                          if (snapshot.connectionState ==
-                                  ConnectionState.active &&
-                              snapshot.hasData &&
-                              snapshot.data!.isNotEmpty)
-                            SliverList(
-                              delegate: SliverChildBuilderDelegate(
-                                (context, index) {
-                                  return Center(
-                                    child: PostItem(
-                                      snapshot: snapshot.data![index],
-                                    ),
-                                  );
-                                },
-                                childCount: snapshot.data?.length ?? 0,
-                              ),
-                            ),
-                          const SliverToBoxAdapter(
-                            child: SizedBox(height: 100.0),
-                          )
-                        ],
-                      );
-                    }),
-              ],
-            );
-          });
-    });
+                        const SliverToBoxAdapter(
+                          child: SizedBox(height: 100.0),
+                        )
+                      ],
+                    );
+                  }),
+            ],
+          );
+        });
   }
 
   Column _accountDetails(Map? data) {
@@ -245,7 +248,6 @@ class _BackgroundProfileState extends State<BackgroundProfile> {
     super.initState();
 
     widget.scrollCtrl.addListener(() {
-      // Ocultar cuando supere 50 px de scroll y mostrar cuando sea menor a 50 px (0.0 - 1.0) calcular
       _backgroundOpacity = 1 - (widget.scrollCtrl.offset / 50).clamp(0, 1);
       setState(() {});
     });

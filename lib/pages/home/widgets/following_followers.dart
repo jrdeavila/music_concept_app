@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
 import 'package:get/get.dart';
@@ -6,10 +7,10 @@ import 'package:music_concept_app/lib.dart';
 class AccountFollowFollowers extends StatelessWidget {
   const AccountFollowFollowers({
     super.key,
-    this.withFollowButton = false,
+    this.guest,
   });
 
-  final bool withFollowButton;
+  final DocumentSnapshot<Map<String, dynamic>>? guest;
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +19,7 @@ class AccountFollowFollowers extends StatelessWidget {
 
     return Obx(() {
       final currentRef = fanPageCtrl.currentAccount?.path;
-      final accountRef = fanPageCtrl.selectedAccount?.path;
+      final guestRef = guest?.reference.path;
       final options = {
         'unfollow': {
           "label": "Dejar de seguir",
@@ -26,7 +27,7 @@ class AccountFollowFollowers extends StatelessWidget {
           "onTap": () {
             ctrl.unfollow(
               followerRef: currentRef!,
-              followingRef: accountRef!,
+              followingRef: guestRef!,
             );
           },
         },
@@ -39,12 +40,12 @@ class AccountFollowFollowers extends StatelessWidget {
       return Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (withFollowButton) ...[
+          if (guest != null) ...[
             const SizedBox(height: 20.0),
             StreamBuilder<bool>(
                 stream: ctrl.isFollowing(
                   followerRef: currentRef!,
-                  followingRef: accountRef!,
+                  followingRef: guestRef!,
                 ),
                 builder: (context, snapshot) {
                   return Row(
@@ -55,7 +56,7 @@ class AccountFollowFollowers extends StatelessWidget {
                         onTap: () {
                           ctrl.follows(
                             followerRef: currentRef,
-                            followingRef: accountRef,
+                            followingRef: guestRef,
                           );
                         },
                       ),
@@ -74,7 +75,7 @@ class AccountFollowFollowers extends StatelessWidget {
           Row(
             children: [
               StreamBuilder<int>(
-                  stream: ctrl.getFollowersCount(accountRef ?? currentRef),
+                  stream: ctrl.getFollowersCount(guestRef ?? currentRef),
                   builder: (context, snapshot) {
                     return _item(
                       label: "Seguidores",
@@ -82,7 +83,7 @@ class AccountFollowFollowers extends StatelessWidget {
                     );
                   }),
               StreamBuilder<int>(
-                  stream: ctrl.getFollowingCount(accountRef ?? currentRef),
+                  stream: ctrl.getFollowingCount(guestRef ?? currentRef),
                   builder: (context, snapshot) {
                     return _item(
                       label: "Siguiendo",
@@ -90,7 +91,7 @@ class AccountFollowFollowers extends StatelessWidget {
                     );
                   }),
               StreamBuilder<int>(
-                  stream: ctrl.getPostsCount(accountRef ?? currentRef),
+                  stream: ctrl.getPostsCount(guestRef ?? currentRef),
                   builder: (context, snapshot) {
                     return _item(
                       label: "Publicaciones",

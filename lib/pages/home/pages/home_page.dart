@@ -13,44 +13,28 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final _pageCtrl = PageController();
-  int _selectedPage = 0;
+  final ctrl = Get.find<FanPageCtrl>();
 
   @override
   void initState() {
     super.initState();
-    Get.lazyPut(() => UserCtrl());
-
-    Get.lazyPut(() => EventCtrl());
     Get.lazyPut(() => PostCtrl());
-    _pageCtrl.addListener(() {
-      setState(() {
-        _selectedPage = _pageCtrl.page?.round() ?? 0;
-      });
-    });
-  }
-
-  @override
-  void dispose() {
-    _pageCtrl.dispose();
-    super.dispose();
+    Get.lazyPut(() => EventCtrl());
   }
 
   @override
   Widget build(BuildContext context) {
-    return NotificationListener<PageChangeNotification>(
-      onNotification: (notification) {
-        _pageCtrl.animateToPage(notification.page,
-            duration: const Duration(milliseconds: 500),
-            curve: Curves.easeInOut);
-        return true;
+    return WillPopScope(
+      onWillPop: () async {
+        ctrl.goToReed();
+        return false;
       },
       child: Scaffold(
         endDrawer: const HomeDrawer(),
         body: PageView(
           physics: const NeverScrollableScrollPhysics(),
           scrollDirection: Axis.horizontal,
-          controller: _pageCtrl,
+          controller: ctrl.pageCtrl,
           children: const [
             FanPageView(), // Home View
 
@@ -59,11 +43,8 @@ class _HomePageState extends State<HomePage> {
         ),
         extendBody: true,
         // resizeToAvoidBottomInset: false,
-        floatingActionButton: Builder(builder: (context) {
+        floatingActionButton: Obx(() {
           if (Get.find<FanPageCtrl>().isSearching) {
-            return const SizedBox.shrink();
-          }
-          if (Get.find<FanPageCtrl>().selectedAccount != null) {
             return const SizedBox.shrink();
           }
           return _floatingButton();
@@ -74,9 +55,7 @@ class _HomePageState extends State<HomePage> {
           if (Get.find<FanPageCtrl>().isSearching) {
             return const SizedBox.shrink();
           }
-          if (Get.find<FanPageCtrl>().selectedAccount != null) {
-            return const SizedBox.shrink();
-          }
+
           return _bottomBar();
         }),
       ),
@@ -119,26 +98,18 @@ class _HomePageState extends State<HomePage> {
         child: Row(children: [
           const SizedBox(width: 16.0),
           HomeAppBarAction(
-            selected: _selectedPage == 0,
+            selected: ctrl.currentPage == 0,
             icon: MdiIcons.home,
             onTap: () {
-              Get.find<PostCtrl>().reset();
-              _pageCtrl.animateToPage(0,
-                  duration: const Duration(milliseconds: 500),
-                  curve: Curves.easeInOut);
+              ctrl.goToReed();
             },
           ),
           const Spacer(),
           HomeAppBarAction(
             icon: MdiIcons.account,
-            selected: _selectedPage == 1,
+            selected: ctrl.currentPage == 1,
             onTap: () {
-              Get.find<PostCtrl>().reset();
-              _pageCtrl.animateToPage(
-                1,
-                duration: const Duration(milliseconds: 500),
-                curve: Curves.easeInOut,
-              );
+              ctrl.goToProfile();
             },
           ),
           const SizedBox(width: 16.0),
@@ -189,10 +160,4 @@ class _RoundedBottomAppBarClipper extends CustomClipper<Path> {
   bool shouldReclip(CustomClipper<Path> oldClipper) {
     return true;
   }
-}
-
-class PageChangeNotification extends Notification {
-  final int page;
-
-  PageChangeNotification(this.page);
 }

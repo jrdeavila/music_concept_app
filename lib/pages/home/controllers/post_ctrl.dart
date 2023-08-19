@@ -52,14 +52,6 @@ class CreatePostCtrl extends GetxController {
 }
 
 class PostCtrl extends GetxController {
-  final Rx<String?> _selectedAccountRef = Rx<String?>(null);
-
-  String? get selectedAccountRef => _selectedAccountRef.value;
-
-  void setSelectedAccount(String? accountRef) {
-    _selectedAccountRef.value = accountRef;
-  }
-
   Stream<DocumentSnapshot<Map<String, dynamic>>> getAccountRef(
       String accountRef) {
     return FirebaseFirestore.instance.doc(accountRef).snapshots();
@@ -115,29 +107,15 @@ class PostCtrl extends GetxController {
     return LikesCommentsService.countComments(commentableRef: postRef);
   }
 
-  @override
-  void onReady() {
-    super.onReady();
-
-    FirebaseAuth.instance.userChanges().listen((event) {
-      if (event != null) {
-        reset();
-      }
-    });
-  }
-
-  void reset() {
-    var accountRef = "users/${FirebaseAuth.instance.currentUser!.uid}";
-    _selectedAccountRef.value = accountRef;
-  }
-
   Stream<List<QueryDocumentSnapshot<Map<String, dynamic>>>> reedPost() {
     return PostService.getAccountFollowingPost(
         "users/${FirebaseAuth.instance.currentUser!.uid}");
   }
 
-  Stream<List<QueryDocumentSnapshot<Map<String, dynamic>>>> profilePosts() {
-    return PostService.getAccountPosts(_selectedAccountRef.value!);
+  Stream<List<QueryDocumentSnapshot<Map<String, dynamic>>>> profilePosts(
+      {String? guestRef}) {
+    return PostService.getAccountPosts(
+        guestRef ?? "users/${FirebaseAuth.instance.currentUser!.uid}");
   }
 
   void deletePost(String postRef) {

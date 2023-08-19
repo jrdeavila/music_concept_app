@@ -1,3 +1,4 @@
+export 'guest_profile/guest_profile.dart';
 export 'home/home.dart';
 export 'login/login.dart';
 export 'maps/maps.dart';

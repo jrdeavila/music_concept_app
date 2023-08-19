@@ -20,6 +20,7 @@ abstract class AppRoutes {
   static const String notWifi = "/not-wifi";
   static const String root = "/";
   static const String postDetails = "/post-details";
+  static const String guestProfile = "/guest-profile";
 
   static const String initialRoute = root;
   static final Map<String, Widget Function(BuildContext context)> routes = {
@@ -34,5 +35,6 @@ abstract class AppRoutes {
     resetPassword: (context) => const ResetPasswordPage(),
     home: (context) => const HomePage(),
     notWifi: (context) => const NoWifiCoonnectionPage(),
+    guestProfile: (context) => GuestProfilePage(guest: Get.arguments),
   };
 }
