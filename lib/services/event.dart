@@ -46,7 +46,7 @@ abstract class EventService {
     final hasAssist = await FirebaseFirestore.instance
         .collection("posts")
         .doc(eventRef)
-        .collection("assist")
+        .collection("assists")
         .where("accountRef", isEqualTo: accountRef)
         .get()
         .then((value) => value.docs.isNotEmpty);
@@ -56,7 +56,7 @@ abstract class EventService {
     await FirebaseFirestore.instance
         .collection("posts")
         .doc(eventRef)
-        .collection("assist")
+        .collection("assists")
         .add({
       "accountRef": accountRef,
       "createdAt": FieldValue.serverTimestamp(),
@@ -71,7 +71,7 @@ abstract class EventService {
       var value = await FirebaseFirestore.instance
           .collection("posts")
           .doc(eventRef)
-          .collection("assist")
+          .collection("assists")
           .where("accountRef", isEqualTo: accountRef)
           .get();
       await Future.wait(
@@ -87,7 +87,7 @@ abstract class EventService {
     return FirebaseFirestore.instance
         .collection("posts")
         .doc(eventRef)
-        .collection("assist")
+        .collection("assists")
         .where("accountRef", isEqualTo: accountRef)
         .snapshots()
         .map((event) => event.docs.isNotEmpty);
@@ -99,7 +99,7 @@ abstract class EventService {
     return FirebaseFirestore.instance
         .collection("posts")
         .doc(eventRef)
-        .collection("assist")
+        .collection("assists")
         .snapshots()
         .map(
           (event) => event.docs.length,

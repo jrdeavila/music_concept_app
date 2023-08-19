@@ -29,8 +29,16 @@ abstract class NotificationService {
   static Future<void> saveNotificationToken(String uid) async {
     var notificationToken = await FirebaseMessaging.instance.getToken();
     if (notificationToken == null) return;
-    await FirebaseFirestore.instance
-        .doc(uid)
-        .update({"notificationToken": notificationToken});
+    // Verificar si el token ya existe en la base de datos
+    var query = await FirebaseFirestore.instance.doc(uid).get();
+    var data = query.data();
+    if (data != null) {
+      var tokens = data["notificationToken"] ?? [];
+      if (tokens.contains(notificationToken)) return;
+    }
+    // Guardar el token en la base de datos
+    await FirebaseFirestore.instance.doc(uid).update({
+      "notificationToken": FieldValue.arrayUnion([notificationToken])
+    });
   }
 }
