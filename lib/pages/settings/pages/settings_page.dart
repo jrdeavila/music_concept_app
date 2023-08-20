@@ -89,26 +89,3 @@ class SettingsPage extends StatelessWidget {
     });
   }
 }
-
-class _AppBarClipper extends CustomClipper<Path> {
-  @override
-  Path getClip(Size size) {
-    return Path()
-      ..moveTo(0, size.height / 2)
-      ..cubicTo(
-        0,
-        size.height / 2,
-        size.width / 2,
-        size.height + 80,
-        size.width,
-        size.height / 2,
-      )
-      ..lineTo(size.width, 0)
-      ..lineTo(0, 0);
-  }
-
-  @override
-  bool shouldReclip(covariant CustomClipper<Path> oldClipper) {
-    return true;
-  }
-}

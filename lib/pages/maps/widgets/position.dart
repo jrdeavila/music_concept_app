@@ -28,7 +28,7 @@ class PositionDetails extends StatelessWidget {
           borderRadius: BorderRadius.circular(20),
           color: selected
               ? Get.theme.colorScheme.primary.withOpacity(0.2)
-              : Colors.grey[200],
+              : Colors.grey[800],
         ),
         margin: const EdgeInsets.only(right: 20),
         child: Row(
@@ -46,7 +46,7 @@ class PositionDetails extends StatelessWidget {
                   Text(
                     placeDetails?.result?.name ?? '',
                     style: TextStyle(
-                      color: Get.theme.colorScheme.onBackground,
+                      color: Get.theme.colorScheme.onPrimary,
                       fontSize: 18.0,
                       fontWeight: FontWeight.bold,
                       overflow: TextOverflow.ellipsis,
@@ -57,7 +57,7 @@ class PositionDetails extends StatelessWidget {
                   Text(
                     placeDetails?.result?.formattedAddress ?? '',
                     style: TextStyle(
-                      color: Get.theme.colorScheme.onBackground,
+                      color: Get.theme.colorScheme.onPrimary,
                       overflow: TextOverflow.ellipsis,
                     ),
                     textAlign: TextAlign.start,
@@ -74,7 +74,7 @@ class PositionDetails extends StatelessWidget {
                             placeDetails!.result!.geometry!.location!.lng!,
                           )),
                       style: TextStyle(
-                        color: Get.theme.colorScheme.onBackground,
+                        color: Get.theme.colorScheme.onPrimary,
                       ),
                     )
                 ],
@@ -123,11 +123,12 @@ class _PositionDetailsSkeletonState extends State<PositionDetailsSkeleton>
           width: 240,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
-            color: Colors.grey[200],
+            color: Colors.grey[800],
           ),
           child: Row(
             children: [
               SkeletonBox(
+                radius: 20.0,
                 width: 40,
                 height: 40,
                 value: _controller.value,
@@ -141,6 +142,7 @@ class _PositionDetailsSkeletonState extends State<PositionDetailsSkeleton>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SkeletonBox(
+                      radius: 5.0,
                       width: 140,
                       height: 20,
                       value: _controller.value,
@@ -149,6 +151,7 @@ class _PositionDetailsSkeletonState extends State<PositionDetailsSkeleton>
                       height: 10,
                     ),
                     SkeletonBox(
+                      radius: 2.0,
                       width: 200,
                       height: 10,
                       value: _controller.value,
@@ -157,6 +160,7 @@ class _PositionDetailsSkeletonState extends State<PositionDetailsSkeleton>
                       height: 5,
                     ),
                     SkeletonBox(
+                      radius: 2.0,
                       width: 100,
                       height: 10,
                       value: _controller.value,
@@ -165,6 +169,7 @@ class _PositionDetailsSkeletonState extends State<PositionDetailsSkeleton>
                       height: 5,
                     ),
                     SkeletonBox(
+                      radius: 2.0,
                       width: 150,
                       height: 10,
                       value: _controller.value,

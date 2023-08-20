@@ -110,7 +110,7 @@ class _EventDialogContentState extends State<EventDialogContent> {
                               borderRadius: BorderRadius.circular(10.0),
                               child: GoogleMap(
                                 onTap: (_) {
-                                  Get.toNamed(AppRoutes.mapFindLocation)
+                                  Get.toNamed(AppRoutes.mapsFindLocation)
                                       ?.then((value) {
                                     if (value is PlaceDetails? &&
                                         value != null) {

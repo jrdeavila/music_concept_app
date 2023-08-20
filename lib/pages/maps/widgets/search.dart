@@ -18,134 +18,148 @@ class SearchPlacesTextField extends StatefulWidget {
 
 class _SearchPlacesTextFieldState extends State<SearchPlacesTextField> {
   final TextEditingController _searchCtrl = TextEditingController();
+  final GlobalKey _searchFieldKey = GlobalKey();
   CancelToken _cancelToken = CancelToken();
-  final LayerLink _layerLink = LayerLink();
   OverlayEntry? _overlayEntry;
 
   @override
   Widget build(BuildContext context) {
-    return CompositedTransformTarget(
-      link: _layerLink,
-      child: Container(
-        decoration: BoxDecoration(boxShadow: [
-          BoxShadow(
-            blurRadius: 10,
-            color: Colors.black.withOpacity(0.1),
-          ),
-        ]),
-        child: TextField(
-          controller: _searchCtrl,
-          style: TextStyle(
+    return Container(
+      decoration: BoxDecoration(boxShadow: [
+        BoxShadow(
+          blurRadius: 10,
+          color: Colors.black.withOpacity(0.1),
+        ),
+      ]),
+      child: TextField(
+        key: _searchFieldKey,
+        controller: _searchCtrl,
+        style: TextStyle(
+          color: Get.theme.colorScheme.primary,
+        ),
+        onChanged: _searchPlaces,
+        decoration: InputDecoration(
+          filled: true,
+          fillColor: Get.theme.colorScheme.onBackground,
+          prefixIcon: Icon(
+            MdiIcons.magnify,
             color: Get.theme.colorScheme.primary,
           ),
-          onChanged: _searchPlaces,
-          decoration: InputDecoration(
-            filled: true,
-            fillColor: Get.theme.colorScheme.onPrimary,
-            prefixIcon: Icon(
-              MdiIcons.magnify,
-              color: Get.theme.colorScheme.primary,
-            ),
-            suffixIcon: GestureDetector(
-              onTap: () {
-                _clearPlaces();
-              },
-              child: Icon(
-                MdiIcons.close,
-                color: Colors.grey[400],
-              ),
-            ),
-            hintText: 'Buscar direccion',
-            hintStyle: TextStyle(
+          suffixIcon: GestureDetector(
+            onTap: () {
+              _clearPlaces();
+            },
+            child: Icon(
+              MdiIcons.close,
               color: Colors.grey[400],
             ),
-            contentPadding: EdgeInsets.zero,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide.none,
-            ),
+          ),
+          hintText: 'Buscar direccion',
+          hintStyle: TextStyle(
+            color: Colors.grey[400],
+          ),
+          contentPadding: EdgeInsets.zero,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide.none,
           ),
         ),
       ),
     );
   }
 
-  OverlayEntry _showPredictions(List<Prediction> predictions) {
-    final renderBox = context.findRenderObject() as RenderBox;
+  _showPredictions(List<Prediction> predictions) {
+    final renderBox =
+        _searchFieldKey.currentContext!.findRenderObject() as RenderBox;
     final size = renderBox.size;
     final offset = renderBox.localToGlobal(Offset.zero);
 
     return OverlayEntry(builder: (context) {
+      var pY = offset.dy + size.height + 20.0;
       return Positioned(
-        left: offset.dx,
-        top: offset.dy + size.height + 20.0,
-        width: size.width,
-        child: CompositedTransformFollower(
-          showWhenUnlinked: false,
-          link: _layerLink,
-          offset: Offset(0.0, size.height + 20.0),
-          child: DecoratedBox(
-            decoration: BoxDecoration(boxShadow: [
-              BoxShadow(
-                blurRadius: 10,
-                color: Colors.black.withOpacity(0.1),
-              ),
-            ]),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: Material(
-                color: Get.theme.colorScheme.onPrimary,
-                elevation: 1.0,
-                child: ListView.builder(
-                  physics: const BouncingScrollPhysics(),
-                  padding: const EdgeInsets.only(top: 20.0),
-                  shrinkWrap: true,
-                  itemCount: predictions.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return ListTile(
-                      onTap: () {
-                        _onTapItem(predictions[index]);
-                      },
-                      minVerticalPadding: 10.0,
-                      leading: Icon(
-                        MdiIcons.mapMarker,
-                        color: Get.theme.colorScheme.primary,
-                      ),
-                      title: Text(
-                        "${predictions[index].description}",
-                        style: TextStyle(
-                          color: Colors.grey[600],
-                        ),
-                      ),
-                      subtitle: Column(
+        top: pY,
+        child: SizedBox(
+          height: MediaQuery.of(context).size.height - pY,
+          width: MediaQuery.of(context).size.width,
+          child: GestureDetector(
+            onTap: () {
+              _clearPlaces();
+            },
+            child: Material(
+              color: Colors.transparent,
+              child: Stack(
+                children: [
+                  Container(
+                    margin: EdgeInsets.only(
+                      left: offset.dx,
+                      right: offset.dx,
+                    ),
+                    width: size.width,
+                    child: Container(
+                      decoration: BoxDecoration(
+                          color: Get.theme.colorScheme.onBackground,
+                          borderRadius: BorderRadius.circular(10),
+                          boxShadow: [
+                            BoxShadow(
+                                blurRadius: 10,
+                                color: Colors.black.withOpacity(0.1),
+                                offset: const Offset(0, 5)),
+                          ]),
+                      padding: const EdgeInsets.only(top: 20.0),
+                      child: Column(
                         mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "${predictions[index].structuredFormatting?.mainText}",
-                            style: TextStyle(
-                              color: Colors.grey[400],
-                              fontSize: 12.0,
-                            ),
-                          ),
-                          Text(
-                            "${predictions[index].structuredFormatting?.secondaryText}",
-                            style: TextStyle(
-                              color: Colors.grey[400],
-                              fontSize: 12.0,
-                            ),
-                          ),
-                        ],
+                        children:
+                            predictions.map((e) => _predictionItem(e)).toList(),
                       ),
-                    );
-                  },
-                ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
         ),
       );
     });
+  }
+
+  ListTile _predictionItem(Prediction prediction) {
+    return ListTile(
+      onTap: () {
+        _onTapItem(prediction);
+      },
+      minVerticalPadding: 10.0,
+      leading: Icon(
+        MdiIcons.mapMarker,
+        color: Get.theme.colorScheme.primary,
+      ),
+      minLeadingWidth: 0,
+      title: Text(
+        "${prediction.description}",
+        style: TextStyle(
+          color: Colors.grey[300],
+        ),
+      ),
+      subtitle: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            prediction.structuredFormatting?.mainText ?? "",
+            style: TextStyle(
+              color: Colors.grey[400],
+              fontSize: 12.0,
+            ),
+          ),
+          Text(
+            prediction.structuredFormatting?.secondaryText ?? "",
+            style: TextStyle(
+              color: Colors.grey[400],
+              fontSize: 12.0,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   void _clearPlaces() {

@@ -205,7 +205,8 @@ class SkeletonBox extends StatelessWidget {
       width: width,
       height: height,
       decoration: BoxDecoration(
-          borderRadius: borderRadius,
+          borderRadius:
+              radius != null ? BorderRadius.circular(radius!) : borderRadius,
           shape: shape,
           color: Color.lerp(
             Colors.grey[600],

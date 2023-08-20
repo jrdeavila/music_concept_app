@@ -11,6 +11,8 @@ enum PostVisibility {
   private,
 }
 
+typedef FdSnapshot = DocumentSnapshot<Map<String, dynamic>>;
+
 abstract class PostService {
   static Future<void> createPost(
       {required String? accountRef,

@@ -67,6 +67,18 @@ class AccountFollowFollowers extends StatelessWidget {
                           icon: MdiIcons.dotsVertical,
                           positionY: 60,
                         ),
+                      const SizedBox(
+                        width: 10.0,
+                      ),
+                      if (guest != null)
+                        HomeAppBarAction(
+                          icon: MdiIcons.mapSearchOutline,
+                          selected: true,
+                          onTap: () {
+                            Get.toNamed(AppRoutes.mapsViewLocation,
+                                arguments: guest);
+                          },
+                        ),
                     ],
                   );
                 }),

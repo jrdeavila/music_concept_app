@@ -38,10 +38,11 @@ class _ResumeMapLocationState extends State<ResumeMapLocation> {
             child: GoogleMap(
               onMapCreated: (ctrl) {
                 _ctrl = ctrl;
+                ctrl.setMapStyle(AppDefaults.mapStyles);
                 setState(() {});
               },
               onTap: (_) {
-                Get.toNamed(AppRoutes.mapFindLocation)?.then((value) {
+                Get.toNamed(AppRoutes.mapsFindLocation)?.then((value) {
                   if (value != null) {
                     _ctrl?.animateCamera(
                       CameraUpdate.newCameraPosition(
@@ -69,10 +70,7 @@ class _ResumeMapLocationState extends State<ResumeMapLocation> {
                 zoom: 15,
                 target: widget.position != null
                     ? widget.position!
-                    : const LatLng(
-                        10.4634,
-                        -73.2532,
-                      ),
+                    : AppDefaults.defaultPositon,
               ),
               markers: {
                 if (widget.position != null)
@@ -129,8 +127,8 @@ class _MapFindLocationPageState extends State<MapFindLocationPage> {
                   setState(() {});
                 },
                 onMapCreated: (controller) {
-                  _controller?.setMapStyle(AppDefaults.mapStyles);
                   _controller = controller;
+                  controller.setMapStyle(AppDefaults.mapStyles);
                   setState(() {});
                 },
                 compassEnabled: false,
@@ -268,7 +266,7 @@ class _MapFindLocationPageState extends State<MapFindLocationPage> {
                   child: Container(
                     padding: const EdgeInsets.symmetric(vertical: 20.0),
                     decoration: BoxDecoration(
-                        color: Get.theme.colorScheme.onPrimaryContainer,
+                        color: Get.theme.colorScheme.onBackground,
                         borderRadius: const BorderRadius.vertical(
                           top: Radius.circular(20),
                         ),
@@ -287,7 +285,7 @@ class _MapFindLocationPageState extends State<MapFindLocationPage> {
                           child: Text(
                             "Lugares cercanos",
                             style: TextStyle(
-                              color: Colors.grey[600],
+                              color: Colors.grey[300],
                               fontSize: 20.0,
                               fontWeight: FontWeight.bold,
                             ),

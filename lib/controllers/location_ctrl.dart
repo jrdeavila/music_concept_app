@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class LocationCtrl extends GetxController {
   final RxBool _hasPermissions = false.obs;
@@ -58,5 +59,11 @@ class LocationCtrl extends GetxController {
 
   void toggleIngcognitoMode() async {
     _incognitoMode.value = !_incognitoMode.value;
+  }
+}
+
+extension PositionLatLng on Position {
+  LatLng toLatLng() {
+    return LatLng(latitude, longitude);
   }
 }
