@@ -143,7 +143,7 @@ class _MapFindLocationPageState extends State<MapFindLocationPage> {
                 polygons: {
                   // Radio circular de 500 metros de la posicion seleccionada
                   if (_point != null)
-                    SearchPlacesServices.getRadiusAbovePoint(
+                    GeolocationUtils.getRadiusAbovePoint(
                       center: _point!,
                       radius: 500, // Metros
                     )

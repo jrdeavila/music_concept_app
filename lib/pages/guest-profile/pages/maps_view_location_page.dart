@@ -17,19 +17,19 @@ class MapsViewLocationPage extends StatefulWidget {
 }
 
 class _MapsViewLocationPageState extends State<MapsViewLocationPage> {
-  late FdSnapshot _guestSeleted;
+  late FdSnapshot _guestSelected;
   GoogleMapController? googleMapCtrl;
   var ctrl = Get.find<LocationCtrl>();
 
   @override
   void initState() {
     super.initState();
-    _guestSeleted = widget.guest;
+    _guestSelected = widget.guest;
   }
 
   @override
   Widget build(BuildContext context) {
-    var data = _guestSeleted.data();
+    var data = _guestSelected.data();
     LatLng point = LatLng(
       (data?["location"] as GeoPoint).latitude,
       (data?["location"] as GeoPoint).longitude,
@@ -55,7 +55,7 @@ class _MapsViewLocationPageState extends State<MapsViewLocationPage> {
                     zoom: 17.0,
                   ),
                   polygons: {
-                    SearchPlacesServices.getRadiusAbovePoint(
+                    GeolocationUtils.getRadiusAbovePoint(
                       center: point,
                       radius: 40.0,
                     ),
@@ -148,7 +148,7 @@ class _MapsViewLocationPageState extends State<MapsViewLocationPage> {
   Row _buildGuestInfo({
     bool backEnabled = true,
   }) {
-    final data = _guestSeleted.data();
+    final data = _guestSelected.data();
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

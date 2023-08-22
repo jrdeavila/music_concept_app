@@ -54,7 +54,7 @@ class RegisterBussinessCtrl extends GetxController {
         label: "Ubicacion",
       ),
       image: _image.value,
-      type: UserAccountType.bussiness,
+      type: UserAccountType.business,
     );
   }
 }

@@ -1,5 +1,6 @@
 export 'app_config.dart';
 export 'background.dart';
+export 'business_service.dart';
 export 'event.dart';
 export 'firebase_storage.dart';
 export 'following_followers.dart';

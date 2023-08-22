@@ -28,11 +28,15 @@ void main() async {
       initializeDateFormatting('es');
       timeago.setLocaleMessages('es', timeago.EsMessages());
 
+      // Services - SOLID
+      Get.put<BusinessService>(MainBusinessService());
+
       Get.put(AuthenticationCtrl());
       Get.put(ConnectionCtrl());
       Get.put(AppModeCtrl());
       Get.put(LocationCtrl());
       Get.put(NotificationCtrl());
+      Get.put(BusinessNearlyCtrl());
       Get.lazyPut(() => LoginCtrl());
       Get.lazyPut(() => RegisterCtrl());
       Get.lazyPut(() => ResetPasswordCtrl());

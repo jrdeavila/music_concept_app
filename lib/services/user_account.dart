@@ -73,6 +73,6 @@ abstract class UserAccountService {
 }
 
 enum UserAccountType {
-  bussiness,
+  business,
   user,
 }

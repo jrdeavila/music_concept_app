@@ -60,17 +60,10 @@ class AccountFollowFollowers extends StatelessWidget {
                           );
                         },
                       ),
-                      const SizedBox(width: 10.0),
-                      if (snapshot.data == true)
-                        PopupMenuProfile(
-                          options: options,
-                          icon: MdiIcons.dotsVertical,
-                          positionY: 60,
-                        ),
                       const SizedBox(
                         width: 10.0,
                       ),
-                      if (guest != null)
+                      if (guest != null) ...[
                         HomeAppBarAction(
                           icon: MdiIcons.mapSearchOutline,
                           selected: true,
@@ -78,6 +71,14 @@ class AccountFollowFollowers extends StatelessWidget {
                             Get.toNamed(AppRoutes.mapsViewLocation,
                                 arguments: guest);
                           },
+                        ),
+                        const SizedBox(width: 10.0),
+                      ],
+                      if (snapshot.data == true)
+                        PopupMenuProfile(
+                          options: options,
+                          icon: MdiIcons.dotsVertical,
+                          positionY: 60,
                         ),
                     ],
                   );

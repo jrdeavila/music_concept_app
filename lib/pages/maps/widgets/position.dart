@@ -67,12 +67,12 @@ class PositionDetails extends StatelessWidget {
                   ),
                   if (mainPoint != null)
                     Text(
-                      SearchPlacesServices.calculateDistance(
-                          mainPoint!,
-                          LatLng(
-                            placeDetails!.result!.geometry!.location!.lat!,
-                            placeDetails!.result!.geometry!.location!.lng!,
-                          )),
+                      GeolocationUtils.distanceBetweenString(
+                        mainPoint!.latitude,
+                        mainPoint!.longitude,
+                        placeDetails!.result!.geometry!.location!.lat!,
+                        placeDetails!.result!.geometry!.location!.lng!,
+                      ),
                       style: TextStyle(
                         color: Get.theme.colorScheme.onPrimary,
                       ),

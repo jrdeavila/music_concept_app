@@ -26,18 +26,23 @@ abstract class SnackbarUtils {
     void Function()? onPressed,
   }) {
     // Top
-    Get.showSnackbar(
-      GetSnackBar(
-        title: title,
-        message: message,
-        duration: const Duration(seconds: 3),
-        mainButton: TextButton(
-          onPressed: onPressed,
-          child: Text(label),
-        ),
-        snackPosition: SnackPosition.TOP,
-      ),
-    );
+    Get.isSnackbarOpen
+        ? Get.closeCurrentSnackbar()
+        : Get.showSnackbar(
+            GetSnackBar(
+              title: title,
+              margin: const EdgeInsets.all(10.0),
+              borderRadius: 15.0,
+              message: message,
+              duration: 10.seconds,
+              overlayBlur: 0.0,
+              mainButton: TextButton(
+                onPressed: onPressed,
+                child: Text(label),
+              ),
+              snackPosition: SnackPosition.TOP,
+            ),
+          );
   }
 
   static void onException(String message) {

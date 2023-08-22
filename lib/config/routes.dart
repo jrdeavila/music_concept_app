@@ -16,6 +16,7 @@ abstract class AppRoutes {
   static const String createSurvey = "/create-survey";
   static const String mapsFindLocation = "/map-find-location";
   static const String mapsViewLocation = "/maps-view-location";
+  static const String mapsViewBusiness = "/maps-view-business";
 
   static const String home = "/home";
   static const String notWifi = "/not-wifi";
@@ -33,6 +34,7 @@ abstract class AppRoutes {
     mapsFindLocation: (context) => const MapFindLocationPage(),
     mapsViewLocation: (context) =>
         MapsViewLocationPage(guest: Get.arguments as FdSnapshot),
+    mapsViewBusiness: (context) => const MapsViewBusinessPage(),
     createSurvey: (context) => const CreateSurvePage(),
     postDetails: (context) => ShowPostDetailsPage(post: Get.arguments),
     resetPassword: (context) => const ResetPasswordPage(),
