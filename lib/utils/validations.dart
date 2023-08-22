@@ -33,3 +33,23 @@ extension RxNullValidations on Rx {
     }
   }
 }
+
+extension RxDateValidations on Rx {
+  T validateDateAfter<T>(
+      {String label = "Campo",
+      String message = "La fecha no puede ser menor a la actual",
+      DateTime? date}) {
+    return validateException(
+        (value as DateTime).isAfter(date ?? DateTime.now()),
+        "$label: $message");
+  }
+
+  T validateDateBefore<T>(
+      {String label = "Campo",
+      String message = "La fecha no puede ser mayor a la actual",
+      DateTime? date}) {
+    return validateException(
+        (value as DateTime).isBefore(date ?? DateTime.now()),
+        "$label: $message");
+  }
+}

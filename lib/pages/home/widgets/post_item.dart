@@ -54,18 +54,21 @@ class _PostItemState extends State<PostItem> {
                 if (hasImage) _buildImage(post),
                 if (!widget.isDetails) PostUserAccountDetails(post: post),
                 if (post['type'] == PostType.event.index)
-                  ResumeSelectDate(
-                    readOnly: true,
-                    date: post['startDate']?.toDate(),
-                    children: [
-                      Text(
-                        post['content'] ?? '',
-                        style: const TextStyle(
-                          fontSize: 22.0,
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: ResumeSelectDate(
+                      readOnly: true,
+                      date: post['startDate']?.toDate(),
+                      children: [
+                        Text(
+                          post['content'] ?? '',
+                          style: const TextStyle(
+                            fontSize: 22.0,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 10.0),
-                    ],
+                        const SizedBox(height: 5.0),
+                      ],
+                    ),
                   ),
                 if (post['type'] != PostType.event.index)
                   Padding(
@@ -128,6 +131,9 @@ class _PostItemState extends State<PostItem> {
 
   Row _buildPostDetails(Map<String, dynamic> post) {
     final ctrl = Get.find<PostCtrl>();
+    var isNotExpired =
+        (post['startDate'] as Timestamp?)?.toDate().isAfter(DateTime.now()) ??
+            false;
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
@@ -175,7 +181,7 @@ class _PostItemState extends State<PostItem> {
                 },
               );
             }),
-        if (post['type'] == PostType.event.index)
+        if (post['type'] == PostType.event.index && isNotExpired)
           StreamBuilder<int>(
               stream: Get.find<EventCtrl>().getCountAssist(
                 eventRef: widget.snapshot.reference.id,

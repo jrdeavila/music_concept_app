@@ -243,107 +243,170 @@ class ResumeSelectDate extends StatelessWidget {
   final bool readOnly;
   final List<Widget> children;
 
+  void _pickDate(context) async {
+    var now = DateTime.now();
+    var themePicker = ThemeData.dark().copyWith(
+      colorScheme: ColorScheme.dark(
+        primary: Get.theme.colorScheme.primary,
+        background: Get.theme.colorScheme.background,
+        onBackground: Get.theme.colorScheme.onBackground,
+      ),
+    );
+    var date = await showDatePicker(
+      context: context,
+      initialDate: now,
+      firstDate: now,
+      lastDate: now.add(
+        7.days,
+      ),
+      builder: (context, child) {
+        return Theme(
+          data: themePicker,
+          child: child!,
+        );
+      },
+    );
+    if (date == null) return;
+    var time = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+      hourLabelText: "Hora",
+      minuteLabelText: "Minutos",
+      builder: (context, child) {
+        return Theme(
+          data: themePicker,
+          child: child!,
+        );
+      },
+    );
+    if (time == null) return;
+    var dateWithTime = DateTime(
+      date.year,
+      date.month,
+      date.day,
+      time.hour,
+      time.minute,
+    );
+
+    onChangeDate?.call(dateWithTime);
+  }
+
   @override
   Widget build(BuildContext context) {
     var now = DateTime.now();
-    String formattedDate =
-        DateFormat("EEEEE, d 'de' MMMM 'del' y, hh:mm a", 'es')
-            .format(date ?? now)
-            .capitalize!;
+    var isNotExpired = date != null && date!.isAfter(now.toLocal());
 
     return GestureDetector(
-      onTap: () {
-        if (!readOnly) {
-          showDatePicker(
-            context: context,
-            initialDate: now,
-            firstDate: now,
-            lastDate: now.add(
-              7.days,
-            ),
-          ).then(
-            (value) => onChangeDate?.call(value),
-          );
-        }
-      },
+      onTap: !readOnly ? () => _pickDate(context) : null,
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Row(
               children: [
-                Center(
-                  child: Container(
-                    width: 80.0,
-                    height: 80.0,
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        width: 1,
-                        color: Get.theme.colorScheme.primary,
-                      ),
-                      borderRadius: BorderRadius.circular(10.0),
-                      color: Get.theme.colorScheme.onBackground,
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Expanded(
-                          flex: 1,
-                          child: DecoratedBox(
-                            decoration: BoxDecoration(
-                              color: Get.theme.colorScheme.primary,
-                              borderRadius: const BorderRadius.vertical(
-                                top: Radius.circular(8.0),
-                              ),
-                            ),
-                            child: Center(
-                              child: Text(
-                                DateFormat.MMM("es")
-                                    .format(date ?? now)
-                                    .capitalize!,
-                              ),
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          flex: 3,
-                          child: Center(
-                            child: Text(
-                              "${date?.day ?? now.day}",
-                              style: const TextStyle(
-                                fontSize: 35.0,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                _buildCalendarDay(
+                  isNotExpired,
                 ),
                 const SizedBox(
                   width: 10.0,
                 ),
                 Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      ...(children),
-                      Text(
-                        formattedDate,
-                        style: TextStyle(
-                          fontSize: 14.0,
-                          color: Get.theme.colorScheme.primary,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
+                  child: _buildContent(
+                    isNotExpired,
                   ),
                 )
               ],
+            ),
+            if (!isNotExpired) ...[
+              const SizedBox(height: 10.0),
+              const Text(
+                "Las fechas del evento ya expiraron",
+                style: TextStyle(
+                  fontSize: 16.0,
+                  color: Colors.grey,
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Column _buildContent([bool isNotExpired = true]) {
+    var now = DateTime.now();
+    var color = isNotExpired ? Get.theme.colorScheme.primary : Colors.grey;
+    String formattedDate =
+        DateFormat("EEEEE, d 'de' MMMM 'del' y, hh:mm a", 'es')
+            .format(date ?? now)
+            .capitalize!;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        ...(children),
+        Text(
+          formattedDate,
+          style: TextStyle(
+            fontSize: 14.0,
+            color: color,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Center _buildCalendarDay([bool isNotExpired = true]) {
+    var now = DateTime.now();
+    var color = isNotExpired
+        ? Get.theme.colorScheme.primary
+        : Get.theme.colorScheme.error;
+    return Center(
+      child: Container(
+        width: 80.0,
+        height: 80.0,
+        decoration: BoxDecoration(
+          border: Border.all(
+            width: 1,
+            color: color,
+          ),
+          borderRadius: BorderRadius.circular(10.0),
+          color: Get.theme.colorScheme.onBackground,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Expanded(
+              flex: 1,
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  color: color,
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(8.0),
+                  ),
+                ),
+                child: Center(
+                  child: Text(
+                    DateFormat.MMM("es").format(date ?? now).capitalize!,
+                  ),
+                ),
+              ),
+            ),
+            Expanded(
+              flex: 3,
+              child: Center(
+                child: Text(
+                  "${date?.day ?? now.day}",
+                  style: const TextStyle(
+                    fontSize: 35.0,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
             ),
           ],
         ),

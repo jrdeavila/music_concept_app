@@ -46,14 +46,22 @@ class CreateEventCtrl extends GetxController {
 
   void submit([String? eventRef]) async {
     _isUploading.value = true;
+    _startDate
+      ..validateNull(
+        label: "Fecha de programacion",
+      )
+      ..validateDateAfter(
+        label: "Fecha de programacion",
+        date: DateTime.now(),
+      );
     EventService.createEvent(
       eventRef: eventRef,
       accountRef: "users/${FirebaseAuth.instance.currentUser!.uid}",
       content: _content.validateEmpty(),
-      point: _point.validateNull(label: "Ubicacion"),
-      startDate: _startDate.validateNull(
-        label: "Fecha de programacion",
+      point: _point.validateNull(
+        label: "Ubicacion",
       ),
+      startDate: _startDate.value,
     );
     _isUploading.value = false;
     Get.back();
