@@ -14,7 +14,7 @@ class ProfileCtrl extends GetxController {
   String? get selectedWallpaper => _selectedWallpaper.value;
 
   Stream<DocumentSnapshot<Map<String, dynamic>>> getAccountStream(
-      String? accountRef) {
+      [String? accountRef]) {
     return UserAccountService.getUserAccountDoc(
       accountRef ?? "users/${FirebaseAuth.instance.currentUser?.uid}",
     ).snapshots();

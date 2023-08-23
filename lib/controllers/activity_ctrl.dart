@@ -6,7 +6,7 @@ import 'package:music_concept_app/lib.dart';
 
 class ActivityCtrl extends GetxController {
   Timer? _timer;
-  final _duration = 10.seconds;
+  final _duration = 1.minutes;
 
   @override
   void onReady() {
