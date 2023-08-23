@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -41,16 +39,18 @@ class LocationCtrl extends GetxController {
       }
     });
 
-    Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (_hasPermissions.value == false) {
-        requestPermissions();
-      }
-    });
+    requestPermissions();
   }
 
   void requestPermissions() async {
-    final permissions = await Geolocator.requestPermission();
-    _permissions.value = permissions;
+    var hasPerms = await Geolocator.checkPermission();
+    if (hasPerms != LocationPermission.denied &&
+        hasPerms != LocationPermission.deniedForever) {
+      _permissions.value = hasPerms;
+    } else {
+      final permissions = await Geolocator.requestPermission();
+      _permissions.value = permissions;
+    }
   }
 
   void goToSettings() async {

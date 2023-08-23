@@ -63,6 +63,7 @@ class _HomePageState extends State<HomePage> {
   Widget _floatingButton() {
     return FloatingActionButton.extended(
       onPressed: () {
+        Get.find<ActivityCtrl>().resetTimer();
         dialogBuilder<PostType>(
           context,
           Offset(

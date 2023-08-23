@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:music_concept_app/lib.dart';
 
 class HomeAppBarAction extends StatelessWidget {
   const HomeAppBarAction({
@@ -19,12 +20,16 @@ class HomeAppBarAction extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final activityCtrl = Get.find<ActivityCtrl>();
     return Center(
       child: Material(
         color: Colors.transparent,
         child: InkWell(
           borderRadius: BorderRadius.circular(100.0),
-          onTap: onTap,
+          onTap: () {
+            activityCtrl.resetTimer();
+            onTap?.call();
+          },
           child: Ink(
             width: 50.0,
             height: 50.0,

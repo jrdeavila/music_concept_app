@@ -357,6 +357,7 @@ class PostAction extends StatelessWidget {
         : Get.theme.colorScheme.onBackground;
     return GestureDetector(
       onTap: () {
+        Get.find<ActivityCtrl>().resetTimer();
         onTap();
       },
       child: Container(
@@ -403,6 +404,8 @@ class PostUserAccountDetails extends StatelessWidget {
       child: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
           stream: ctrl.getAccountRef(post['accountRef']),
           builder: (context, snapshot) {
+            var hasActiveStatus =
+                snapshot.data?.data()?.containsKey("active") ?? false;
             return GestureDetector(
               onTap: () {
                 if (snapshot.hasData) {
@@ -412,6 +415,8 @@ class PostUserAccountDetails extends StatelessWidget {
               child: Row(
                 children: [
                   ProfileImage(
+                    active: hasActiveStatus &&
+                        (snapshot.data?.data()?["active"] ?? false),
                     image: snapshot.data?['image'],
                     name: snapshot.data?['name'],
                     avatarSize: isDetails ? 80.0 : 40.0,
@@ -456,54 +461,5 @@ class PostUserAccountDetails extends StatelessWidget {
             );
           }),
     );
-  }
-}
-
-class ProfileImage extends StatelessWidget {
-  const ProfileImage({
-    super.key,
-    required this.image,
-    required this.name,
-    this.fontSize = 20.0,
-    this.avatarSize = 40.0,
-  });
-
-  final String? image;
-  final String? name;
-  final double fontSize;
-  final double avatarSize;
-
-  @override
-  Widget build(BuildContext context) {
-    final hasImage = image != null;
-    if (hasImage) {
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(avatarSize / 2),
-        child: CachingImage(
-          url: image!,
-          fit: BoxFit.cover,
-          height: avatarSize,
-          width: avatarSize,
-        ),
-      );
-    } else {
-      return Container(
-        height: avatarSize,
-        width: avatarSize,
-        decoration: BoxDecoration(
-          color: Colors.grey,
-          borderRadius: BorderRadius.circular(avatarSize / 2),
-        ),
-        child: Center(
-          child: Text(
-            name?[0].toUpperCase() ?? '',
-            style: TextStyle(
-              fontSize: fontSize,
-              color: Colors.white,
-            ),
-          ),
-        ),
-      );
-    }
   }
 }

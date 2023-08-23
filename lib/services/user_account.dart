@@ -70,6 +70,13 @@ abstract class UserAccountService {
       String path) {
     return FirebaseFirestore.instance.doc(path);
   }
+
+  static Future<void> saveActiveStatus(String uid, {bool active = true}) {
+    return FirebaseFirestore.instance.collection("users").doc(uid).update({
+      "active": active,
+      "lastActive": FieldValue.serverTimestamp(),
+    });
+  }
 }
 
 enum UserAccountType {

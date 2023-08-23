@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:music_concept_app/lib.dart';
 
 class ProfileTabBar extends StatelessWidget {
   const ProfileTabBar({
@@ -55,7 +56,10 @@ class ProfileTabBarItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: () {
+        Get.find<ActivityCtrl>().resetTimer();
+        onTap?.call();
+      },
       child: Container(
         margin: const EdgeInsets.symmetric(
           horizontal: 5.0,

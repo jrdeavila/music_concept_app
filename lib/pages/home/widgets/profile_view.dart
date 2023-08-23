@@ -172,33 +172,19 @@ class _ProfileViewState extends State<ProfileView> {
   }
 
   Column _accountDetails(Map? data) {
-    var hasImage = data?['image'] != null;
     var hasAddress = data?['address'] != null;
     var hasCategory = data?['category'] != null;
+    var hasActiveStatus = data?.containsKey('active') ?? false;
+    var hasLastActive = data?['lastActive'] != null;
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Container(
-          width: 130,
-          height: 130,
-          padding: const EdgeInsets.all(3.0),
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: Get.theme.colorScheme.onBackground,
-            border: Border.all(
-              color: Get.theme.colorScheme.primary,
-              width: 2.0,
-            ),
-          ),
-          child: hasImage
-              ? ClipRRect(
-                  borderRadius: BorderRadius.circular(100),
-                  child: CachingImage(
-                    url: data?['image'],
-                    fit: BoxFit.cover,
-                  ),
-                )
-              : const Center(child: Icon(MdiIcons.account)),
+        ProfileImage(
+          name: data?['name'],
+          image: data?['image'],
+          active: hasActiveStatus && data!['active'],
+          avatarSize: 130.0,
+          fontSize: 40.0,
         ),
         const SizedBox(height: 20.0),
         Text(
@@ -220,6 +206,18 @@ class _ProfileViewState extends State<ProfileView> {
             data?['address'] ?? '',
             style:
                 TextStyle(fontSize: 15.0, color: Get.theme.colorScheme.primary),
+          ),
+        const SizedBox(height: 10.0),
+        if (hasLastActive && data?["lastActive"] != null)
+          Text(
+            "Activo ${data?['active'] ?? false ? "ahora" : TimeUtils.timeagoFormat(data?["lastActive"].toDate())}",
+            style: TextStyle(
+              fontSize: 15.0,
+              color: data?["active"] ?? false
+                  ? Get.theme.colorScheme.primary
+                  : Colors.grey,
+              fontWeight: FontWeight.bold,
+            ),
           ),
       ],
     );

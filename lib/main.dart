@@ -17,7 +17,6 @@ void main() async {
       await Firebase.initializeApp(
         options: DefaultFirebaseOptions.currentPlatform,
       );
-
       await FirebaseMessaging.instance.requestPermission(
         alert: true,
         badge: true,
@@ -37,6 +36,7 @@ void main() async {
       Get.put(LocationCtrl());
       Get.put(NotificationCtrl());
       Get.put(BusinessNearlyCtrl());
+      Get.put(ActivityCtrl());
       Get.lazyPut(() => LoginCtrl());
       Get.lazyPut(() => RegisterCtrl());
       Get.lazyPut(() => ResetPasswordCtrl());

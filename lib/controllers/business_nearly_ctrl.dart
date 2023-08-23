@@ -41,7 +41,7 @@ class BusinessNearlyCtrl extends GetxController {
   void _notifyNearlyBusiness(p0) {
     if (p0.isNotEmpty && Get.currentRoute != AppRoutes.mapsViewBusiness) {
       SnackbarUtils.showBanner(
-        title: "Estar cerca de algunos establecimientos",
+        title: "Estas cerca de algunos establecimientos",
         message: "Presiona el Boton 'VER' para abrir el mapa",
         label: "VER",
         onPressed: () {
