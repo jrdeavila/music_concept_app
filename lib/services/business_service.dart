@@ -28,6 +28,11 @@ abstract class BusinessService {
     required String accountRef,
     required String businessRef,
   });
+
+  Future<void> setCurrentVisit({
+    required String accountRef,
+    String? businessRef,
+  });
 }
 
 class MainBusinessService implements BusinessService {
@@ -79,5 +84,13 @@ class MainBusinessService implements BusinessService {
         "createdAt": FieldValue.serverTimestamp(),
       });
     }
+  }
+
+  @override
+  Future<void> setCurrentVisit(
+      {required String accountRef, String? businessRef}) async {
+    await FirebaseFirestore.instance.doc(accountRef).update({
+      "currentVisit": businessRef,
+    });
   }
 }

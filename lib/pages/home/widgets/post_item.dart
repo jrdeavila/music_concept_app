@@ -415,6 +415,7 @@ class PostUserAccountDetails extends StatelessWidget {
               child: Row(
                 children: [
                   ProfileImage(
+                    hasVisit: snapshot.data?.data()?["currentVisit"] != null,
                     active: hasActiveStatus &&
                         (snapshot.data?.data()?["active"] ?? false),
                     image: snapshot.data?['image'],

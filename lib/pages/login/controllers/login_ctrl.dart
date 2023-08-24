@@ -68,6 +68,7 @@ class RegisterCtrl extends GetxController {
         label: "Contraseña",
       ),
       image: _image.value,
+      category: "Personas",
     );
   }
 }

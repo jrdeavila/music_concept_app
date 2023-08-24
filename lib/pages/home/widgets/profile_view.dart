@@ -78,7 +78,7 @@ class _ProfileViewState extends State<ProfileView> {
                         if (widget.guest != null) {
                           Get.back();
                         } else {
-                          Get.find<FanPageCtrl>().goToReed();
+                          Get.find<HomeCtrl>().goToReed();
                         }
                       },
                     ),
@@ -134,12 +134,14 @@ class _ProfileViewState extends State<ProfileView> {
                     const SliverFillRemaining(
                       child: WallpaperTabView(),
                     ),
-                  if (snapshot.connectionState == ConnectionState.waiting ||
+                  if (_currentTab == 1 &&
+                          snapshot.connectionState == ConnectionState.waiting ||
                       snapshot.connectionState == ConnectionState.none)
                     const SliverToBoxAdapter(
                       child: LoadingPostSkeleton(),
                     ),
-                  if (snapshot.connectionState == ConnectionState.active &&
+                  if (_currentTab == 1 &&
+                      snapshot.connectionState == ConnectionState.active &&
                       snapshot.hasData &&
                       snapshot.data!.isNotEmpty)
                     SliverList(
@@ -176,7 +178,6 @@ class _ProfileViewState extends State<ProfileView> {
           var hasAddress = data?['address'] != null;
           var hasActiveStatus = data?.containsKey('active') ?? false;
           var hasLastActive = data?['lastActive'] != null;
-          print(lastActiveString);
           lastActiveString = hasLastActive
               ? "Activo ${data?['active'] ?? false ? "ahora" : TimeUtils.timeagoFormat(data?["lastActive"].toDate())}"
               : lastActiveString;
@@ -184,6 +185,7 @@ class _ProfileViewState extends State<ProfileView> {
             mainAxisSize: MainAxisSize.min,
             children: [
               ProfileImage(
+                hasVisit: data?["currentVisit"] != null,
                 name: data?['name'],
                 image: data?['image'],
                 active: hasActiveStatus && data!['active'],

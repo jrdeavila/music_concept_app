@@ -13,6 +13,7 @@ void main() async {
   runZonedGuarded(
     () async {
       WidgetsFlutterBinding.ensureInitialized();
+      WidgetsBinding.instance.addObserver(LifeCycleObserver());
       await GetStorage.init();
       await Firebase.initializeApp(
         options: DefaultFirebaseOptions.currentPlatform,
@@ -41,7 +42,7 @@ void main() async {
       Get.lazyPut(() => RegisterCtrl());
       Get.lazyPut(() => ResetPasswordCtrl());
       Get.lazyPut(() => RegisterBussinessCtrl());
-      Get.lazyPut(() => FanPageCtrl());
+      Get.lazyPut(() => HomeCtrl());
 
       runApp(const MyApp());
     },
@@ -49,9 +50,14 @@ void main() async {
   );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(

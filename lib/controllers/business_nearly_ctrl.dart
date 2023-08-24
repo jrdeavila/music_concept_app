@@ -16,7 +16,6 @@ class BusinessNearlyCtrl extends GetxController {
 
   final double userRadius = 100.0;
   final double businessLimit = 100.0;
-  final Duration _timeToStay = 15.minutes;
   final Duration _timerDuration = 10.minutes;
 
   @override
@@ -31,11 +30,12 @@ class BusinessNearlyCtrl extends GetxController {
         ),
       ),
     );
-    _searchBusiness();
-
     ever(businesses, _onStayInBusiness);
     ever(_onYouStay, _registerYouStayOnaBsns);
     ever(businesses, _notifyNearlyBusiness);
+
+    _searchBusiness();
+    _searchBusinessPeriodic();
   }
 
   void _notifyNearlyBusiness(p0) {
@@ -52,19 +52,23 @@ class BusinessNearlyCtrl extends GetxController {
     }
   }
 
-  void _searchBusiness() async {
+  void _searchBusinessPeriodic() async {
     Timer.periodic(_timerDuration, (timer) {
-      if (_coordinates.value != null && _isAuthenticated.value) {
-        _service
-            .searchBusinessNearly(
-          coordinates: _coordinates.value!,
-          radius: userRadius,
-        )
-            .then((value) {
-          businesses.value = value;
-        });
-      }
+      _searchBusiness();
     });
+  }
+
+  void _searchBusiness() {
+    if (_coordinates.value != null && _isAuthenticated.value) {
+      _service
+          .searchBusinessNearly(
+        coordinates: _coordinates.value!,
+        radius: userRadius,
+      )
+          .then((value) {
+        businesses.value = value;
+      });
+    }
   }
 
   // Para encontrar el establecimiento mas cercano usando [radius] como referencia
@@ -82,18 +86,15 @@ class BusinessNearlyCtrl extends GetxController {
 
   // Primera revision si esta en la zona, segunda revision registra el establecimiento visitado
   void _registerYouStayOnaBsns(FdSnapshot? snapshot) {
-    timer?.cancel();
+    _service.setCurrentVisit(
+      accountRef: "users/${FirebaseAuth.instance.currentUser!.uid}",
+      businessRef: snapshot?.reference.path,
+    );
     if (snapshot != null) {
-      timer = Timer.periodic(_timeToStay, (timer) {
-        var point = snapshot.data()!["location"] as GeoPoint;
-        var distance = _calcDistance(point);
-        if (distance < businessLimit) {
-          _service.createBusinessVisit(
-            accountRef: "users/${FirebaseAuth.instance.currentUser!.uid}",
-            businessRef: snapshot.reference.path,
-          );
-        }
-      });
+      _service.createBusinessVisit(
+        accountRef: "users/${FirebaseAuth.instance.currentUser!.uid}",
+        businessRef: snapshot.reference.path,
+      );
     }
   }
 

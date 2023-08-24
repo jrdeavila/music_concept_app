@@ -10,13 +10,14 @@ class ProfileImage extends StatelessWidget {
     this.fontSize = 20.0,
     this.avatarSize = 40.0,
     this.active = false,
+    this.hasVisit = false,
   });
 
   final String? image;
   final String? name;
   final double fontSize;
   final double avatarSize;
-  final bool active;
+  final bool active, hasVisit;
 
   @override
   Widget build(BuildContext context) {
@@ -33,37 +34,68 @@ class ProfileImage extends StatelessWidget {
                 radius: 0.1538 * avatarSize,
                 dx: 0.2307 * avatarSize / 2,
               ),
-              child: Builder(builder: (context) {
-                if (hasImage) {
-                  return ClipRRect(
-                    borderRadius: BorderRadius.circular(avatarSize / 2),
-                    child: CachingImage(
-                      url: image!,
-                      fit: BoxFit.cover,
-                      height: avatarSize,
-                      width: avatarSize,
-                    ),
-                  );
-                } else {
-                  return Container(
-                    height: avatarSize,
-                    width: avatarSize,
-                    decoration: BoxDecoration(
-                      color: Colors.grey,
-                      borderRadius: BorderRadius.circular(avatarSize / 2),
-                    ),
-                    child: Center(
-                      child: Text(
-                        name?[0].toUpperCase() ?? '',
-                        style: TextStyle(
-                          fontSize: fontSize,
-                          color: Colors.white,
+              child: Stack(
+                children: [
+                  Positioned.fill(
+                    child: Builder(builder: (context) {
+                      if (hasImage) {
+                        return ClipRRect(
+                          borderRadius: BorderRadius.circular(avatarSize / 2),
+                          child: CachingImage(
+                            url: image!,
+                            fit: BoxFit.cover,
+                            height: avatarSize,
+                            width: avatarSize,
+                          ),
+                        );
+                      } else {
+                        return Container(
+                          height: avatarSize,
+                          width: avatarSize,
+                          decoration: BoxDecoration(
+                            color: Colors.grey,
+                            borderRadius: BorderRadius.circular(avatarSize / 2),
+                          ),
+                          child: Center(
+                            child: Text(
+                              name?[0].toUpperCase() ?? '',
+                              style: TextStyle(
+                                fontSize: fontSize,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        );
+                      }
+                    }),
+                  ),
+                  if (hasVisit) ...[
+                    Align(
+                      alignment: Alignment.center,
+                      child: Container(
+                        width: avatarSize,
+                        height: avatarSize,
+                        decoration: BoxDecoration(
+                          color: Colors.black.withOpacity(0.5),
+                          borderRadius: BorderRadius.circular(avatarSize / 2),
+                          border: Border.all(
+                            color: Get.theme.colorScheme.onPrimary,
+                            width: 1.0,
+                          ),
                         ),
                       ),
                     ),
-                  );
-                }
-              }),
+                    Align(
+                      alignment: Alignment.center,
+                      child: SizedBox(
+                        width: avatarSize,
+                        height: avatarSize,
+                        child: const MusicVisualizerAnimation(),
+                      ),
+                    ),
+                  ],
+                ],
+              ),
             ),
           ),
           if (active)
@@ -85,6 +117,92 @@ class ProfileImage extends StatelessWidget {
             ),
         ],
       ),
+    );
+  }
+}
+
+class MusicVisualizerAnimation extends StatelessWidget {
+  const MusicVisualizerAnimation({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    List<int> percents = [900, 700, 600, 800, 500];
+    return LayoutBuilder(builder: (context, constraints) {
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: List.generate(
+          6,
+          (index) {
+            return MusicVisualizerBar(
+              color: Get.theme.colorScheme.onPrimary,
+              duration: percents[index % 5],
+              maxHeight: constraints.maxHeight * 0.4,
+              width: constraints.maxWidth / 18,
+            );
+          },
+        ),
+      );
+    });
+  }
+}
+
+class MusicVisualizerBar extends StatefulWidget {
+  const MusicVisualizerBar({
+    super.key,
+    required this.color,
+    required this.duration,
+    this.maxHeight = 100.0,
+    this.width = 8.0,
+  });
+
+  final Color color;
+  final int duration;
+  final double maxHeight, width;
+
+  @override
+  State<MusicVisualizerBar> createState() => _MusicVisualizerBarState();
+}
+
+class _MusicVisualizerBarState extends State<MusicVisualizerBar>
+    with SingleTickerProviderStateMixin {
+  late Animation<double> animation;
+  late AnimationController animationCtrl;
+
+  @override
+  void initState() {
+    super.initState();
+    animationCtrl = AnimationController(
+      vsync: this,
+      duration: widget.duration.milliseconds,
+    );
+    final curvedAnimation = CurvedAnimation(
+      parent: animationCtrl,
+      curve: Curves.easeInOutSine,
+    );
+    animation =
+        Tween<double>(begin: 0, end: widget.maxHeight).animate(curvedAnimation)
+          ..addListener(() {
+            setState(() {});
+          });
+
+    animationCtrl.repeat(reverse: true);
+  }
+
+  @override
+  void dispose() {
+    animationCtrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: widget.width,
+      decoration: BoxDecoration(
+        color: widget.color,
+        borderRadius: BorderRadius.circular(5.0),
+      ),
+      height: animation.value,
     );
   }
 }

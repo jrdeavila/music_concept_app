@@ -42,6 +42,10 @@ class AuthenticationCtrl extends GetxController {
   }
 
   void logout() {
+    UserAccountService.saveActiveStatus(
+      _firebaseUser.value!.uid,
+      active: false,
+    );
     FirebaseAuth.instance.signOut();
   }
 }

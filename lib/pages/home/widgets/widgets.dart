@@ -10,6 +10,7 @@ export 'post_item.dart';
 export 'post_skeleton.dart';
 export 'profile_image.dart';
 export 'profile_view.dart';
+export 'search_page_view.dart';
 export 'survey.dart';
 export 'tabbar.dart';
 export 'wallpaper_tab.dart';

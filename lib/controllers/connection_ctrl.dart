@@ -28,6 +28,7 @@ class ConnectionCtrl extends GetxController {
         }
       } else {
         Get.put(AuthenticationCtrl());
+        Get.find<HomeCtrl>().goToReed();
         if (Get.currentRoute == "/not-wifi") {
           Get.offAllNamed(_lastRoute.value);
         }

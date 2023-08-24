@@ -11,7 +11,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final ctrl = Get.find<FanPageCtrl>();
+  final ctrl = Get.find<HomeCtrl>();
 
   @override
   void initState() {
@@ -34,87 +34,86 @@ class _HomePageState extends State<HomePage> {
           scrollDirection: Axis.horizontal,
           controller: ctrl.pageCtrl,
           children: const [
+            SearchPageView(),
             FanPageView(), // Home View
-
             ProfileView(), // Profile View
           ],
         ),
         extendBody: true,
         // resizeToAvoidBottomInset: false,
-        floatingActionButton: Obx(() {
-          if (Get.find<FanPageCtrl>().isSearching) {
-            return const SizedBox.shrink();
-          }
-          return _floatingButton();
-        }),
+        floatingActionButton: _floatingButton(),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
 
-        bottomNavigationBar: Obx(() {
-          if (Get.find<FanPageCtrl>().isSearching) {
-            return const SizedBox.shrink();
-          }
-
-          return _bottomBar();
-        }),
+        bottomNavigationBar: _bottomBar(),
       ),
     );
   }
 
   Widget _floatingButton() {
-    return FloatingActionButton.extended(
-      onPressed: () {
-        Get.find<ActivityCtrl>().resetTimer();
-        dialogBuilder<PostType>(
-          context,
-          Offset(
-            Get.width / 2,
-            Get.height / 2,
-          ),
-          const MenuSelectPostOrSurvey(),
-        ).then((value) {
-          if (value == PostType.survey) {
-            Get.toNamed(AppRoutes.createSurvey);
-          }
-          if (value == PostType.event) {
-            showEventDialog(context);
-          }
-          if (value == PostType.post) {
-            showPostDialog(context);
-          }
-        });
-      },
-      icon: const Icon(MdiIcons.plus),
-      label: const Text('Publicar'),
-    );
+    return Obx(() {
+      if (ctrl.currentPage == 0) {
+        return const SizedBox.shrink();
+      }
+      return FloatingActionButton.extended(
+        onPressed: () {
+          Get.find<ActivityCtrl>().resetTimer();
+          dialogBuilder<PostType>(
+            context,
+            Offset(
+              Get.width / 2,
+              Get.height / 2,
+            ),
+            const MenuSelectPostOrSurvey(),
+          ).then((value) {
+            if (value == PostType.survey) {
+              Get.toNamed(AppRoutes.createSurvey);
+            }
+            if (value == PostType.event) {
+              showEventDialog(context);
+            }
+            if (value == PostType.post) {
+              showPostDialog(context);
+            }
+          });
+        },
+        icon: const Icon(MdiIcons.plus),
+        label: const Text('Publicar'),
+      );
+    });
   }
 
-  ClipPath _bottomBar() {
-    return ClipPath(
-      clipper: _RoundedBottomAppBarClipper(),
-      child: BottomAppBar(
-        color: Get.theme.primaryColor,
-        height: 80.0,
-        child: Row(children: [
-          const SizedBox(width: 16.0),
-          HomeAppBarAction(
-            selected: ctrl.currentPage == 0,
-            icon: MdiIcons.home,
-            onTap: () {
-              ctrl.goToReed();
-            },
-          ),
-          const Spacer(),
-          HomeAppBarAction(
-            icon: MdiIcons.account,
-            selected: ctrl.currentPage == 1,
-            onTap: () {
-              ctrl.goToProfile();
-            },
-          ),
-          const SizedBox(width: 16.0),
-        ]),
-      ),
-    );
+  Widget _bottomBar() {
+    return Obx(() {
+      if (ctrl.currentPage == 0) {
+        return const SizedBox.shrink();
+      }
+      return ClipPath(
+        clipper: _RoundedBottomAppBarClipper(),
+        child: BottomAppBar(
+          color: Get.theme.primaryColor,
+          height: 80.0,
+          child: Row(children: [
+            const SizedBox(width: 16.0),
+            HomeAppBarAction(
+              selected: ctrl.currentPage == 1,
+              icon: MdiIcons.home,
+              onTap: () {
+                ctrl.goToReed();
+              },
+            ),
+            const Spacer(),
+            HomeAppBarAction(
+              icon: MdiIcons.account,
+              selected: ctrl.currentPage == 2,
+              onTap: () {
+                ctrl.goToProfile();
+              },
+            ),
+            const SizedBox(width: 16.0),
+          ]),
+        ),
+      );
+    });
   }
 }
 

@@ -8,12 +8,21 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:music_concept_app/lib.dart';
 
 abstract class UserAccountService {
-  static Future<QuerySnapshot<Map<String, dynamic>>> searchAccounts(
-      String searchText) {
-    return FirebaseFirestore.instance
+  static Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>>
+      searchAccounts(
+    String searchText, {
+    String? category,
+  }) async {
+    QuerySnapshot<Map<String, dynamic>> results = await FirebaseFirestore
+        .instance
         .collection("users")
-        .where("name", isGreaterThanOrEqualTo: searchText)
+        .where("category", isEqualTo: category)
         .get();
+    var query = results.docs
+        .where((element) => (element["name"] as String).toLowerCase().contains(
+              searchText.toLowerCase(),
+            ));
+    return query.toList();
   }
 
   static Future<void> createAccount({

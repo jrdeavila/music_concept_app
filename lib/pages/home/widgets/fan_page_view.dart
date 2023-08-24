@@ -10,19 +10,6 @@ class FanPageView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ctrl = Get.find<FanPageCtrl>();
-    return Obx(() {
-      return Stack(
-        children: [
-          _fanPageView(),
-          if (ctrl.isSearching) _searchView(),
-        ],
-      );
-    });
-  }
-
-  Widget _fanPageView() {
-    final ctrl = Get.find<FanPageCtrl>();
     return Column(
       children: [
         AppBar(
@@ -35,7 +22,7 @@ class FanPageView extends StatelessWidget {
             HomeAppBarAction(
               selected: true,
               icon: MdiIcons.magnify,
-              onTap: () => ctrl.setSearching(true),
+              onTap: () => Get.find<HomeCtrl>().goToSearch(),
             ),
             const SizedBox(width: 10.0),
             Obx(() {
@@ -98,22 +85,6 @@ class FanPageView extends StatelessWidget {
                   builder: (context, snapshot) {
                     return Column(
                       children: [
-                        ProfileTabBar(
-                          children: [
-                            ProfileTabBarItem(
-                              label: 'Explorar',
-                              icon: MdiIcons.compass,
-                              selected: true,
-                              onTap: () {},
-                            ),
-                            ProfileTabBarItem(
-                              label: 'Descubrir',
-                              icon: MdiIcons.musicNote,
-                              selected: false,
-                              onTap: () {},
-                            ),
-                          ],
-                        ),
                         ...(snapshot.data!).map((e) {
                           return PostItem(
                             snapshot: e,
@@ -128,54 +99,6 @@ class FanPageView extends StatelessWidget {
                   })),
         ),
       ],
-    );
-  }
-
-  Container _searchView() {
-    final ctrl = Get.find<FanPageCtrl>();
-    return Container(
-      color: Get.theme.colorScheme.background,
-      child: Column(
-        children: [
-          AppBar(
-            backgroundColor: Colors.transparent,
-            leadingWidth: 76,
-            leading: HomeAppBarAction(
-              selected: true,
-              icon: MdiIcons.arrowLeft,
-              onTap: () => ctrl.setSearching(false),
-            ),
-            titleSpacing: 0,
-            title: LoginRoundedTextField(
-              label: "Buscar ...",
-              onChanged: ctrl.setSearchText,
-            ),
-          ),
-          Expanded(
-            child: Obx(() {
-              return ListView.builder(
-                physics: const BouncingScrollPhysics(),
-                itemBuilder: (context, index) {
-                  final data = ctrl.searchResult[index].data();
-                  final hasAddress = data!['address'] != null;
-                  return ListTile(
-                    onTap: () {
-                      ctrl.goToGuestProfile(ctrl.searchResult[index]);
-                    },
-                    leading: ProfileImage(
-                      image: data['image'],
-                      name: data['name'],
-                    ),
-                    title: Text(data['name']),
-                    subtitle: hasAddress ? Text(data['address']) : null,
-                  );
-                },
-                itemCount: ctrl.searchResult.length,
-              );
-            }),
-          ),
-        ],
-      ),
     );
   }
 }
