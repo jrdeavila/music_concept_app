@@ -9,7 +9,6 @@ import 'package:music_concept_app/lib.dart';
 class BusinessNearlyCtrl extends GetxController {
   final RxList<FdSnapshot> businesses = RxList();
   final Rx<Coordinates?> _coordinates = Rx(null);
-  final BusinessService _service = Get.find();
   final Rx<FdSnapshot?> _onYouStay = Rx(null);
   final RxBool _isAuthenticated = false.obs;
   Timer? timer;
@@ -60,12 +59,10 @@ class BusinessNearlyCtrl extends GetxController {
 
   void _searchBusiness() {
     if (_coordinates.value != null && _isAuthenticated.value) {
-      _service
-          .searchBusinessNearly(
+      BusinessService.searchBusinessNearly(
         coordinates: _coordinates.value!,
         radius: userRadius,
-      )
-          .then((value) {
+      ).then((value) {
         businesses.value = value;
       });
     }
@@ -86,12 +83,12 @@ class BusinessNearlyCtrl extends GetxController {
 
   // Primera revision si esta en la zona, segunda revision registra el establecimiento visitado
   void _registerYouStayOnaBsns(FdSnapshot? snapshot) {
-    _service.setCurrentVisit(
+    BusinessService.setCurrentVisit(
       accountRef: "users/${FirebaseAuth.instance.currentUser!.uid}",
       businessRef: snapshot?.reference.path,
     );
     if (snapshot != null) {
-      _service.createBusinessVisit(
+      BusinessService.createBusinessVisit(
         accountRef: "users/${FirebaseAuth.instance.currentUser!.uid}",
         businessRef: snapshot.reference.path,
       );

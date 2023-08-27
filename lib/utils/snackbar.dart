@@ -23,17 +23,25 @@ abstract class SnackbarUtils {
     required String title,
     required String message,
     required String label,
+    IconData? icon,
     void Function()? onPressed,
   }) {
-    // Top
     Get.isSnackbarOpen
         ? Get.closeCurrentSnackbar()
         : Get.showSnackbar(
             GetSnackBar(
+              padding: const EdgeInsets.all(10.0),
+              icon: icon != null
+                  ? Icon(
+                      icon,
+                      color: Get.theme.colorScheme.primary,
+                      size: 30.0,
+                    )
+                  : null,
               title: title,
+              message: message,
               margin: const EdgeInsets.all(10.0),
               borderRadius: 15.0,
-              message: message,
               duration: 10.seconds,
               overlayBlur: 0.0,
               mainButton: TextButton(

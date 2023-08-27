@@ -19,25 +19,7 @@ class Coordinates {
 }
 
 abstract class BusinessService {
-  Future<List<FdSnapshot>> searchBusinessNearly({
-    required Coordinates coordinates,
-    required double radius,
-  });
-
-  Future<void> createBusinessVisit({
-    required String accountRef,
-    required String businessRef,
-  });
-
-  Future<void> setCurrentVisit({
-    required String accountRef,
-    String? businessRef,
-  });
-}
-
-class MainBusinessService implements BusinessService {
-  @override
-  Future<List<FdSnapshot>> searchBusinessNearly(
+  static Future<List<FdSnapshot>> searchBusinessNearly(
       {required Coordinates coordinates, required double radius}) async {
     final query = await FirebaseFirestore.instance
         .collection("users")
@@ -62,8 +44,7 @@ class MainBusinessService implements BusinessService {
     }).toList();
   }
 
-  @override
-  Future<void> createBusinessVisit({
+  static Future<void> createBusinessVisit({
     required String accountRef,
     required String businessRef,
   }) async {
@@ -86,8 +67,7 @@ class MainBusinessService implements BusinessService {
     }
   }
 
-  @override
-  Future<void> setCurrentVisit(
+  static Future<void> setCurrentVisit(
       {required String accountRef, String? businessRef}) async {
     await FirebaseFirestore.instance.doc(accountRef).update({
       "currentVisit": businessRef,

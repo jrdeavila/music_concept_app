@@ -52,6 +52,17 @@ class CreatePostCtrl extends GetxController {
 }
 
 class PostCtrl extends GetxController {
+  final RxList<FdSnapshot> _posts = <FdSnapshot>[].obs;
+
+  List<FdSnapshot> get posts => _posts.toList();
+
+  @override
+  void onReady() {
+    super.onReady();
+    _posts.bindStream(PostService.getAccountFollowingPost(
+        "users/${FirebaseAuth.instance.currentUser!.uid}"));
+  }
+
   Stream<DocumentSnapshot<Map<String, dynamic>>> getAccountRef(
       String accountRef) {
     return FirebaseFirestore.instance.doc(accountRef).snapshots();
@@ -84,7 +95,7 @@ class PostCtrl extends GetxController {
     required String postRef,
   }) {
     return LikesCommentsService.isLiked(
-      accountRef: FirebaseAuth.instance.currentUser!.uid,
+      accountRef: "users/${FirebaseAuth.instance.currentUser!.uid}",
       likeableRef: postRef,
     );
   }
@@ -105,11 +116,6 @@ class PostCtrl extends GetxController {
     required String postRef,
   }) {
     return LikesCommentsService.countComments(commentableRef: postRef);
-  }
-
-  Stream<List<QueryDocumentSnapshot<Map<String, dynamic>>>> reedPost() {
-    return PostService.getAccountFollowingPost(
-        "users/${FirebaseAuth.instance.currentUser!.uid}");
   }
 
   Stream<List<QueryDocumentSnapshot<Map<String, dynamic>>>> profilePosts(

@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:music_concept_app/lib.dart';
 
 abstract class FollowingFollowersServices {
   static Future<void> followAccount({
@@ -18,12 +17,6 @@ abstract class FollowingFollowersServices {
       "followerRef": followerRef,
       "timestamp": FieldValue.serverTimestamp(),
     });
-
-    await NotificationService.sendMessage(
-      accountRef: followingRef,
-      title: "New Follower",
-      body: "You have a new follower",
-    );
   }
 
   static Future<void> unfollowAccount({
@@ -64,5 +57,17 @@ abstract class FollowingFollowersServices {
         .where("followerRef", isEqualTo: followerRef)
         .snapshots()
         .map((event) => event.docs.isNotEmpty);
+  }
+
+  static Future<List<String>> getFollowersRefsFuture(String accountRef) {
+    return FirebaseFirestore.instance
+        .collection("follows")
+        .where("followingRef", isEqualTo: accountRef)
+        .get()
+        .then((value) => value.docs
+            .map(
+              (e) => e["followerRef"] as String,
+            )
+            .toList());
   }
 }

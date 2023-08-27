@@ -13,7 +13,7 @@ class PostItem extends StatefulWidget {
     this.isDetails = false,
   });
 
-  final QueryDocumentSnapshot<Map<String, dynamic>> snapshot;
+  final DocumentSnapshot<Map<String, dynamic>> snapshot;
   final bool isReed;
   final bool isDetails;
 
@@ -32,7 +32,7 @@ class _PostItemState extends State<PostItem> {
   Widget build(BuildContext context) {
     final ctrl = Get.find<PostCtrl>();
 
-    Map<String, dynamic> post = widget.snapshot.data();
+    Map<String, dynamic> post = widget.snapshot.data()!;
     bool hasImage = post['image'] != null;
     return Material(
       color: Colors.transparent,
@@ -176,7 +176,7 @@ class _PostItemState extends State<PostItem> {
                 onTap: () {
                   Get.toNamed(
                     AppRoutes.postDetails,
-                    arguments: widget.snapshot,
+                    arguments: widget.snapshot.reference.path,
                   );
                 },
               );
@@ -420,7 +420,7 @@ class PostUserAccountDetails extends StatelessWidget {
                         (snapshot.data?.data()?["active"] ?? false),
                     image: snapshot.data?['image'],
                     name: snapshot.data?['name'],
-                    avatarSize: isDetails ? 80.0 : 40.0,
+                    avatarSize: isDetails ? 60.0 : 40.0,
                     fontSize: isDetails ? 30.0 : 20.0,
                   ),
                   const SizedBox(width: 10.0),

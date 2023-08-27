@@ -22,7 +22,7 @@ class LifeCycleObserver extends WidgetsBindingObserver {
         FirebaseAuth.instance.currentUser!.uid,
         active: false,
       );
-      Get.find<BusinessService>().setCurrentVisit(
+      BusinessService.setCurrentVisit(
           accountRef: "users/${FirebaseAuth.instance.currentUser!.uid}");
     }
   }

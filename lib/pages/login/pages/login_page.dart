@@ -9,7 +9,6 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ctrl = Get.find<LoginCtrl>();
-    var appModeCtrl = Get.find<AppModeCtrl>();
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
@@ -71,11 +70,7 @@ class LoginPage extends StatelessWidget {
         child: Center(
           child: TextButton(
             onPressed: () {
-              if (appModeCtrl.isNormalMode) {
-                Get.offAllNamed(AppRoutes.register);
-              } else {
-                Get.offAllNamed(AppRoutes.businessRegister);
-              }
+              Get.offAllNamed(AppRoutes.register);
             },
             child: const Text('¿No tienes una cuenta? Registrate'),
           ),

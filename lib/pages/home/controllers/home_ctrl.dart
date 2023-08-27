@@ -8,22 +8,30 @@ class HomeCtrl extends GetxController {
   final PageController pageCtrl = PageController(initialPage: 1);
 
   final RxInt _currentPage = RxInt(1);
+  final RxBool _showBottomBar = RxBool(true);
 
   int get currentPage => _currentPage.value;
+  bool get showBottomBar => _showBottomBar.value;
 
   @override
   void onInit() {
     super.onInit();
+    Get.put(PostCtrl());
+    Get.put(EventCtrl());
     Get.put(FanPageCtrl());
     Get.put(SearchCtrl());
+    Get.put(ProfileCtrl());
   }
 
   @override
   void onClose() {
     super.onClose();
     pageCtrl.dispose();
-    Get.delete<FanPageCtrl>();
+    Get.delete<ProfileCtrl>();
     Get.delete<SearchCtrl>();
+    Get.delete<FanPageCtrl>();
+    Get.delete<EventCtrl>();
+    Get.delete<PostCtrl>();
   }
 
   @override
@@ -39,18 +47,26 @@ class HomeCtrl extends GetxController {
       duration: 500.milliseconds,
       curve: Curves.easeInOut,
     );
+    _showBottomBar.value = page > 0;
+  }
+
+  void setBottomBarVisibility(bool value) {
+    _showBottomBar.value = value;
   }
 
   void goToProfile() {
     _currentPage.value = 2;
+    Get.find<FanPageCtrl>().setNotification(false);
   }
 
   void goToReed() {
     _currentPage.value = 1;
+    Get.find<FanPageCtrl>().setNotification(false);
   }
 
   void goToSearch() {
     _currentPage.value = 0;
+    Get.find<FanPageCtrl>().setNotification(false);
   }
 }
 
@@ -110,6 +126,11 @@ class SearchCtrl extends GetxController {
 }
 
 class FanPageCtrl extends GetxController {
+  final PageController pageCtrl = PageController();
+  final RxBool _isNotifications = RxBool(false);
+
+  bool get isNotifications => _isNotifications.value;
+
   final Rx<DocumentReference<Map<String, dynamic>>?> _currentAccount =
       Rx<DocumentReference<Map<String, dynamic>>?>(null);
 
@@ -123,6 +144,29 @@ class FanPageCtrl extends GetxController {
       _currentAccount.value =
           user != null ? UserAccountService.getUserAccountRef(user.uid) : null;
     });
+    _isNotifications.listen(_onNotificationsChange);
+  }
+
+  void setNotification(bool value) => _isNotifications.value = value;
+  void toggleNotifications() =>
+      _isNotifications.value = !_isNotifications.value;
+
+  void _onNotificationsChange(bool value) {
+    if (!value) {
+      Get.find<HomeCtrl>().setBottomBarVisibility(true);
+      pageCtrl.animateToPage(
+        0,
+        duration: 500.milliseconds,
+        curve: Curves.easeInOut,
+      );
+    } else {
+      Get.find<HomeCtrl>().setBottomBarVisibility(false);
+      pageCtrl.animateToPage(
+        1,
+        duration: 500.milliseconds,
+        curve: Curves.easeInOut,
+      );
+    }
   }
 
   void goToGuestProfile(DocumentSnapshot<Map<String, dynamic>> guest) {

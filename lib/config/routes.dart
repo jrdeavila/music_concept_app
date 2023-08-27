@@ -36,7 +36,7 @@ abstract class AppRoutes {
         MapsViewLocationPage(guest: Get.arguments as FdSnapshot),
     mapsViewBusiness: (context) => const MapsViewBusinessPage(),
     createSurvey: (context) => const CreateSurvePage(),
-    postDetails: (context) => ShowPostDetailsPage(post: Get.arguments),
+    postDetails: (context) => ShowPostDetailsPage(postRef: Get.arguments),
     resetPassword: (context) => const ResetPasswordPage(),
     home: (context) => const HomePage(),
     notWifi: (context) => const NoWifiCoonnectionPage(),

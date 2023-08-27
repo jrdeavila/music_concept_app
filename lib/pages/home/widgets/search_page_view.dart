@@ -69,7 +69,9 @@ class SearchPageView extends StatelessWidget {
               HomeAppBarAction(
                 selected: true,
                 icon: MdiIcons.arrowRight,
-                onTap: () => Get.find<HomeCtrl>().goToReed(),
+                onTap: () {
+                  Get.find<HomeCtrl>().goToReed();
+                },
               ),
               const SizedBox(
                 width: 16.0,

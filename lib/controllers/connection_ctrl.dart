@@ -7,6 +7,7 @@ import 'package:music_concept_app/lib.dart';
 class ConnectionCtrl extends GetxController {
   final _pining = Rx<bool>(false);
   final _connectivityResult = Rx<bool?>(null);
+  final _times = Rx<int>(0);
   final RxString _lastRoute = "/".obs;
 
   bool get pining => _pining.value;
@@ -34,6 +35,20 @@ class ConnectionCtrl extends GetxController {
         }
       }
     });
+    _times.listen((p0) {
+      if (p0 > 2) {
+        SnackbarUtils.showSnackbar(
+          message: "No hay conexión a internet",
+          label: "Reintentar",
+          onPressed: () => _request(),
+        );
+      }
+      if (p0 > 5) {
+        _connectivityResult.value = false;
+      } else {
+        _connectivityResult.value = true;
+      }
+    });
   }
 
   Future<void> _request() async {
@@ -41,15 +56,12 @@ class ConnectionCtrl extends GetxController {
       final result = await Process.run('ping', ['-c', '1', 'google.com']);
 
       if (result.exitCode == 0) {
-        // Ping exitoso, hay internet
-        _connectivityResult.value = true;
+        _times.value = 0;
       } else {
-        // No hay internet
-        _connectivityResult.value = false;
+        _times.value++;
       }
     } catch (e) {
-      // No hay internet
-      _connectivityResult.value = false;
+      _times.value++;
     }
   }
 

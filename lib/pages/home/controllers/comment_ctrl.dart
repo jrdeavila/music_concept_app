@@ -15,7 +15,11 @@ class CommentCtrl extends GetxController {
   bool get isUploading => _isUploading.value;
 
   Stream<DocumentSnapshot<Map<String, dynamic>>> getAccount(String accountRef) {
-    return UserAccountService.getUserAccountRef(accountRef).snapshots();
+    return UserAccountService.getUserAccountDoc(accountRef).snapshots();
+  }
+
+  Stream<FdSnapshot?> getPost(String postRef) {
+    return PostService.getPost(postRef);
   }
 
   void setContent(String content) {
@@ -39,7 +43,7 @@ class CommentCtrl extends GetxController {
     required String commentRef,
   }) {
     return LikesCommentsService.isLiked(
-      accountRef: FirebaseAuth.instance.currentUser!.uid,
+      accountRef: "users/${FirebaseAuth.instance.currentUser!.uid}",
       likeableRef: commentRef,
     );
   }
@@ -72,7 +76,7 @@ class CommentCtrl extends GetxController {
 
   _loadComments(String? value) {
     if (value != null) {
-      LikesCommentsService.getComments(postRef: "posts/$value").listen((event) {
+      LikesCommentsService.getComments(postRef: value).listen((event) {
         comments.value = event.docs;
       });
     }
@@ -83,7 +87,7 @@ class CommentCtrl extends GetxController {
       _isUploading.value = true;
       LikesCommentsService.commentCommentable(
         accountRef: FirebaseAuth.instance.currentUser!.uid,
-        commentableRef: "posts/${_selectedPostRef.value}",
+        commentableRef: _selectedPostRef.value!,
         content: _content.value,
       ).then((value) {
         _content.value = '';

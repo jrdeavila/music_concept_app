@@ -3,7 +3,8 @@ import 'package:flutter_material_design_icons/flutter_material_design_icons.dart
 import 'package:get/get.dart';
 
 class PostSkeleton extends StatefulWidget {
-  const PostSkeleton({super.key});
+  const PostSkeleton({super.key, this.isResume = false});
+  final bool isResume;
 
   @override
   State<PostSkeleton> createState() => _PostSkeletonState();
@@ -39,64 +40,25 @@ class _PostSkeletonState extends State<PostSkeleton>
           margin: const EdgeInsets.symmetric(vertical: 10.0),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20.0),
-            color: Get.theme.colorScheme.onBackground,
+            color: widget.isResume ? null : Get.theme.colorScheme.onBackground,
           ),
           child: Column(
             children: [
-              SkeletonBox(
-                value: _controller.value,
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(20.0),
-                  topRight: Radius.circular(20.0),
+              if (!widget.isResume) ...[
+                SkeletonBox(
+                  value: _controller.value,
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(20.0),
+                    topRight: Radius.circular(20.0),
+                  ),
+                  width: double.infinity,
+                  height: 150,
                 ),
-                width: double.infinity,
-                height: 150,
-              ),
-              const SizedBox(
-                height: 10.0,
-              ),
-              Row(
-                children: [
-                  const SizedBox(
-                    width: 20,
-                  ),
-                  SkeletonBox(
-                    value: _controller.value,
-                    width: 50,
-                    height: 50,
-                    shape: BoxShape.circle,
-                  ),
-                  const SizedBox(width: 10.0),
-                  Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SkeletonBox(
-                        value: _controller.value,
-                        width: 150,
-                        height: 15,
-                      ),
-                      const SizedBox(height: 8.0),
-                      Row(
-                        children: [
-                          SkeletonBox(
-                            value: _controller.value,
-                            width: 100,
-                            height: 8,
-                          ),
-                          const SizedBox(width: 10.0),
-                          SkeletonBox(
-                            width: 15,
-                            value: _controller.value,
-                            height: 15,
-                            shape: BoxShape.circle,
-                          ),
-                        ],
-                      )
-                    ],
-                  ),
-                ],
-              ),
+                const SizedBox(
+                  height: 10.0,
+                ),
+                const UserAccountSkeleton(),
+              ],
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.all(20.0),
@@ -177,6 +139,84 @@ class _PostSkeletonState extends State<PostSkeleton>
           ),
         );
       },
+    );
+  }
+}
+
+class UserAccountSkeleton extends StatefulWidget {
+  const UserAccountSkeleton({
+    super.key,
+    this.isDetails = false,
+  });
+
+  final bool isDetails;
+
+  @override
+  State<UserAccountSkeleton> createState() => _UserAccountSkeletonState();
+}
+
+class _UserAccountSkeletonState extends State<UserAccountSkeleton>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _controller =
+        AnimationController(vsync: this, duration: const Duration(seconds: 1));
+    _controller.repeat(reverse: true);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        const SizedBox(
+          width: 20,
+        ),
+        SkeletonBox(
+          value: _controller.value,
+          width: widget.isDetails ? 40.0 : 60.0,
+          height: widget.isDetails ? 40.0 : 60.0,
+          shape: BoxShape.circle,
+        ),
+        const SizedBox(width: 10.0),
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SkeletonBox(
+              value: _controller.value,
+              width: 150,
+              height: 15,
+            ),
+            const SizedBox(height: 8.0),
+            Row(
+              children: [
+                SkeletonBox(
+                  value: _controller.value,
+                  width: 100,
+                  height: 8,
+                ),
+                const SizedBox(width: 10.0),
+                SkeletonBox(
+                  width: 15,
+                  value: _controller.value,
+                  height: 15,
+                  shape: BoxShape.circle,
+                ),
+              ],
+            )
+          ],
+        ),
+      ],
     );
   }
 }

@@ -14,13 +14,6 @@ class _HomePageState extends State<HomePage> {
   final ctrl = Get.find<HomeCtrl>();
 
   @override
-  void initState() {
-    super.initState();
-    Get.lazyPut(() => PostCtrl());
-    Get.lazyPut(() => EventCtrl());
-  }
-
-  @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
@@ -40,77 +33,111 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
         extendBody: true,
-        // resizeToAvoidBottomInset: false,
-        floatingActionButton: _floatingButton(),
+        floatingActionButton: const HomeFloatingButton(),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-
-        bottomNavigationBar: _bottomBar(),
+        bottomNavigationBar: const HomeBottomBar(),
       ),
     );
   }
+}
 
-  Widget _floatingButton() {
+class HomeFloatingButton extends StatelessWidget {
+  const HomeFloatingButton({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final ctrl = Get.find<HomeCtrl>();
     return Obx(() {
-      if (ctrl.currentPage == 0) {
-        return const SizedBox.shrink();
-      }
-      return FloatingActionButton.extended(
-        onPressed: () {
-          Get.find<ActivityCtrl>().resetTimer();
-          dialogBuilder<PostType>(
-            context,
-            Offset(
-              Get.width / 2,
-              Get.height / 2,
-            ),
-            const MenuSelectPostOrSurvey(),
-          ).then((value) {
-            if (value == PostType.survey) {
-              Get.toNamed(AppRoutes.createSurvey);
-            }
-            if (value == PostType.event) {
-              showEventDialog(context);
-            }
-            if (value == PostType.post) {
-              showPostDialog(context);
-            }
-          });
+      return TweenAnimationBuilder(
+        duration: 500.milliseconds,
+        tween: Tween<double>(
+          begin: ctrl.showBottomBar ? 1.0 : 0.0,
+          end: ctrl.showBottomBar ? 0.0 : 1.0,
+        ),
+        builder: (context, value, child) {
+          return Transform.translate(
+            offset: Offset(0.0, value * 110.0),
+            child: child,
+          );
         },
-        icon: const Icon(MdiIcons.plus),
-        label: const Text('Publicar'),
+        child: FloatingActionButton.extended(
+          onPressed: () {
+            Get.find<ActivityCtrl>().resetTimer();
+            dialogBuilder<PostType>(
+              context,
+              Offset(
+                Get.width / 2,
+                Get.height / 2,
+              ),
+              const MenuSelectPostOrSurvey(),
+            ).then((value) {
+              if (value == PostType.survey) {
+                Get.toNamed(AppRoutes.createSurvey);
+              }
+              if (value == PostType.event) {
+                showEventDialog(context);
+              }
+              if (value == PostType.post) {
+                showPostDialog(context);
+              }
+            });
+          },
+          icon: const Icon(MdiIcons.plus),
+          label: const Text('Publicar'),
+        ),
       );
     });
   }
+}
 
-  Widget _bottomBar() {
+class HomeBottomBar extends StatelessWidget {
+  const HomeBottomBar({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final ctrl = Get.find<HomeCtrl>();
     return Obx(() {
-      if (ctrl.currentPage == 0) {
-        return const SizedBox.shrink();
-      }
-      return ClipPath(
-        clipper: _RoundedBottomAppBarClipper(),
-        child: BottomAppBar(
-          color: Get.theme.primaryColor,
-          height: 80.0,
-          child: Row(children: [
-            const SizedBox(width: 16.0),
-            HomeAppBarAction(
-              selected: ctrl.currentPage == 1,
-              icon: MdiIcons.home,
-              onTap: () {
-                ctrl.goToReed();
-              },
-            ),
-            const Spacer(),
-            HomeAppBarAction(
-              icon: MdiIcons.account,
-              selected: ctrl.currentPage == 2,
-              onTap: () {
-                ctrl.goToProfile();
-              },
-            ),
-            const SizedBox(width: 16.0),
-          ]),
+      return TweenAnimationBuilder(
+        duration: 300.milliseconds,
+        tween: Tween<double>(
+          begin: ctrl.showBottomBar ? 1.0 : 0.0,
+          end: ctrl.showBottomBar ? 0.0 : 1.0,
+        ),
+        builder: (context, value, child) {
+          return Transform.translate(
+            offset: Offset(0.0, value * 80.0),
+            child: child,
+          );
+        },
+        child: ClipPath(
+          clipper: _RoundedBottomAppBarClipper(),
+          child: BottomAppBar(
+            color: Get.theme.primaryColor,
+            height: 80.0,
+            child: Row(children: [
+              const SizedBox(width: 16.0),
+              HomeAppBarAction(
+                selected: ctrl.currentPage == 1,
+                icon: MdiIcons.home,
+                onTap: () {
+                  ctrl.goToReed();
+                },
+              ),
+              const Spacer(),
+              HomeAppBarAction(
+                icon: MdiIcons.account,
+                selected: ctrl.currentPage == 2,
+                onTap: () {
+                  ctrl.goToProfile();
+                },
+              ),
+              const SizedBox(width: 16.0),
+            ]),
+          ),
         ),
       );
     });

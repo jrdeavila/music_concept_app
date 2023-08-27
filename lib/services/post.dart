@@ -33,7 +33,8 @@ abstract class PostService {
               ),
             )
           : null;
-      await FirebaseFirestore.instance.collection('posts').add({
+
+      var post = await FirebaseFirestore.instance.collection('posts').add({
         'accountRef': accountRef,
         'visibility': visibility.index,
         'content': content,
@@ -42,6 +43,11 @@ abstract class PostService {
         'deletedAt': null,
         "type": PostType.post.index,
       });
+      await PostNotification.sendPostNotification(
+        accountRef: accountRef!,
+        postRef: post.path,
+        image: imagePath,
+      );
     });
   }
 
@@ -58,6 +64,17 @@ abstract class PostService {
         .where('accountRef', isEqualTo: accountRef)
         .snapshots()
         .map((event) => event.docs.length);
+  }
+
+  static Stream<FdSnapshot?> getPost(
+    String postRef,
+  ) async* {
+    var post = await FirebaseFirestore.instance.doc(postRef).get();
+    if (post.exists) {
+      yield* FirebaseFirestore.instance.doc(postRef).snapshots();
+    } else {
+      yield null;
+    }
   }
 
   static Stream<List<QueryDocumentSnapshot<Map<String, dynamic>>>>
@@ -101,6 +118,29 @@ abstract class PostService {
       }
       return docs;
     });
+  }
+}
+
+abstract class PostNotification {
+  static Future<void> sendPostNotification({
+    required String accountRef,
+    required String postRef,
+    required String? image,
+  }) async {
+    var data = await UserAccountService.getUserAccountDoc(accountRef).get();
+    var name = data["name"];
+    var followers =
+        await FollowingFollowersServices.getFollowersRefsFuture(accountRef);
+    return NotificationService.sendMultipleNotifications(
+      title: "$name ha publicado algo nuevo",
+      body: "Revisa la publicación de $name",
+      accountRefs: followers,
+      type: NotificationType.post,
+      arguments: {
+        "image": image,
+        "ref": postRef,
+      },
+    );
   }
 }
 

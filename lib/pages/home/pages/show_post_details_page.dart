@@ -6,8 +6,8 @@ import 'package:music_concept_app/lib.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class ShowPostDetailsPage extends StatefulWidget {
-  final QueryDocumentSnapshot<Map<String, dynamic>> post;
-  const ShowPostDetailsPage({super.key, required this.post});
+  final String postRef;
+  const ShowPostDetailsPage({super.key, required this.postRef});
 
   @override
   State<ShowPostDetailsPage> createState() => _ShowPostDetailsPageState();
@@ -18,7 +18,7 @@ class _ShowPostDetailsPageState extends State<ShowPostDetailsPage> {
   void initState() {
     super.initState();
     final ctrl = Get.put(CommentCtrl());
-    ctrl.setSelectedPost(widget.post.id);
+    ctrl.setSelectedPost(widget.postRef);
   }
 
   @override
@@ -31,62 +31,62 @@ class _ShowPostDetailsPageState extends State<ShowPostDetailsPage> {
   @override
   Widget build(BuildContext context) {
     final ctrl = Get.find<CommentCtrl>();
-    return Scaffold(
-      body: CustomScrollView(
-        controller: _scrollCtrl,
-        physics: const BouncingScrollPhysics(),
-        slivers: [
-          SliverAppBar(
-            floating: true,
-            toolbarHeight: 100,
-            titleSpacing: 0,
-            leadingWidth: 76,
-            leading: HomeAppBarAction(
-              icon: Icons.arrow_back,
-              selected: true,
-              onTap: () {
-                Get.back();
-              },
-            ),
-            bottom: PreferredSize(
-              preferredSize: const Size.fromHeight(100),
-              child: PostUserAccountDetails(
-                post: widget.post.data(),
-                isDetails: true,
-              ),
-            ),
-          ),
-          SliverToBoxAdapter(
-            child: PostItem(
-              snapshot: widget.post,
-              isReed: true,
-              isDetails: true,
-            ),
-          ),
-          SliverToBoxAdapter(
-              child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: _commentField(),
-          )),
-          Obx(() {
-            return SliverList(
-              delegate: SliverChildBuilderDelegate(
-                (context, index) {
-                  final comment = ctrl.comments[index];
-                  return CommentItem(
-                    comment: comment,
+    return StreamBuilder(
+        stream: ctrl.getPost(widget.postRef),
+        builder: (context, snapshot) {
+          return Scaffold(
+            body: CustomScrollView(
+              controller: _scrollCtrl,
+              physics: const BouncingScrollPhysics(),
+              slivers: [
+                const SliverToBoxAdapter(
+                    child: SizedBox(
+                  height: kToolbarHeight + 20,
+                )),
+                SliverToBoxAdapter(
+                  child: snapshot.data != null
+                      ? PostUserAccountDetails(
+                          post: snapshot.data!.data()!,
+                          isDetails: true,
+                        )
+                      : const UserAccountSkeleton(),
+                ),
+                SliverToBoxAdapter(
+                  child: snapshot.data != null
+                      ? PostItem(
+                          snapshot: snapshot.data!,
+                          isReed: true,
+                          isDetails: true,
+                        )
+                      : const PostSkeleton(
+                          isResume: true,
+                        ),
+                ),
+                SliverToBoxAdapter(
+                    child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: _commentField(),
+                )),
+                Obx(() {
+                  return SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) {
+                        final comment = ctrl.comments[index];
+                        return CommentItem(
+                          comment: comment,
+                        );
+                      },
+                      childCount: ctrl.comments.length,
+                    ),
                   );
-                },
-                childCount: ctrl.comments.length,
-              ),
-            );
-          }),
-          const SliverToBoxAdapter(
-            child: SizedBox(height: 100),
-          ),
-        ],
-      ),
-    );
+                }),
+                const SliverToBoxAdapter(
+                  child: SizedBox(height: 100),
+                ),
+              ],
+            ),
+          );
+        });
   }
 
   Widget _commentField() {

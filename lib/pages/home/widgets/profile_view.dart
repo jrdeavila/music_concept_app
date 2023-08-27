@@ -21,12 +21,6 @@ class _ProfileViewState extends State<ProfileView> {
   final _scrollCtrl = ScrollController();
 
   @override
-  void initState() {
-    super.initState();
-    Get.lazyPut(() => ProfileCtrl());
-  }
-
-  @override
   void dispose() {
     _scrollCtrl.dispose();
     super.dispose();
