@@ -63,7 +63,7 @@ class AccountFollowFollowers extends StatelessWidget {
                       const SizedBox(
                         width: 10.0,
                       ),
-                      if (guest != null) ...[
+                      if (guest?.data()?['location'] != null) ...[
                         HomeAppBarAction(
                           icon: MdiIcons.mapSearchOutline,
                           selected: true,
