@@ -46,7 +46,6 @@ abstract class PostService {
       await PostNotification.sendPostNotification(
         accountRef: accountRef!,
         postRef: post.path,
-        image: imagePath,
       );
     });
   }
@@ -125,7 +124,7 @@ abstract class PostNotification {
   static Future<void> sendPostNotification({
     required String accountRef,
     required String postRef,
-    required String? image,
+    PostType type = PostType.post,
   }) async {
     var data = await UserAccountService.getUserAccountDoc(accountRef).get();
     var name = data["name"];
@@ -135,9 +134,16 @@ abstract class PostNotification {
       title: "$name ha publicado algo nuevo",
       body: "Revisa la publicación de $name",
       accountRefs: followers,
-      type: NotificationType.post,
+      type: (() {
+        var notificationTypes = {
+          PostType.event: NotificationType.event,
+          PostType.post: NotificationType.post,
+          PostType.survey: NotificationType.survey,
+        };
+
+        return notificationTypes[type]!;
+      })(),
       arguments: {
-        "image": image,
         "ref": postRef,
       },
     );

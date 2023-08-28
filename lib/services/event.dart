@@ -9,7 +9,7 @@ abstract class EventService {
     required LatLng point,
     required DateTime startDate,
     required String accountRef,
-  }) {
+  }) async {
     if (eventRef != null) {
       return FirebaseFirestore.instance
           .collection("posts")
@@ -24,7 +24,8 @@ abstract class EventService {
         "updatedAt": FieldValue.serverTimestamp(),
       });
     }
-    return FirebaseFirestore.instance.collection("posts").add({
+
+    var res = await FirebaseFirestore.instance.collection("posts").add({
       "content": content,
       "point": GeoPoint(
         point.latitude,
@@ -37,6 +38,11 @@ abstract class EventService {
       "accountRef": accountRef,
       "type": PostType.event.index,
     });
+    return PostNotification.sendPostNotification(
+      accountRef: accountRef,
+      postRef: res.path,
+      type: PostType.event,
+    );
   }
 
   static Future<void> createEventAssist({

@@ -63,11 +63,11 @@ class NotificationCtrl extends GetxController {
 }
 
 Map<int, Icon> notificationIcon = {
-  1: Icon(MdiIcons.newspaperVariantMultipleOutline,
+  0: Icon(MdiIcons.newspaperVariantMultipleOutline,
       color: Get.theme.colorScheme.primary, size: 30.0),
-  2: Icon(MdiIcons.calendar, color: Get.theme.colorScheme.primary, size: 30.0),
-  3: Icon(MdiIcons.poll, color: Get.theme.colorScheme.primary, size: 30.0),
-  6: Icon(MdiIcons.information,
+  1: Icon(MdiIcons.calendar, color: Get.theme.colorScheme.primary, size: 30.0),
+  2: Icon(MdiIcons.poll, color: Get.theme.colorScheme.primary, size: 30.0),
+  3: Icon(MdiIcons.information,
       color: Get.theme.colorScheme.primary, size: 30.0),
   5: Icon(MdiIcons.comment, color: Get.theme.colorScheme.onPrimary, size: 30.0),
   4: Icon(MdiIcons.heart, color: Get.theme.colorScheme.error, size: 30.0),
