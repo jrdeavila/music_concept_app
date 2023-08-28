@@ -20,6 +20,14 @@ class ProfileCtrl extends GetxController {
     ).snapshots();
   }
 
+  Stream<List<FdSnapshot>> getBusinessVisits({
+    required String? accountRef,
+  }) =>
+      BusinessService.getBusinessVisits(
+        accountRef:
+            accountRef ?? "users/${FirebaseAuth.instance.currentUser!.uid}",
+      );
+
   @override
   void onReady() {
     super.onReady();

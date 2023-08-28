@@ -73,4 +73,18 @@ abstract class BusinessService {
       "currentVisit": businessRef,
     });
   }
+
+  static Stream<List<FdSnapshot>> getBusinessVisits({
+    required String accountRef,
+  }) {
+    return FirebaseFirestore.instance
+        .collection("business_visits")
+        .orderBy("createdAt", descending: true)
+        .snapshots()
+        .map(
+          (event) => event.docs
+              .where((element) => element.data()['accountRef'] == accountRef)
+              .toList(),
+        );
+  }
 }

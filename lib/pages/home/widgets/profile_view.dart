@@ -121,6 +121,15 @@ class _ProfileViewState extends State<ProfileView> {
                                 _currentTab = 1;
                               });
                             }),
+                        ProfileTabBarItem(
+                            label: 'Visitas',
+                            icon: MdiIcons.sitemap,
+                            selected: _currentTab == 2,
+                            onTap: () {
+                              setState(() {
+                                _currentTab = 2;
+                              });
+                            }),
                       ],
                     ),
                   ),
@@ -149,6 +158,48 @@ class _ProfileViewState extends State<ProfileView> {
                           );
                         },
                         childCount: snapshot.data?.length ?? 0,
+                      ),
+                    ),
+                  if (_currentTab == 2)
+                    SliverToBoxAdapter(
+                      child: StreamBuilder(
+                        stream: Get.find<ProfileCtrl>().getBusinessVisits(
+                          accountRef: widget.guest?.reference.path,
+                        ),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return SizedBox(
+                              height: 180.0,
+                              child: ListView(
+                                physics: const BouncingScrollPhysics(),
+                                padding: const EdgeInsets.all(16.0),
+                                scrollDirection: Axis.horizontal,
+                                children: List.generate(
+                                  5,
+                                  (index) => BusinessItemSkeleton(),
+                                ),
+                              ),
+                            );
+                          }
+                          if (snapshot.connectionState ==
+                                  ConnectionState.done &&
+                              (snapshot.data?.isEmpty ?? false)) {
+                            return const SizedBox.shrink();
+                          }
+                          return SizedBox(
+                            height: 180,
+                            child: ListView.builder(
+                                physics: const BouncingScrollPhysics(),
+                                padding: const EdgeInsets.all(16.0),
+                                scrollDirection: Axis.horizontal,
+                                itemBuilder: (context, index) {
+                                  var item = snapshot.data![index];
+                                  return BusinessItem(item: item);
+                                },
+                                itemCount: snapshot.data?.length ?? 0),
+                          );
+                        },
                       ),
                     ),
                   const SliverToBoxAdapter(
