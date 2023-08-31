@@ -74,6 +74,37 @@ abstract class BusinessService {
     });
   }
 
+  static Stream<FdSnapshot> getCurrentVisit({
+    required String accountRef,
+  }) async* {
+    var ref = await FirebaseFirestore.instance.doc(accountRef).get();
+    var businessRef = ref.data()!['currentVisit'];
+    yield* FirebaseFirestore.instance.doc(businessRef).snapshots();
+  }
+
+  // Saber si las personas que sigues estan en el mismo sitio que tu
+  static Stream<List<String>> getFollingInCurrentVisit({
+    required String accountRef,
+  }) async* {
+    var ref = await FirebaseFirestore.instance.doc(accountRef).get();
+    var businessRef = ref.data()!['currentVisit'];
+    yield* FirebaseFirestore.instance
+        .collection("follows")
+        .where("followerRef", isEqualTo: accountRef)
+        .snapshots()
+        .asyncMap((event) async {
+      var refs = event.docs.map((e) => e.data()['followingRef'] as String);
+      List<String> followingRefs = [];
+      for (String userRef in refs) {
+        var user = await FirebaseFirestore.instance.doc(userRef).get();
+        if (user.data()!['currentVisit'] == businessRef) {
+          followingRefs.add(userRef);
+        }
+      }
+      return followingRefs;
+    });
+  }
+
   static Stream<List<FdSnapshot>> getBusinessVisits({
     required String accountRef,
   }) {

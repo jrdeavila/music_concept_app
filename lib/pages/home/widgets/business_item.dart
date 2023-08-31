@@ -16,7 +16,8 @@ class BusinessItem extends StatelessWidget {
         stream: Get.find<ProfileCtrl>()
             .getAccountStream(item.data()?["businessRef"]),
         builder: (context, snapshot) {
-          if (snapshot.data == null) return const Text("Loading...");
+          if (snapshot.data == null) return const BusinessItemSkeleton();
+
           return Container(
             margin: const EdgeInsets.only(right: 10.0),
             decoration: BoxDecoration(

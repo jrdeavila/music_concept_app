@@ -177,7 +177,7 @@ class _ProfileViewState extends State<ProfileView> {
                                 scrollDirection: Axis.horizontal,
                                 children: List.generate(
                                   5,
-                                  (index) => BusinessItemSkeleton(),
+                                  (index) => const BusinessItemSkeleton(),
                                 ),
                               ),
                             );
@@ -226,43 +226,143 @@ class _ProfileViewState extends State<ProfileView> {
           lastActiveString = hasLastActive
               ? "Activo ${data?['active'] ?? false ? "ahora" : TimeUtils.timeagoFormat(data?["lastActive"].toDate())}"
               : lastActiveString;
-          return Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ProfileImage(
-                hasVisit: data?["currentVisit"] != null,
-                name: data?['name'],
-                image: data?['image'],
-                active: hasActiveStatus && data!['active'],
-                avatarSize: 130.0,
-                fontSize: 40.0,
-              ),
-              const SizedBox(height: 20.0),
-              Text(
-                data?['name'] ?? '',
-                style: const TextStyle(
-                  fontSize: 25.0,
-                  fontWeight: FontWeight.bold,
+          return Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ProfileImage(
+                  hasVisit: data?["currentVisit"] != null,
+                  name: data?['name'],
+                  image: data?['image'],
+                  active: hasActiveStatus && data!['active'],
+                  avatarSize: 130.0,
+                  fontSize: 40.0,
                 ),
-              ),
-              if (hasAddress)
+                const SizedBox(height: 20.0),
                 Text(
-                  data?['address'] ?? '',
+                  data?['name'] ?? '',
+                  style: const TextStyle(
+                    fontSize: 25.0,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                if (data?['currentVisit'] != null) ...[
+                  const SizedBox(
+                    height: 10.0,
+                  ),
+                  StreamBuilder(
+                      stream: Get.find<ProfileCtrl>()
+                          .getFollowingInCurrentVisit(accountRef: null),
+                      builder: (context, snapshot) {
+                        var length = snapshot.data?.length ?? 0;
+                        var limit = 4;
+                        var items = length >= limit ? limit : length;
+                        var hasMore = length > limit;
+                        var hasAlone = length == 0;
+                        var offsetX = (160.0 - (25.0 * items)) / 2.25;
+                        return Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Transform.translate(
+                              offset: Offset(offsetX, 0.0),
+                              child: SizedBox(
+                                width: 160.0,
+                                child: Row(
+                                  children: [
+                                    ...List.generate(
+                                      items,
+                                      (index) => StreamBuilder(
+                                          stream: Get.find<ProfileCtrl>()
+                                              .getAccountStream(
+                                            snapshot.data![index],
+                                          ),
+                                          builder: (context, account) {
+                                            return Transform.translate(
+                                              offset: Offset(
+                                                index * -15.0,
+                                                0.0,
+                                              ),
+                                              child: ProfileImage(
+                                                image: account.data?['image'],
+                                                name: account.data?['name'],
+                                              ),
+                                            );
+                                          }),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 5.0),
+                            StreamBuilder(
+                                stream: Get.find<ProfileCtrl>()
+                                    .getAccountStream(data!['currentVisit']),
+                                builder: (context, business) {
+                                  return Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        hasAlone
+                                            ? "esta en"
+                                            : "${hasMore ? "y otras personas mas" : ""} estan en ",
+                                        style: TextStyle(
+                                          fontSize: 15.0,
+                                          fontWeight: FontWeight.bold,
+                                          color:
+                                              Get.theme.colorScheme.onPrimary,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 5.0),
+                                      GestureDetector(
+                                        onTap: () {
+                                          Get.toNamed(AppRoutes.guestProfile,
+                                              arguments: business.data);
+                                        },
+                                        child: ProfileImage(
+                                          image: business.data?['image'],
+                                          name: business.data?['name'],
+                                        ),
+                                      ),
+                                      Text(
+                                        business.data?['name']?.toUpperCase() ??
+                                            '',
+                                        style: TextStyle(
+                                          fontSize: 15.0,
+                                          fontWeight: FontWeight.bold,
+                                          color:
+                                              Get.theme.colorScheme.onPrimary,
+                                        ),
+                                      ),
+                                    ],
+                                  );
+                                })
+                          ],
+                        );
+                      }),
+                  const SizedBox(
+                    height: 10.0,
+                  ),
+                ],
+                if (hasAddress)
+                  Text(
+                    data?['address'] ?? '',
+                    style: TextStyle(
+                        fontSize: 15.0, color: Get.theme.colorScheme.primary),
+                  ),
+                const SizedBox(height: 10.0),
+                Text(
+                  lastActiveString,
                   style: TextStyle(
-                      fontSize: 15.0, color: Get.theme.colorScheme.primary),
+                    fontSize: 15.0,
+                    color: data?["active"] ?? false
+                        ? Get.theme.colorScheme.primary
+                        : Colors.grey,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              const SizedBox(height: 10.0),
-              Text(
-                lastActiveString,
-                style: TextStyle(
-                  fontSize: 15.0,
-                  color: data?["active"] ?? false
-                      ? Get.theme.colorScheme.primary
-                      : Colors.grey,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
+              ],
+            ),
           );
         });
   }

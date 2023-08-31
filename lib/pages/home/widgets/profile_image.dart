@@ -55,6 +55,10 @@ class ProfileImage extends StatelessWidget {
                           decoration: BoxDecoration(
                             color: Colors.grey,
                             borderRadius: BorderRadius.circular(avatarSize / 2),
+                            border: Border.all(
+                              color: Get.theme.colorScheme.onPrimary,
+                              width: 1.0,
+                            ),
                           ),
                           child: Center(
                             child: Text(

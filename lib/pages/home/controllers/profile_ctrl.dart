@@ -20,6 +20,14 @@ class ProfileCtrl extends GetxController {
     ).snapshots();
   }
 
+  Stream<List<String>> getFollowingInCurrentVisit({
+    required String? accountRef,
+  }) =>
+      BusinessService.getFollingInCurrentVisit(
+        accountRef:
+            accountRef ?? "users/${FirebaseAuth.instance.currentUser!.uid}",
+      );
+
   Stream<List<FdSnapshot>> getBusinessVisits({
     required String? accountRef,
   }) =>

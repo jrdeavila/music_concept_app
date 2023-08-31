@@ -229,6 +229,8 @@ class SearchPageView extends StatelessWidget {
                     leading: ProfileImage(
                       image: data['image'],
                       name: data['name'],
+                      active: data['active'] ?? false,
+                      hasVisit: data['currentVisit'] != null,
                     ),
                     title: Text(data['name']),
                     subtitle: hasAddress ? Text(data['address']) : null,
