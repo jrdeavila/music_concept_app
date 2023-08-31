@@ -408,10 +408,11 @@ class _BackgroundProfileState extends State<BackgroundProfile> {
               ),
               decoration: BoxDecoration(
                 image: ctrl.selectedWallpaper != null ||
-                        snapshot.data?['background'] != null
+                        snapshot.data?.data()?['background'] != null
                     ? DecorationImage(
-                        image: AssetImage(snapshot.data?['background'] ??
-                            ctrl.selectedWallpaper),
+                        image: AssetImage(
+                            snapshot.data?.data()?['background'] ??
+                                ctrl.selectedWallpaper),
                         fit: BoxFit.cover,
                       )
                     : null,
