@@ -91,9 +91,10 @@ class _ShowPostDetailsPageState extends State<ShowPostDetailsPage> {
 
   Widget _commentField() {
     final ctrl = Get.find<CommentCtrl>();
+    final commentCtrl = TextEditingController();
     return Obx(() {
       return TextFormField(
-        initialValue: ctrl.content,
+        controller: commentCtrl,
         onChanged: ctrl.setContent,
         decoration: InputDecoration(
             filled: true,
@@ -110,7 +111,10 @@ class _ShowPostDetailsPageState extends State<ShowPostDetailsPage> {
                   )
                 : Center(
                     child: GestureDetector(
-                      onTap: ctrl.submit,
+                      onTap: () {
+                        ctrl.submit();
+                        commentCtrl.clear();
+                      },
                       child: const Icon(
                         Icons.send,
                         color: Colors.white,
