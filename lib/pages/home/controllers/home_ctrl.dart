@@ -21,12 +21,14 @@ class HomeCtrl extends GetxController {
     Get.put(FanPageCtrl());
     Get.put(SearchCtrl());
     Get.put(ProfileCtrl());
+    Get.put(ChatCtrl());
   }
 
   @override
   void onClose() {
     super.onClose();
     pageCtrl.dispose();
+    Get.delete<ChatCtrl>();
     Get.delete<ProfileCtrl>();
     Get.delete<SearchCtrl>();
     Get.delete<FanPageCtrl>();
@@ -56,17 +58,17 @@ class HomeCtrl extends GetxController {
 
   void goToProfile() {
     _currentPage.value = 2;
-    Get.find<FanPageCtrl>().setNotification(false);
+    Get.find<FanPageCtrl>().showReed();
   }
 
   void goToReed() {
     _currentPage.value = 1;
-    Get.find<FanPageCtrl>().setNotification(false);
+    Get.find<FanPageCtrl>().showReed();
   }
 
   void goToSearch() {
     _currentPage.value = 0;
-    Get.find<FanPageCtrl>().setNotification(false);
+    Get.find<FanPageCtrl>().showReed();
   }
 }
 
@@ -127,9 +129,10 @@ class SearchCtrl extends GetxController {
 
 class FanPageCtrl extends GetxController {
   final PageController pageCtrl = PageController();
-  final RxBool _isNotifications = RxBool(false);
+  final RxInt _currentPage = RxInt(0);
 
-  bool get isNotifications => _isNotifications.value;
+  bool get isNotifications => _currentPage.value == 1;
+  bool get isChat => _currentPage.value == 2;
 
   final Rx<DocumentReference<Map<String, dynamic>>?> _currentAccount =
       Rx<DocumentReference<Map<String, dynamic>>?>(null);
@@ -144,29 +147,25 @@ class FanPageCtrl extends GetxController {
       _currentAccount.value =
           user != null ? UserAccountService.getUserAccountRef(user.uid) : null;
     });
-    _isNotifications.listen(_onNotificationsChange);
+    _currentPage.listen(_onPageChange);
   }
 
-  void setNotification(bool value) => _isNotifications.value = value;
-  void toggleNotifications() =>
-      _isNotifications.value = !_isNotifications.value;
+  void showReed() => _currentPage.value = 0;
+  void toggleNotifications() {
+    _currentPage.value = _currentPage.value == 1 ? 0 : 1;
+  }
 
-  void _onNotificationsChange(bool value) {
-    if (!value) {
-      Get.find<HomeCtrl>().setBottomBarVisibility(true);
-      pageCtrl.animateToPage(
-        0,
-        duration: 500.milliseconds,
-        curve: Curves.easeInOut,
-      );
-    } else {
-      Get.find<HomeCtrl>().setBottomBarVisibility(false);
-      pageCtrl.animateToPage(
-        1,
-        duration: 500.milliseconds,
-        curve: Curves.easeInOut,
-      );
-    }
+  void toggleChat() {
+    _currentPage.value = _currentPage.value == 2 ? 0 : 2;
+  }
+
+  void _onPageChange(int page) {
+    Get.find<HomeCtrl>().setBottomBarVisibility(page == 0);
+    pageCtrl.animateToPage(
+      page,
+      duration: 500.milliseconds,
+      curve: Curves.easeInOut,
+    );
   }
 
   void goToGuestProfile(DocumentSnapshot<Map<String, dynamic>> guest) {

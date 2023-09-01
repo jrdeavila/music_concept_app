@@ -1,3 +1,4 @@
+export 'chat_ctrl.dart';
 export 'comment_ctrl.dart';
 export 'event_ctrl.dart';
 export 'home_ctrl.dart';

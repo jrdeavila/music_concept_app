@@ -33,8 +33,7 @@ class NotificationCtrl extends GetxController {
         icon: notificationIcon[last.data()?["type"]]!.icon,
         title: last["title"],
         message: last["body"],
-        label: "VER",
-        onPressed: () {},
+        label: "",
       );
     }
 

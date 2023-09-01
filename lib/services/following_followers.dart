@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:music_concept_app/lib.dart';
 
 abstract class FollowingFollowersServices {
   static Future<void> followAccount({
@@ -69,5 +70,16 @@ abstract class FollowingFollowersServices {
               (e) => e["followerRef"] as String,
             )
             .toList());
+  }
+
+  static Stream<List<FdSnapshot>> getFriends(
+      {required String accountRef}) async* {
+    var followersRefs = await getFollowersRefsFuture(accountRef);
+    yield* FirebaseFirestore.instance
+        .collection("follows")
+        .where("followingRef", isEqualTo: accountRef)
+        .where("followerRef", whereIn: followersRefs)
+        .snapshots()
+        .map((event) => event.docs);
   }
 }
