@@ -62,8 +62,12 @@ class HomeCtrl extends GetxController {
   }
 
   void goToReed() {
-    _currentPage.value = 1;
-    Get.find<FanPageCtrl>().showReed();
+    if (_currentPage.value != 1) {
+      _currentPage.value = 1;
+      Get.find<FanPageCtrl>().showReed();
+    } else {
+      Get.back();
+    }
   }
 
   void goToSearch() {

@@ -10,14 +10,12 @@ class AuthenticationCtrl extends GetxController {
     super.onReady();
     _firebaseUser.listen((p0) {
       if (p0 != null) {
-        Get.put(LocationCtrl());
         Get.put(NotificationCtrl());
         Get.put(BusinessNearlyCtrl());
         Get.put(ActivityCtrl());
         Get.lazyPut(() => HomeCtrl());
         Get.offAllNamed(AppRoutes.home);
       } else {
-        Get.delete<LocationCtrl>();
         Get.delete<NotificationCtrl>();
         Get.delete<BusinessNearlyCtrl>();
         Get.delete<ActivityCtrl>();

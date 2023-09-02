@@ -11,20 +11,23 @@ class ProfileImage extends StatelessWidget {
     this.avatarSize = 40.0,
     this.active = false,
     this.hasVisit = false,
+    this.isBusiness = false,
   });
 
   final String? image;
   final String? name;
   final double fontSize;
   final double avatarSize;
-  final bool active, hasVisit;
+  final bool active, hasVisit, isBusiness;
 
   @override
   Widget build(BuildContext context) {
     final hasImage = image != null;
+    final percent = isBusiness ? 4 : 2;
+    var avatarWidth = avatarSize * (isBusiness ? 2.0 : 1.0);
     return SizedBox(
       height: avatarSize,
-      width: avatarSize,
+      width: avatarWidth,
       child: Stack(
         children: [
           Positioned.fill(
@@ -40,21 +43,23 @@ class ProfileImage extends StatelessWidget {
                     child: Builder(builder: (context) {
                       if (hasImage) {
                         return ClipRRect(
-                          borderRadius: BorderRadius.circular(avatarSize / 2),
+                          borderRadius:
+                              BorderRadius.circular(avatarSize / percent),
                           child: CachingImage(
                             url: image!,
                             fit: BoxFit.cover,
                             height: avatarSize,
-                            width: avatarSize,
+                            width: avatarWidth,
                           ),
                         );
                       } else {
                         return Container(
                           height: avatarSize,
-                          width: avatarSize,
+                          width: avatarWidth,
                           decoration: BoxDecoration(
                             color: Colors.grey,
-                            borderRadius: BorderRadius.circular(avatarSize / 2),
+                            borderRadius:
+                                BorderRadius.circular(avatarSize / percent),
                             border: Border.all(
                               color: Get.theme.colorScheme.onPrimary,
                               width: 1.0,
@@ -77,11 +82,12 @@ class ProfileImage extends StatelessWidget {
                     Align(
                       alignment: Alignment.center,
                       child: Container(
-                        width: avatarSize,
+                        width: avatarWidth,
                         height: avatarSize,
                         decoration: BoxDecoration(
                           color: Colors.black.withOpacity(0.5),
-                          borderRadius: BorderRadius.circular(avatarSize / 2),
+                          borderRadius:
+                              BorderRadius.circular(avatarSize / percent),
                           border: Border.all(
                             color: Get.theme.colorScheme.onPrimary,
                             width: 1.0,
@@ -92,9 +98,11 @@ class ProfileImage extends StatelessWidget {
                     Align(
                       alignment: Alignment.center,
                       child: SizedBox(
-                        width: avatarSize,
+                        width: avatarWidth,
                         height: avatarSize,
-                        child: const MusicVisualizerAnimation(),
+                        child: MusicVisualizerAnimation(
+                          lines: isBusiness ? 12 : 6,
+                        ),
                       ),
                     ),
                   ],
@@ -126,7 +134,11 @@ class ProfileImage extends StatelessWidget {
 }
 
 class MusicVisualizerAnimation extends StatelessWidget {
-  const MusicVisualizerAnimation({super.key});
+  final int lines;
+  const MusicVisualizerAnimation({
+    super.key,
+    this.lines = 6,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -135,13 +147,13 @@ class MusicVisualizerAnimation extends StatelessWidget {
       return Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: List.generate(
-          6,
+          lines,
           (index) {
             return MusicVisualizerBar(
               color: Get.theme.colorScheme.onPrimary,
               duration: percents[index % 5],
               maxHeight: constraints.maxHeight * 0.4,
-              width: constraints.maxWidth / 18,
+              width: constraints.maxWidth / (18 * lines / 6),
             );
           },
         ),

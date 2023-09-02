@@ -104,14 +104,15 @@ class _ProfileViewState extends State<ProfileView> {
                     child: ProfileTabBar(
                       children: [
                         ProfileTabBarItem(
-                            label: 'Fondos',
-                            icon: MdiIcons.wallpaper,
-                            selected: _currentTab == 0,
-                            onTap: () {
-                              setState(() {
-                                _currentTab = 0;
-                              });
-                            }),
+                          label: 'Fondos',
+                          icon: MdiIcons.wallpaper,
+                          selected: _currentTab == 0,
+                          onTap: () {
+                            setState(() {
+                              _currentTab = 0;
+                            });
+                          },
+                        ),
                         ProfileTabBarItem(
                             label: 'Posts',
                             icon: MdiIcons.post,
@@ -232,10 +233,11 @@ class _ProfileViewState extends State<ProfileView> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 ProfileImage(
-                  hasVisit: data?["currentVisit"] != null,
+                  isBusiness: data?['type'] == 0,
+                  hasVisit: data?['currentVisit'] != null,
                   name: data?['name'],
                   image: data?['image'],
-                  active: hasActiveStatus && data!['active'],
+                  active: hasActiveStatus,
                   avatarSize: 130.0,
                   fontSize: 40.0,
                 ),

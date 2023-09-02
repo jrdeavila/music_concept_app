@@ -15,7 +15,7 @@ class ChatView extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "Chats (${Get.find<ChatCtrl>().chatCount})",
+                "Chats",
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 25.0,

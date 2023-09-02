@@ -4,7 +4,6 @@ import 'package:get/get.dart';
 import 'package:music_concept_app/lib.dart';
 
 class ChatCtrl extends GetxController {
-  int get chatCount => friends.length;
   int get chatsNotRead => chats.where((element) {
         return element.data()?['lastSenderRef'] !=
                 "users/${FirebaseAuth.instance.currentUser!.uid}" &&

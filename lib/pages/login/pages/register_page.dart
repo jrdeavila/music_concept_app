@@ -105,7 +105,7 @@ class _RegisterPageState extends State<RegisterPage> {
             onTap: () {
               ctrl.submit();
             },
-            label: "Continuar",
+            label: "Continuar como persona",
           ),
         ),
         Padding(

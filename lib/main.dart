@@ -22,6 +22,7 @@ void main() async {
 
       Get.put(AuthenticationCtrl());
       Get.put(ConnectionCtrl());
+      Get.put(LocationCtrl());
 
       Get.lazyPut(() => LoginCtrl());
       Get.lazyPut(() => RegisterCtrl());
