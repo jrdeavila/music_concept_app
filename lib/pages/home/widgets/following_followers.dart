@@ -105,6 +105,9 @@ class AccountFollowFollowers extends StatelessWidget {
                     return _item(
                       label: "Seguidores",
                       value: snapshot.data?.toString() ?? "0",
+                      onTap: () {
+                        Get.toNamed(AppRoutes.followers, arguments: guest);
+                      },
                     );
                   }),
               StreamBuilder<int>(
@@ -113,6 +116,9 @@ class AccountFollowFollowers extends StatelessWidget {
                     return _item(
                       label: "Siguiendo",
                       value: snapshot.data?.toString() ?? "0",
+                      onTap: () {
+                        Get.toNamed(AppRoutes.followers, arguments: guest);
+                      },
                     );
                   }),
               StreamBuilder<int>(
@@ -133,24 +139,28 @@ class AccountFollowFollowers extends StatelessWidget {
   Widget _item({
     required String label,
     required String value,
+    VoidCallback? onTap,
   }) {
     return Expanded(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            value,
-            style: const TextStyle(
-              fontSize: 27.0,
+      child: GestureDetector(
+        onTap: onTap,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              value,
+              style: const TextStyle(
+                fontSize: 27.0,
+              ),
             ),
-          ),
-          Text(
-            label,
-            style: TextStyle(
-              color: Get.theme.colorScheme.onPrimary.withOpacity(0.5),
+            Text(
+              label,
+              style: TextStyle(
+                color: Get.theme.colorScheme.onPrimary.withOpacity(0.5),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

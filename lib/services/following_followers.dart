@@ -73,7 +73,27 @@ abstract class FollowingFollowersServices {
             .toList());
   }
 
-  static Stream<List<FdSnapshot>> getFriends({required String accountRef}) {
+  static Stream<List<String>> getFollowers({required String accountRef}) {
+    return FirebaseFirestore.instance
+        .collection("follows")
+        .where("followingRef", isEqualTo: accountRef)
+        .snapshots()
+        .map(
+          (event) =>
+              event.docs.map((e) => e.data()['followerRef'] as String).toList(),
+        );
+  }
+
+  static Stream<List<String>> getFollowings({required String accountRef}) {
+    return FirebaseFirestore.instance
+        .collection("follows")
+        .where("followerRef", isEqualTo: accountRef)
+        .snapshots()
+        .map((event) =>
+            event.docs.map((e) => e.data()['followingRef'] as String).toList());
+  }
+
+  static Stream<List<String>> getFriends({required String accountRef}) {
     return FirebaseFirestore.instance
         .collection("follows")
         .where("followingRef", isEqualTo: accountRef)
@@ -88,7 +108,7 @@ abstract class FollowingFollowersServices {
           friends.add(item);
         }
       }
-      return friends;
+      return event.docs.map((e) => e.data()['followerRef'] as String).toList();
     });
   }
 

@@ -10,7 +10,7 @@ class ChatCtrl extends GetxController {
             !element.data()?['receiverSeen'];
       }).length;
 
-  final RxList<FdSnapshot> friends = <FdSnapshot>[].obs;
+  final RxList<String> friends = <String>[].obs;
   final RxList<FdSnapshot> chats = <FdSnapshot>[].obs;
 
   Stream<FdSnapshot> getUserAccountStream(String accountRef) {

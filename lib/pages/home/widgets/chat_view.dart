@@ -65,20 +65,19 @@ class FriendItem extends StatelessWidget {
     required this.friend,
   });
 
-  final FdSnapshot friend;
+  final String friend;
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-      stream: Get.find<ChatCtrl>()
-          .getUserAccountStream(friend.data()?['followerRef'] as String),
+      stream: Get.find<ChatCtrl>().getUserAccountStream(friend),
       builder: (context, snapshot) {
         return Padding(
           padding: const EdgeInsets.only(right: 10.0),
           child: GestureDetector(
             onTap: () {
               Get.find<ChatCtrl>().openNewChat(
-                receiverRef: friend.data()?['followerRef'],
+                receiverRef: friend,
               );
             },
             child: ProfileImage(

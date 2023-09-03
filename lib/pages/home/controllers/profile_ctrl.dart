@@ -44,6 +44,24 @@ class ProfileCtrl extends GetxController {
         userRef: "users/${FirebaseAuth.instance.currentUser!.uid}");
   }
 
+  Stream<List<String>> getFollowers(String? accountRef) {
+    return FollowingFollowersServices.getFollowers(
+        accountRef:
+            accountRef ?? "users/${FirebaseAuth.instance.currentUser!.uid}");
+  }
+
+  Stream<List<String>> getFollowings(String? accountRef) {
+    return FollowingFollowersServices.getFollowings(
+        accountRef:
+            accountRef ?? "users/${FirebaseAuth.instance.currentUser!.uid}");
+  }
+
+  Stream<List<String>> getFriends(String? accountRef) {
+    return FollowingFollowersServices.getFriends(
+        accountRef:
+            accountRef ?? "users/${FirebaseAuth.instance.currentUser!.uid}");
+  }
+
   @override
   void onReady() {
     super.onReady();
