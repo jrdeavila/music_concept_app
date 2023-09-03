@@ -36,6 +36,14 @@ class ProfileCtrl extends GetxController {
             accountRef ?? "users/${FirebaseAuth.instance.currentUser!.uid}",
       );
 
+  Stream<bool> isAFriend({
+    required String accountRef,
+  }) {
+    return FollowingFollowersServices.accountIsFriend(
+        accountRef: accountRef,
+        userRef: "users/${FirebaseAuth.instance.currentUser!.uid}");
+  }
+
   @override
   void onReady() {
     super.onReady();

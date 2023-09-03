@@ -31,11 +31,6 @@ class AccountFollowFollowers extends StatelessWidget {
             );
           },
         },
-        'block': {
-          "label": "Bloquear",
-          "icon": MdiIcons.blockHelper,
-          "onTap": () {},
-        },
       };
       return Column(
         mainAxisSize: MainAxisSize.min,
@@ -74,6 +69,23 @@ class AccountFollowFollowers extends StatelessWidget {
                         ),
                         const SizedBox(width: 10.0),
                       ],
+                      if (guest != null)
+                        StreamBuilder<bool>(
+                            stream: ctrl.isAFriend(
+                                accountRef: guest!.reference.path),
+                            builder: (context, snapshot) {
+                              if (snapshot.data == true) {
+                                return HomeAppBarAction(
+                                  icon: MdiIcons.message,
+                                  selected: true,
+                                  onTap: () {
+                                    // Get.find<ChatCtrl>().openNewChat(
+                                    //     receiverRef: guest!.reference.path);
+                                  },
+                                );
+                              }
+                              return const SizedBox.shrink();
+                            }),
                       if (snapshot.data == true)
                         PopupMenuProfile(
                           options: options,

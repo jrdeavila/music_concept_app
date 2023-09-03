@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:get/get.dart';
 import 'package:music_concept_app/lib.dart';
 
 abstract class FollowingFollowersServices {
@@ -72,14 +73,60 @@ abstract class FollowingFollowersServices {
             .toList());
   }
 
-  static Stream<List<FdSnapshot>> getFriends(
-      {required String accountRef}) async* {
-    var followersRefs = await getFollowersRefsFuture(accountRef);
-    yield* FirebaseFirestore.instance
+  static Stream<List<FdSnapshot>> getFriends({required String accountRef}) {
+    return FirebaseFirestore.instance
         .collection("follows")
         .where("followingRef", isEqualTo: accountRef)
-        .where("followerRef", whereIn: followersRefs)
         .snapshots()
-        .map((event) => event.docs);
+        .asyncMap((event) async {
+      var friends = <FdSnapshot>[];
+      for (var item in event.docs) {
+        var isAFriend = await accountIsFriendFuture(
+            accountRef: item.data()['followingRef'],
+            userRef: item.data()['followerRef']);
+        if (isAFriend) {
+          friends.add(item);
+        }
+      }
+      return friends;
+    });
+  }
+
+  static Future<bool> accountIsFriendFuture({
+    required String accountRef,
+    required String userRef,
+  }) {
+    return FirebaseFirestore.instance
+        .collection("follows")
+        .where("followingRef", whereIn: [accountRef, userRef])
+        .get()
+        .then((value) {
+          var isFollowing = value.docs.firstWhereOrNull((element) =>
+              element.data()['followingRef'] == userRef &&
+              element.data()['followerRef'] == accountRef);
+          var isFollower = value.docs.firstWhereOrNull((element) =>
+              element.data()['followingRef'] == accountRef &&
+              element.data()['followerRef'] == userRef);
+          return isFollower != null && isFollowing != null;
+        });
+  }
+
+  static Stream<bool> accountIsFriend({
+    required String accountRef,
+    required String userRef,
+  }) {
+    return FirebaseFirestore.instance
+        .collection("follows")
+        .where("followingRef", whereIn: [accountRef, userRef])
+        .snapshots()
+        .map((value) {
+          var isFollowing = value.docs.firstWhereOrNull((element) =>
+              element.data()['followingRef'] == userRef &&
+              element.data()['followerRef'] == accountRef);
+          var isFollower = value.docs.firstWhereOrNull((element) =>
+              element.data()['followingRef'] == accountRef &&
+              element.data()['followerRef'] == userRef);
+          return isFollower != null && isFollowing != null;
+        });
   }
 }
