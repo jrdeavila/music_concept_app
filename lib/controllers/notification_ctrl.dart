@@ -42,6 +42,12 @@ class NotificationCtrl extends GetxController {
         .length;
   }
 
+  void deleteNotification(String notificationRef) {
+    NotificationService.deleteNotification(
+      notificationRef: notificationRef,
+    );
+  }
+
   void markAllAsRead() {
     NotificationService.markAllAsRead(
       accountRef: "users/${FirebaseAuth.instance.currentUser!.uid}",

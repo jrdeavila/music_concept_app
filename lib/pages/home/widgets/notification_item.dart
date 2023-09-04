@@ -13,6 +13,10 @@ class NotificationItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
+      onLongPress: () {
+        Get.find<NotificationCtrl>()
+            .deleteNotification(notification.reference.path);
+      },
       onTap: () {
         Get.find<NotificationCtrl>().markAsRead(notification.reference.path);
         Get.toNamed(
