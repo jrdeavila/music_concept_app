@@ -45,6 +45,7 @@ class _LoginRoundedTextFieldState extends State<LoginRoundedTextField> {
     return Container(
       margin: const EdgeInsets.all(8.0),
       child: TextFormField(
+        enabled: widget.onChanged != null,
         controller: _controller,
         obscureText: _visible,
         onChanged: widget.onChanged,

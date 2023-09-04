@@ -31,6 +31,13 @@ class AccountFollowFollowers extends StatelessWidget {
             );
           },
         },
+        'view-details': {
+          'label': 'Ver detalles',
+          'icon': MdiIcons.accountDetailsOutline,
+          'onTap': () {
+            Get.toNamed(AppRoutes.profileDetails, arguments: guest);
+          },
+        }
       };
       return Column(
         mainAxisSize: MainAxisSize.min,

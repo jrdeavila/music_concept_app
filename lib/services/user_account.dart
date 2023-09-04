@@ -86,6 +86,33 @@ abstract class UserAccountService {
       "lastActive": FieldValue.serverTimestamp(),
     });
   }
+
+  static Future<void> addAcademicStudy({
+    required String accountRef,
+    required String value,
+  }) {
+    return FirebaseFirestore.instance.doc(accountRef).update({
+      "academicStudies": FieldValue.arrayUnion([value]),
+    });
+  }
+
+  static Future<void> removeAcademicStudy({
+    required String accountRef,
+    required String value,
+  }) {
+    return FirebaseFirestore.instance.doc(accountRef).update({
+      "academicStudies": FieldValue.arrayRemove([value]),
+    });
+  }
+
+  static Future<void> changeMaritalStatus({
+    required String accountRef,
+    required String value,
+  }) {
+    return FirebaseFirestore.instance.doc(accountRef).update({
+      "maritalStatus": value,
+    });
+  }
 }
 
 enum UserAccountType {

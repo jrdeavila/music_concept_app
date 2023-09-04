@@ -140,13 +140,40 @@ class ProfileCtrl extends GetxController {
       }
     }
   }
+
+  void addAcademicStudy(String value) {
+    UserAccountService.addAcademicStudy(
+      accountRef: "users/${FirebaseAuth.instance.currentUser!.uid}",
+      value: value,
+    );
+  }
+
+  void removeAcademicStudy(String value) {
+    UserAccountService.removeAcademicStudy(
+      accountRef: "users/${FirebaseAuth.instance.currentUser!.uid}",
+      value: value,
+    );
+  }
+
+  void changeMaritalStatus({
+    required String value,
+    required String? accountRef,
+  }) {
+    UserAccountService.changeMaritalStatus(
+      accountRef:
+          accountRef ?? "users/${FirebaseAuth.instance.currentUser!.uid}",
+      value: value,
+    );
+  }
 }
 
 final accountOptions = {
-  'settings-profile': {
-    "label": "Configuración de la cuenta",
-    "icon": MdiIcons.accountCog,
-    "onTap": () {},
+  'view-profile-details': {
+    "label": "Ver perfil",
+    "icon": MdiIcons.account,
+    "onTap": () {
+      Get.toNamed(AppRoutes.profileDetails);
+    },
   },
   'settings-app': {
     "label": "Configuración de la aplicación",
