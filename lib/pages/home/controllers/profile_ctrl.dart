@@ -36,6 +36,14 @@ class ProfileCtrl extends GetxController {
             accountRef ?? "users/${FirebaseAuth.instance.currentUser!.uid}",
       );
 
+  Stream<List<FdSnapshot>> getVisitors({
+    required String? accountRef,
+  }) =>
+      BusinessService.getVisitors(
+        businessRef:
+            accountRef ?? "users/${FirebaseAuth.instance.currentUser!.uid}",
+      );
+
   Stream<bool> isAFriend({
     required String accountRef,
   }) {

@@ -11,6 +11,8 @@ class BusinessNearlyCtrl extends GetxController {
   final Rx<Coordinates?> _coordinates = Rx(null);
   final Rx<FdSnapshot?> _onYouStay = Rx(null);
   final RxBool _isAuthenticated = false.obs;
+  final RxBool _isBusiness = false.obs;
+  final Rx<FdSnapshot?> _user = Rx(null);
   Timer? timer;
 
   final double userRadius = 100.0;
@@ -29,9 +31,20 @@ class BusinessNearlyCtrl extends GetxController {
         ),
       ),
     );
-    ever(businesses, _onStayInBusiness);
-    ever(_onYouStay, _registerYouStayOnaBsns);
-    ever(businesses, _notifyNearlyBusiness);
+    _user.bindStream(
+      FirebaseAuth.instance.userChanges().asyncMap<FdSnapshot>(
+            (event) => UserAccountService.getUserAccountRef(event!.uid).get(),
+          ),
+    );
+
+    ever(_user, (value) {
+      _isBusiness.value = value?.data()?["type"] == 0;
+    });
+    ever(businesses, _onStayInBusiness, condition: () => _isBusiness.value);
+    ever(_onYouStay, _registerYouStayOnaBsns,
+        condition: () => !_isBusiness.value && _isAuthenticated.value);
+    ever(businesses, _notifyNearlyBusiness,
+        condition: () => !_isBusiness.value && _isAuthenticated.value);
 
     _searchBusiness();
     _searchBusinessPeriodic();

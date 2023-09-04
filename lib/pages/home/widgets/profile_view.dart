@@ -164,44 +164,58 @@ class _ProfileViewState extends State<ProfileView> {
                   if (_currentTab == 2)
                     SliverToBoxAdapter(
                       child: StreamBuilder(
-                        stream: Get.find<ProfileCtrl>().getBusinessVisits(
-                          accountRef: widget.guest?.reference.path,
-                        ),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return SizedBox(
-                              height: 180.0,
-                              child: ListView(
-                                physics: const BouncingScrollPhysics(),
-                                padding: const EdgeInsets.all(16.0),
-                                scrollDirection: Axis.horizontal,
-                                children: List.generate(
-                                  5,
-                                  (index) => const BusinessItemSkeleton(),
-                                ),
-                              ),
+                          stream: Get.find<ProfileCtrl>()
+                              .getAccountStream(widget.guest?.reference.path),
+                          builder: (context, snapshot) {
+                            var isBusiness = snapshot.data?['type'] == 0;
+                            return StreamBuilder(
+                              stream: !isBusiness
+                                  ? Get.find<ProfileCtrl>().getBusinessVisits(
+                                      accountRef: widget.guest?.reference.path,
+                                    )
+                                  : Get.find<ProfileCtrl>().getVisitors(
+                                      accountRef: widget.guest?.reference.path,
+                                    ),
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return SizedBox(
+                                    height: 180.0,
+                                    child: ListView(
+                                      physics: const BouncingScrollPhysics(),
+                                      padding: const EdgeInsets.all(16.0),
+                                      scrollDirection: Axis.horizontal,
+                                      children: List.generate(
+                                        5,
+                                        (index) => const BusinessItemSkeleton(),
+                                      ),
+                                    ),
+                                  );
+                                }
+                                if (snapshot.connectionState ==
+                                        ConnectionState.done &&
+                                    (snapshot.data?.isEmpty ?? false)) {
+                                  return const SizedBox.shrink();
+                                }
+                                return SizedBox(
+                                  height: 180,
+                                  child: ListView.builder(
+                                    physics: const BouncingScrollPhysics(),
+                                    padding: const EdgeInsets.all(16.0),
+                                    scrollDirection: Axis.horizontal,
+                                    itemBuilder: (context, index) {
+                                      var item = snapshot.data![index];
+                                      return BusinessItem(
+                                        item: item,
+                                        isBusiness: !isBusiness,
+                                      );
+                                    },
+                                    itemCount: snapshot.data?.length ?? 0,
+                                  ),
+                                );
+                              },
                             );
-                          }
-                          if (snapshot.connectionState ==
-                                  ConnectionState.done &&
-                              (snapshot.data?.isEmpty ?? false)) {
-                            return const SizedBox.shrink();
-                          }
-                          return SizedBox(
-                            height: 180,
-                            child: ListView.builder(
-                                physics: const BouncingScrollPhysics(),
-                                padding: const EdgeInsets.all(16.0),
-                                scrollDirection: Axis.horizontal,
-                                itemBuilder: (context, index) {
-                                  var item = snapshot.data![index];
-                                  return BusinessItem(item: item);
-                                },
-                                itemCount: snapshot.data?.length ?? 0),
-                          );
-                        },
-                      ),
+                          }),
                     ),
                   const SliverToBoxAdapter(
                     child: SizedBox(height: 100.0),
