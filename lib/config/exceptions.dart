@@ -15,9 +15,6 @@ abstract class HandlerException {
     }
     if (e is DioException && e.type == DioExceptionType.cancel) {
       return;
-    } else {
-      SnackbarUtils.onException(e.toString());
-      return;
     }
   }
 }
