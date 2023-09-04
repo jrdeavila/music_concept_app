@@ -79,8 +79,8 @@ class AccountFollowFollowers extends StatelessWidget {
                                   icon: MdiIcons.message,
                                   selected: true,
                                   onTap: () {
-                                    // Get.find<ChatCtrl>().openNewChat(
-                                    //     receiverRef: guest!.reference.path);
+                                    Get.find<ChatCtrl>().openNewChat(
+                                        receiverRef: guest!.reference.path);
                                   },
                                 );
                               }
