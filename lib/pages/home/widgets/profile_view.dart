@@ -167,7 +167,8 @@ class _ProfileViewState extends State<ProfileView> {
                           stream: Get.find<ProfileCtrl>()
                               .getAccountStream(widget.guest?.reference.path),
                           builder: (context, snapshot) {
-                            var isBusiness = snapshot.data?['type'] == 0;
+                            var isBusiness =
+                                snapshot.data?.data()?['type'] == 0;
                             return StreamBuilder(
                               stream: !isBusiness
                                   ? Get.find<ProfileCtrl>().getBusinessVisits(
