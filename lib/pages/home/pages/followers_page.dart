@@ -139,6 +139,14 @@ class AccountList extends StatelessWidget {
             stream: Get.find<ProfileCtrl>().getAccountStream(related),
             builder: (context, snapshot) {
               return ListTile(
+                onTap: () {
+                  if (snapshot.hasData) {
+                    Get.toNamed(
+                      AppRoutes.guestProfile,
+                      arguments: snapshot.data,
+                    );
+                  }
+                },
                 leading: ProfileImage(
                   image: snapshot.data?.data()?['image'],
                   name: snapshot.data?.data()?['name'],
