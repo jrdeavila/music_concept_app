@@ -53,7 +53,7 @@ class ConnectionCtrl extends GetxController {
 
   Future<void> _request() async {
     try {
-      final result = await Process.run('ping', ['-c', '1', 'google.com']);
+      final result = await Process.run('ping', ['-c', '5', 'google.com']);
 
       if (result.exitCode == 0) {
         _times.value = 0;
