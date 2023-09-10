@@ -33,8 +33,12 @@ class ProfileDetailsPage extends StatelessWidget {
                   ),
                   if (academicStudies.isNotEmpty)
                     ...academicStudies.map(
-                      (e) =>
-                          _academicStudyItem(initialValue: e, canDelete: true),
+                      (e) {
+                        return _academicStudyItem(
+                          initialValue: e,
+                          canDelete: true,
+                        );
+                      },
                     ),
                   if (academicStudies.isEmpty) ...[
                     const SizedBox(height: 8.0),
@@ -64,7 +68,14 @@ class ProfileDetailsPage extends StatelessWidget {
         });
   }
 
-  DropdownButtonFormField<String> _buildMaritalStatus(String status) {
+  Widget _buildMaritalStatus(String status) {
+    if (guest != null) {
+      return Text(
+        status,
+        style: TextStyle(color: Colors.grey[500]),
+        textAlign: TextAlign.center,
+      );
+    }
     return DropdownButtonFormField(
         decoration: InputDecoration(
           filled: true,
