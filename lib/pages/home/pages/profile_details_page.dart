@@ -110,14 +110,14 @@ class ProfileDetailsPage extends StatelessWidget {
     bool canDelete = false,
   }) {
     String currentValue = initialValue ?? "";
-    late TextEditingController controller;
+    TextEditingController? controller;
     return SizedBox(
       height: 80.0,
       child: Row(
         children: [
           Expanded(
             child: LoginRoundedTextField(
-              label: "Univ. Privada de Tacna...",
+              label: "Nuevo ",
               initialValue: currentValue,
               icon: Icons.school,
               onControllingText: (ctrl) {
@@ -138,7 +138,7 @@ class ProfileDetailsPage extends StatelessWidget {
                 if (canDelete) {
                   Get.find<ProfileCtrl>().removeAcademicStudy(currentValue);
                 } else {
-                  controller.clear();
+                  controller?.clear();
                   Get.find<ProfileCtrl>().addAcademicStudy(currentValue);
                 }
               },

@@ -103,16 +103,17 @@ class _ProfileViewState extends State<ProfileView> {
                   SliverToBoxAdapter(
                     child: ProfileTabBar(
                       children: [
-                        ProfileTabBarItem(
-                          label: 'Fondos',
-                          icon: MdiIcons.wallpaper,
-                          selected: _currentTab == 0,
-                          onTap: () {
-                            setState(() {
-                              _currentTab = 0;
-                            });
-                          },
-                        ),
+                        if (widget.guest == null)
+                          ProfileTabBarItem(
+                            label: 'Fondos',
+                            icon: MdiIcons.wallpaper,
+                            selected: _currentTab == 0,
+                            onTap: () {
+                              setState(() {
+                                _currentTab = 0;
+                              });
+                            },
+                          ),
                         ProfileTabBarItem(
                             label: 'Posts',
                             icon: MdiIcons.post,
@@ -134,7 +135,7 @@ class _ProfileViewState extends State<ProfileView> {
                       ],
                     ),
                   ),
-                  if (_currentTab == 0)
+                  if (_currentTab == 0 && widget.guest == null)
                     const SliverFillRemaining(
                       child: WallpaperTabView(),
                     ),
