@@ -95,26 +95,27 @@ abstract class PostService {
   }
 
   static Stream<List<QueryDocumentSnapshot<Map<String, dynamic>>>>
-      getAccountFollowingPost(String accountRef) async* {
-    final following = await FirebaseFirestore.instance
-        .collection("follows")
-        .where("followerRef", isEqualTo: accountRef)
-        .get();
-
-    final followingRefs = following.docs.map<String>((e) => e['followingRef']);
-
-    yield* FirebaseFirestore.instance
-        .collection('posts')
-        .orderBy("createdAt", descending: true)
+      getAccountFollowingPost(String accountRef) {
+    return FirebaseFirestore.instance
+        .collection("posts")
         .snapshots()
-        .map((e) {
+        .asyncMap((event) async {
+      final followingRefs = (await FirebaseFirestore.instance
+              .collection("follows")
+              .where("followerRef", isEqualTo: accountRef)
+              .get())
+          .docs
+          .map((e) => e['followingRef'])
+          .toList()
+          .cast<String>();
       final docs = <QueryDocumentSnapshot<Map<String, dynamic>>>[];
       for (final ref in followingRefs) {
-        docs.addAll(e.docs.where((element) =>
+        docs.addAll(event.docs.where((element) =>
             element['accountRef'] == ref &&
             element['deletedAt'] == null &&
             element['visibility'] != PostVisibility.private.index));
       }
+      docs.sort((a, b) => b['createdAt'].compareTo(a['createdAt']));
       return docs;
     });
   }
