@@ -62,12 +62,8 @@ class HomeCtrl extends GetxController {
   }
 
   void goToReed() {
-    if (_currentPage.value != 1) {
-      _currentPage.value = 1;
-      Get.find<FanPageCtrl>().showReed();
-    } else {
-      Get.back();
-    }
+    _currentPage.value = 1;
+    Get.find<FanPageCtrl>().showReed();
   }
 
   void goToSearch() {
@@ -154,7 +150,14 @@ class FanPageCtrl extends GetxController {
     _currentPage.listen(_onPageChange);
   }
 
-  void showReed() => _currentPage.value = 0;
+  void showReed() {
+    if (_currentPage.value != 0) {
+      _currentPage.value = 0;
+    } else {
+      Get.back();
+    }
+  }
+
   void toggleNotifications() {
     _currentPage.value = _currentPage.value == 1 ? 0 : 1;
   }

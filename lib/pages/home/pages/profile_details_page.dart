@@ -5,7 +5,6 @@ import 'package:music_concept_app/lib.dart';
 class ProfileDetailsPage extends StatelessWidget {
   final FdSnapshot? guest;
   const ProfileDetailsPage({super.key, this.guest});
-
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
