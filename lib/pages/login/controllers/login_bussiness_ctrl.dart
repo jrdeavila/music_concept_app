@@ -36,7 +36,7 @@ class RegisterBussinessCtrl extends GetxController {
   void setLocation(LatLng? value) => _location.value = value;
 
   void submit() {
-    UserAccountService.createAccount(
+    Get.find<AuthenticationCtrl>().register(
       email: _email.validateEmail(),
       password: _password.validateEmpty(
         label: "Contraseña",

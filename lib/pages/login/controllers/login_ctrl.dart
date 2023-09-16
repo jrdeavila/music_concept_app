@@ -59,7 +59,7 @@ class RegisterCtrl extends GetxController {
   }
 
   void submit() {
-    UserAccountService.createAccount(
+    Get.find<AuthenticationCtrl>().register(
       name: _name.validateEmpty(
         label: "Nombre",
       ),
@@ -68,7 +68,6 @@ class RegisterCtrl extends GetxController {
         label: "Contraseña",
       ),
       image: _image.value,
-      category: "Personas",
     );
   }
 }

@@ -61,6 +61,7 @@ abstract class SnackbarUtils {
   }
 
   static void onFirebaseException(String code) {
+    if (blockedList.contains(code)) return;
     showSnackbar(
       message: firebaseMessages[code] ?? code,
       label: "OK",
@@ -78,4 +79,10 @@ const firebaseMessages = {
   "weak-password": "Contraseña débil",
   "unknown": "Error desconocido",
   "failed-precondition": "Precondición fallida",
+  "not-found": "No encontrado",
 };
+
+const blockedList = [
+  "not-found",
+  "failed-precondition",
+];

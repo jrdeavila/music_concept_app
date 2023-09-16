@@ -1,9 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:music_concept_app/lib.dart';
 
 class AuthenticationCtrl extends GetxController {
   final Rx<User?> _firebaseUser = Rx<User?>(null);
+  final _getStorage = GetStorage();
 
   @override
   void onReady() {
@@ -18,7 +22,11 @@ class AuthenticationCtrl extends GetxController {
         Get.delete<NotificationCtrl>();
         Get.delete<BusinessNearlyCtrl>();
         Get.delete<HomeCtrl>();
-        Get.offAllNamed(AppRoutes.login);
+        if (_getStorage.read('first-login') == null) {
+          Get.offAllNamed(AppRoutes.root);
+        } else {
+          Get.offAllNamed(AppRoutes.login);
+        }
       }
     });
     _firebaseUser.bindStream(FirebaseAuth.instance.authStateChanges());
@@ -32,6 +40,31 @@ class AuthenticationCtrl extends GetxController {
       email: email,
       password: password,
     );
+
+    _getStorage.write('first-login', true);
+  }
+
+  void register({
+    required String email,
+    required String password,
+    required String name,
+    required Uint8List? image,
+    String category = "Personas",
+    LatLng? location,
+    String? address,
+    UserAccountType type = UserAccountType.user,
+  }) async {
+    await UserAccountService.createAccount(
+      name: name,
+      email: email,
+      password: password,
+      image: image,
+      category: category,
+      type: type,
+      location: location,
+      address: address,
+    );
+    _getStorage.write('first-login', true);
   }
 
   void resetPassword({
