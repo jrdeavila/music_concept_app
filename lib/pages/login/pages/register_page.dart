@@ -16,10 +16,10 @@ class _RegisterPageState extends State<RegisterPage> {
   Widget build(BuildContext context) {
     final ctrl = Get.find<RegisterCtrl>();
     return Scaffold(
-      body: Obx(() {
-        return SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
-          child: Column(
+      body: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
+        child: Obx(
+          () => Column(
             children: [
               const SizedBox(
                 height: 200,
@@ -38,6 +38,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       emailCtrl?.text = ctrl.email;
                       passwordCtrl?.text = ctrl.password;
                       ctrl.previousPage();
+                      setState(() {});
                     },
                   ),
                   ProfileTabBarItem(
@@ -47,6 +48,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     onTap: () {
                       nameCtrl?.text = ctrl.name;
                       ctrl.nextPage();
+                      setState(() {});
                     },
                   ),
                 ]),
@@ -58,8 +60,8 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
             ],
           ),
-        );
-      }),
+        ),
+      ),
       bottomNavigationBar: SizedBox(
         height: 80,
         child: Center(

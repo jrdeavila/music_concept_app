@@ -12,13 +12,11 @@ class AuthenticationCtrl extends GetxController {
       if (p0 != null) {
         Get.put(NotificationCtrl());
         Get.put(BusinessNearlyCtrl());
-        Get.put(ActivityCtrl());
         Get.lazyPut(() => HomeCtrl());
         Get.offAllNamed(AppRoutes.home);
       } else {
         Get.delete<NotificationCtrl>();
         Get.delete<BusinessNearlyCtrl>();
-        Get.delete<ActivityCtrl>();
         Get.delete<HomeCtrl>();
         Get.offAllNamed(AppRoutes.login);
       }
