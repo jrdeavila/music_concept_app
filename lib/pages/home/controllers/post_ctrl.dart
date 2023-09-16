@@ -53,15 +53,26 @@ class CreatePostCtrl extends GetxController {
 
 class PostCtrl extends GetxController {
   final RxList<FdSnapshot> _posts = <FdSnapshot>[].obs;
+  final RxBool _isLoading = true.obs;
 
   List<FdSnapshot> get posts => _posts.toList();
+  bool get isLoading => _isLoading.value;
 
   @override
   void onReady() {
     super.onReady();
-    _posts.bindStream(PostService.getAccountFollowingPost(
-        "users/${FirebaseAuth.instance.currentUser!.uid}"));
+    _posts.bindStream(_fetchingPost);
   }
+
+  Stream<List<FdSnapshot>> get _fetchingPost =>
+      PostService.getAccountFollowingPost(
+              "users/${FirebaseAuth.instance.currentUser!.uid}")
+          .asyncMap((event) async {
+        _isLoading.value = true;
+        await Future.delayed(1.seconds);
+        _isLoading.value = false;
+        return event;
+      });
 
   Stream<DocumentSnapshot<Map<String, dynamic>>> getAccountRef(
       String accountRef) {
