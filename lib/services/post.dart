@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:async/async.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:music_concept_app/lib.dart';
@@ -94,12 +95,27 @@ abstract class PostService {
     });
   }
 
-  static Stream<List<QueryDocumentSnapshot<Map<String, dynamic>>>>
-      getAccountFollowingPost(String accountRef) {
-    return FirebaseFirestore.instance
+  static Stream<List<FdSnapshot>> getAccountFollowingPost(String accountRef) {
+    Stream<List<FdSnapshot>> fetchPostStream() => FirebaseFirestore.instance
         .collection("posts")
         .snapshots()
-        .asyncMap((event) async {
+        .map((event) => event.docs);
+    Stream<List<FdSnapshot>> fetchFollowingPostStream() =>
+        FirebaseFirestore.instance
+            .collection("follows")
+            .where("followerRef", isEqualTo: accountRef)
+            .snapshots()
+            .asyncMap((event) {
+          return FirebaseFirestore.instance
+              .collection("posts")
+              .get()
+              .then((value) => value.docs);
+        });
+
+    return StreamGroup.merge<List<FdSnapshot>>([
+      fetchPostStream(),
+      fetchFollowingPostStream(),
+    ]).asyncMap((event) async {
       final followingRefs = (await FirebaseFirestore.instance
               .collection("follows")
               .where("followerRef", isEqualTo: accountRef)
@@ -108,9 +124,9 @@ abstract class PostService {
           .map((e) => e['followingRef'])
           .toList()
           .cast<String>();
-      final docs = <QueryDocumentSnapshot<Map<String, dynamic>>>[];
+      final docs = <FdSnapshot>[];
       for (final ref in followingRefs) {
-        docs.addAll(event.docs.where((element) =>
+        docs.addAll(event.where((element) =>
             element['accountRef'] == ref &&
             element['deletedAt'] == null &&
             element['visibility'] != PostVisibility.private.index));
