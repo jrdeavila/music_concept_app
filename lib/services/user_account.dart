@@ -46,7 +46,7 @@ abstract class UserAccountService {
 
       final imagePath = image != null
           ? await FirebaseStorageService.uploadFile(
-              path: "users",
+              path: "users/$id/avatar",
               fileName: "avatar",
               fileExtension: "jpg",
               fileData: base64.encode(image),
