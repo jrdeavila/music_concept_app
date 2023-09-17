@@ -20,6 +20,13 @@ class WelcomePage extends StatelessWidget {
               width: Get.width,
             ),
           ),
+          Align(
+            alignment: const FractionalOffset(0.5, 0.3),
+            child: SizedBox(
+              width: 150,
+              child: Image.asset("assets/logo/splash.jpeg"),
+            ),
+          ),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Column(
