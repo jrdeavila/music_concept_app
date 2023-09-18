@@ -44,18 +44,8 @@ abstract class UserAccountService {
       user.sendEmailVerification();
       final id = user.uid;
 
-      final imagePath = image != null
-          ? await FirebaseStorageService.uploadFile(
-              path: "users/$id/avatar",
-              fileName: "avatar",
-              fileExtension: "jpg",
-              fileData: base64.encode(image),
-              format: PutStringFormat.base64,
-              metadata: SettableMetadata(
-                contentType: "image/jpeg",
-              ),
-            )
-          : null;
+      final imagePath =
+          image != null ? setAvatar(accountRef: id, image: image) : null;
 
       transaction.set(FirebaseFirestore.instance.collection("users").doc(id), {
         "name": name,
@@ -68,6 +58,38 @@ abstract class UserAccountService {
             ? GeoPoint(location.latitude, location.longitude)
             : null,
       });
+    });
+  }
+
+  static Future<String> setAvatar({
+    required String accountRef,
+    required Uint8List image,
+  }) async {
+    final imagePath = await FirebaseStorageService.uploadFile(
+      path: "users/$accountRef/avatar",
+      fileName: "avatar",
+      fileExtension: "jpg",
+      fileData: base64.encode(image),
+      format: PutStringFormat.base64,
+      metadata: SettableMetadata(
+        contentType: "image/jpeg",
+      ),
+    );
+
+    return imagePath;
+  }
+
+  static Future<void> changeAvatar({
+    required Uint8List image,
+    required String accountRef,
+  }) async {
+    var path = await setAvatar(accountRef: accountRef, image: image);
+
+    return FirebaseFirestore.instance
+        .collection("users")
+        .doc(accountRef)
+        .update({
+      "image": path,
     });
   }
 

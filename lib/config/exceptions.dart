@@ -4,6 +4,7 @@ import 'package:music_concept_app/lib.dart';
 
 abstract class HandlerException {
   static void handler(Object e, StackTrace? stackTrace) {
+    print(e);
     if (e is FirebaseException) {
       SnackbarUtils.onFirebaseException(e.code);
       return;

@@ -165,6 +165,13 @@ class ProfileCtrl extends GetxController {
       value: value,
     );
   }
+
+  void changeAvatar(Uint8List image) {
+    UserAccountService.changeAvatar(
+      accountRef: FirebaseAuth.instance.currentUser!.uid,
+      image: image,
+    );
+  }
 }
 
 final accountOptions = {

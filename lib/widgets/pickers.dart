@@ -10,6 +10,7 @@ class ImagePicker extends StatefulWidget {
   final Uint8List? image;
   final double? margin;
   final Widget? child;
+  final bool canRemove;
 
   const ImagePicker({
     super.key,
@@ -17,6 +18,7 @@ class ImagePicker extends StatefulWidget {
     this.childOnImageSelected,
     this.image,
     this.margin,
+    this.canRemove = true,
     this.child,
   });
 
@@ -75,8 +77,11 @@ class _ImagePickerState extends State<ImagePicker> {
 
   void _showMenu(TapUpDetails details) {
     dialogBuilder<ResultImagePicker>(
-            context, details.globalPosition, const SelectImageMenu())
-        .then((value) {
+        context,
+        details.globalPosition,
+        SelectImageMenu(
+          canRemove: widget.canRemove,
+        )).then((value) {
       if (value is ResultImagePicker) {
         if (value.remove) {
           setState(() {
@@ -94,7 +99,8 @@ class _ImagePickerState extends State<ImagePicker> {
 }
 
 class SelectImageMenu extends StatelessWidget {
-  const SelectImageMenu({super.key});
+  final bool canRemove;
+  const SelectImageMenu({super.key, required this.canRemove});
 
   @override
   Widget build(BuildContext context) {
@@ -125,14 +131,15 @@ class SelectImageMenu extends StatelessWidget {
               });
             },
           ),
-          MenuAction(
-            icon: Icons.delete,
-            text: "Quitar imagen",
-            foregroundColor: foregroundColor,
-            onTap: () {
-              Navigator.of(context).pop(ResultImagePicker(remove: true));
-            },
-          ),
+          if (canRemove)
+            MenuAction(
+              icon: Icons.delete,
+              text: "Quitar imagen",
+              foregroundColor: foregroundColor,
+              onTap: () {
+                Navigator.of(context).pop(ResultImagePicker(remove: true));
+              },
+            ),
         ]);
   }
 }

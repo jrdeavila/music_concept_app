@@ -24,7 +24,7 @@ class WelcomePage extends StatelessWidget {
             alignment: const FractionalOffset(0.5, 0.3),
             child: SizedBox(
               width: 150,
-              child: Image.asset("assets/logo/splash.jpeg"),
+              child: Image.asset("assets/logo/logo.png"),
             ),
           ),
           Container(
