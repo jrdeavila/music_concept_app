@@ -108,7 +108,7 @@ abstract class FollowingFollowersServices {
           friends.add(item);
         }
       }
-      return event.docs.map((e) => e.data()['followerRef'] as String).toList();
+      return friends.map((e) => e.data()!['followerRef'] as String).toList();
     });
   }
 
