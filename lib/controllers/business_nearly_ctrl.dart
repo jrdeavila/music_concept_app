@@ -40,7 +40,7 @@ class BusinessNearlyCtrl extends GetxController {
     ever(_user, (value) {
       _isBusiness.value = value?.data()?["type"] == 0;
     });
-    ever(businesses, _onStayInBusiness, condition: () => _isBusiness.value);
+    ever(businesses, _onStayInBusiness, condition: () => !_isBusiness.value);
     ever(_onYouStay, _registerYouStayOnaBsns,
         condition: () => !_isBusiness.value && _isAuthenticated.value);
     ever(businesses, _notifyNearlyBusiness,
