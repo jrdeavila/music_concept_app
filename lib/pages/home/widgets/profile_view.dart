@@ -242,7 +242,9 @@ class _ProfileViewState extends State<ProfileView> {
               builder: (context, snapshot) {
                 var data = snapshot.data?.data();
                 var hasAddress = data?['address'] != null;
-                var hasActiveStatus = data?.containsKey('active') ?? false;
+                var hasActiveStatus = data?.containsKey('active') ?? false
+                    ? data!['active']
+                    : false;
                 var hasLastActive = data?['lastActive'] != null;
                 lastActiveString = hasLastActive
                     ? "Activo ${data?['active'] ?? false ? "ahora" : TimeUtils.timeagoFormat(data?["lastActive"].toDate())}"

@@ -33,7 +33,7 @@ class WelcomePage extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 const Text(
-                  "Comparte tus gustos musicales con el tus amigos y el mundo",
+                  "Comparte tus gustos musicales con el mundo",
                   style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
                   textAlign: TextAlign.center,
                 ),

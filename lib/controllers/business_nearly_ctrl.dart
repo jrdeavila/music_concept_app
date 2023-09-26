@@ -15,8 +15,8 @@ class BusinessNearlyCtrl extends GetxController {
   final Rx<FdSnapshot?> _user = Rx(null);
   Timer? timer;
 
-  final double userRadius = 100.0;
-  final double businessLimit = 100.0;
+  final double userRadius = 50.0;
+  final double businessLimit = 20.0;
   final Duration _timerDuration = 10.minutes;
 
   @override
