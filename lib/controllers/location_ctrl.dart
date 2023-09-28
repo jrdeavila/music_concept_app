@@ -21,6 +21,9 @@ class LocationCtrl extends GetxController {
   @override
   void onReady() {
     super.onReady();
+    Geolocator.getLastKnownPosition().then((value) {
+      return _position.value = value;
+    });
     _position.bindStream(Geolocator.getPositionStream());
     _incognitoMode.value = GetStorage().read('incognitoMode') ?? false;
     _incognitoMode.listen((p0) {
