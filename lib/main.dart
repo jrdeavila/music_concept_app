@@ -28,7 +28,7 @@ void main() async {
       timeago.setLocaleMessages('es', timeago.EsMessages());
 
       Get.put(AuthenticationCtrl());
-      Get.put(ConnectionCtrl());
+      // Get.put(ConnectionCtrl());
       Get.put(LocationCtrl());
       Get.put(ActivityCtrl());
 

@@ -22,8 +22,14 @@ class WelcomePage extends StatelessWidget {
           ),
           Align(
             alignment: const FractionalOffset(0.5, 0.3),
-            child: SizedBox(
+            child: Container(
               width: 150,
+              height: 150,
+              padding: const EdgeInsets.all(2),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(100),
+              ),
               child: Image.asset("assets/logo/logo.png"),
             ),
           ),
